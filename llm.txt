@@ -1,0 +1,31 @@
+# Remigiusz Bednarczyk
+> Quality Engineering Lead / Test Manager
+
+## About
+Remigiusz Bednarczyk is a Quality Engineering Lead and Test Manager based in Poland, specializing in regulated environments, particularly the pharmaceutical sector (GxP). He has extensive experience in designing testing strategies, managing cross-functional QA teams, and driving digital transformation in testing processes.
+
+## Contact & Links
+- Email: rem.bednarczyk@gmail.com
+- LinkedIn: https://linkedin.com/in/rembednarczyk
+- Website: https://rembednarczyk.github.io
+
+## Professional Experience
+- **Test Manager** at Sii Poland (2021 - Present)
+  - Leading quality engineering and testing strategy across regulated pharmaceutical projects.
+  - Test Manager for Genmab (2024 - Present): Owning end-to-end test management, GxP/CSV compliance, and digital transformation using Jira with Xray.
+  - Test Manager for Roche (2021 - Present): Managing testing teams across concurrent GxP-regulated projects globally.
+- **Senior Test & Analysis Engineer** at Sii Poland / Acxiom (2018 - 2021)
+  - Conducted API, GUI, and cloud testing initiatives across AWS, HDFS, Kafka, and Spark.
+- **Test & Analysis Engineer** at Sii Poland / Acxiom (2017 - 2018)
+- **Application Tester** at Simple S.A. / Bazus (2014 - 2017)
+
+## Community & Leadership
+- Vice President of the Polish Testing Board (SJSI).
+- Conference Host & Speaker at major IT events (TestWarez, Na Podbój IT).
+- Trainer & Mentor for 500+ software testers (ISTQB preparation).
+- Lead Technical Assessor for testing professionals.
+
+## Core Competencies
+- Test Management: Test Strategy, Risk-Based Testing, Defect Management, GxP / CSV Compliance.
+- Methodologies: Agile / Scrum, Waterfall, V-Model, ITIL, SAFe, Shift-Left Testing.
+- Tools & Technologies: Jira & Xray, HP ALM, TraceLink, Postman, SQL, NoSQL.

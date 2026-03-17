@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rembednarczyk.github.io/sitemap.xml
