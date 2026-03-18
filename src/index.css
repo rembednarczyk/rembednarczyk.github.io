@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@media print {
+  @page {
+    margin: 1.5cm;
+  }
+
+  body, html, #root {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Force background colors to print (for tags, etc.) */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

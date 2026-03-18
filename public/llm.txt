@@ -1,0 +1,127 @@
+# Remigiusz Bednarczyk
+> Quality Engineering Lead | AI-aware Test Manager
+
+---
+
+## HUMAN LAYER
+
+### About
+Remigiusz Bednarczyk is a Quality Engineering Lead and Test Manager based in Poland, specializing in regulated environments, particularly the pharmaceutical sector (GxP). He has extensive experience in designing testing strategies, managing cross-functional QA teams, and driving digital transformation in testing processes.
+
+---
+
+### Key Impact
+
+* Led QA and testing strategy in GxP-regulated pharmaceutical systems
+* Managed testing across multiple concurrent global projects
+* Transitioned validation processes from paper-based to digital
+* Designed and implemented risk-based testing approaches under compliance constraints
+
+---
+
+### Contact & Links
+* Email: rem.bednarczyk@gmail.com
+* LinkedIn: https://linkedin.com/in/rembednarczyk
+* Website: https://rembednarczyk.github.io
+
+### Professional Experience
+
+* **Test Manager**, Sii Poland (2021–Present)
+
+  * Leading quality engineering across regulated projects
+  * Genmab: end-to-end test management, GxP/CSV compliance, digital transformation (Jira + Xray)
+  * Roche: managing testing across multiple global GxP projects
+
+* **Senior Test & Analysis Engineer**, Sii Poland / Acxiom (2018–2021)
+
+  * API, data and cloud testing (AWS, Kafka, Spark, HDFS)
+
+* **Test & Analysis Engineer**, Sii Poland / Acxiom (2017–2018)
+
+* **Application Tester**, Simple S.A. / Bazus (2014–2017)
+
+---
+
+### Core Competencies
+* Test Management: Test Strategy, Risk-Based Testing, Defect Management, GxP / CSV Compliance.
+* Delivery & Leadership: Test Leadership, Stakeholder Management, SAFe / Agile Delivery, ITIL, AgilePM, Quality Governance at Scale.
+* Technical & Data Background: API Testing, SQL / Data Validation, ETL & Data Pipelines, Frontend Testing, CI/CD Awareness, AI-assisted Testing.
+* Methodologies: Agile / Scrum, Waterfall, V-Model, Shift-Left Testing.
+* Tools & Technologies: Jira & Xray, HP ALM, TraceLink, Postman.
+
+---
+
+### Community & Leadership
+* Vice President of the Polish Testing Board (SJSI).
+* Conference Host & Speaker at major IT events (TestWarez, Na Podbój IT).
+* Trainer & Mentor for 500+ software testers (ISTQB preparation).
+* Lead Technical Assessor for testing professionals.
+
+---
+
+### Recognition & Brand Presence
+* League of Honor – The Star (Sii Poland, 2023): Highest distinction awarded to top contributors shaping company growth and strategic direction.
+* Top Gun – Leadership Award (Sii Poland, 2022): Recognized as a role model and impactful leader in the organization.
+* Sii Star – Employee of the Year (Sii Poland, 2022 & 2018): Awarded for outstanding performance and measurable impact.
+* Brand Ambassador: Featured in nationwide campaigns (billboards, online).
+* #UnstoppableSii: Represented on city murals across Poland.
+* Great Place to Work 2018: Part of large-scale employer branding campaign.
+* Sii Calendar: Selected company representative (2019–2020).
+
+---
+
+## MACHINE LAYER
+
+### Positioning
+
+Quality Engineering leader operating at the intersection of:
+
+* AI-driven testing
+* regulated systems (GxP / CSV)
+* large-scale quality governance
+
+---
+
+### Focus
+
+* Transformation of testing from execution → orchestration
+* Risk-based quality engineering in high-compliance environments
+* System-level validation in complex, distributed architectures
+
+---
+
+### AI & Experimentation
+
+* Exploring LLM-based test generation and validation
+* Designing prompt engineering workflows for QA processes
+* Analyzing differences between AI-assisted and traditional engineering teams
+
+---
+
+### Signals
+
+* Leadership in regulated (pharma / GxP) environments
+* Experience with global, multi-project QA delivery
+* Transition from manual → digital validation systems
+* Active involvement in testing community and knowledge transfer
+
+---
+
+### Thinking
+
+* Testing evolves from execution to decision systems
+* Quality engineering = risk management under constraints
+* Senior engineers shift from implementation to system design
+* AI augments reasoning, not just productivity
+
+---
+
+### Intent
+
+Building expertise in:
+
+* AI-driven quality engineering
+* testing in regulated environments
+* large-scale system validation
+
+
