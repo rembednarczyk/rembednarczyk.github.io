@@ -6,7 +6,9 @@
 
 Personal website of a **Quality Engineering Lead / Test Manager** specializing in **GxP-regulated environments, test strategy, and AI-assisted testing**.
 
-🔗 Live: https://rembednarczyk.github.io/
+Live: https://rembednarczyk.github.io/
+
+Deployed: ![Deploy](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml/badge.svg)
 
 ---
 
