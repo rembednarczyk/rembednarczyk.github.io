@@ -6,7 +6,13 @@
 
 Personal website of a **Quality Engineering Lead / Test Manager** specializing in **GxP-regulated environments, test strategy, and AI-assisted testing**.
 
-🔗 Live: https://rembednarczyk.github.io/
+**Live:** [rembednarczyk.github.io](https://rembednarczyk.github.io/)
+
+Deployed: [![CI/CD Pipeline](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml)
+
+Using: [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 
 ---
 
@@ -71,6 +77,14 @@ Chosen for **speed, maintainability, and developer experience**.
 - Lazy loading (`React.lazy`, `Suspense`)
 - Above-the-fold prioritization
 - Optimized initial load (fast FCP)
+
+---
+
+### CI/CD Pipeline (GitHub Actions)
+
+- Quality Gates (CI): Every push and pull request triggers ESLint and TypeScript type checking (`tsc --noEmit`).
+- Fail-Fast: The build process is aborted if any quality gate fails, preventing broken code from reaching production.
+- Continuous Deployment (CD): Successful merges to `main` are automatically built and deployed to GitHub Pages.
 
 ---
 
