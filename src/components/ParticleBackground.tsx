@@ -1,16 +1,21 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
 export const ParticleBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
 
   if (prefersReducedMotion) {
     return (
-      <div 
+      <div
         aria-hidden="true"
         className="fixed inset-0 pointer-events-none z-0"
-        style={{ background: 'radial-gradient(circle at center, #0f172a 0%, #020617 100%)' }}
+        style={{
+          background:
+            "radial-gradient(circle at center, #0f172a 0%, #020617 100%)",
+        }}
       />
     );
   }
@@ -18,7 +23,7 @@ export const ParticleBackground: React.FC = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     let animationFrameId: number;
@@ -61,7 +66,7 @@ export const ParticleBackground: React.FC = () => {
         if (!ctx) return;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(139, 92, 246, 0.8)'; // Purple-ish star/node
+        ctx.fillStyle = "rgba(139, 92, 246, 0.8)"; // Purple-ish star/node
         ctx.fill();
       }
     }
@@ -69,7 +74,10 @@ export const ParticleBackground: React.FC = () => {
     const initParticles = () => {
       particles = [];
       // Adjust particle count based on screen size
-      const numParticles = Math.min(Math.floor((window.innerWidth * window.innerHeight) / 12000), 120);
+      const numParticles = Math.min(
+        Math.floor((window.innerWidth * window.innerHeight) / 12000),
+        120,
+      );
       for (let i = 0; i < numParticles; i++) {
         particles.push(new Particle());
       }
@@ -106,11 +114,11 @@ export const ParticleBackground: React.FC = () => {
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(mouse.x, mouse.y);
           ctx.stroke();
-          
+
           // Slight attraction to mouse
           if (distanceMouse > 50) {
-             particles[i].x -= dxMouse * 0.005;
-             particles[i].y -= dyMouse * 0.005;
+            particles[i].x -= dxMouse * 0.005;
+            particles[i].y -= dyMouse * 0.005;
           }
         }
       }
@@ -118,23 +126,23 @@ export const ParticleBackground: React.FC = () => {
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach(p => {
+
+      particles.forEach((p) => {
         p.update();
         p.draw();
       });
-      
+
       drawLines();
-      
+
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    window.addEventListener('resize', resize);
-    window.addEventListener('mousemove', (e) => {
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", (e) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
     });
-    window.addEventListener('mouseout', () => {
+    window.addEventListener("mouseout", () => {
       mouse.x = -1000;
       mouse.y = -1000;
     });
@@ -143,7 +151,7 @@ export const ParticleBackground: React.FC = () => {
     animate();
 
     return () => {
-      window.removeEventListener('resize', resize);
+      window.removeEventListener("resize", resize);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
@@ -153,7 +161,10 @@ export const ParticleBackground: React.FC = () => {
       ref={canvasRef}
       aria-hidden="true"
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ background: 'radial-gradient(circle at center, #0f172a 0%, #020617 100%)' }}
+      style={{
+        background:
+          "radial-gradient(circle at center, #0f172a 0%, #020617 100%)",
+      }}
     />
   );
 };

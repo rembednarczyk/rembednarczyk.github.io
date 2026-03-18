@@ -1,6 +1,6 @@
-import { motion } from 'motion/react';
-import { SectionHeading } from '../ui/SectionHeading';
-import { experienceData } from '../../data/portfolioData';
+import { motion } from "motion/react";
+import { SectionHeading } from "../ui/SectionHeading";
+import { experienceData } from "../../data/portfolioData";
 
 export function ExperienceSection() {
   return (
@@ -15,13 +15,18 @@ export function ExperienceSection() {
 
         <div className="space-y-8">
           {experienceData.map((job, idx) => (
-            <article key={idx} className="group relative bg-[#0a1128]/80 backdrop-blur-sm border border-white/10 rounded-xl p-8 hover:-translate-y-1 active:scale-[0.98] transition-all duration-300">
+            <article
+              key={idx}
+              className="group relative bg-[#0a1128]/80 backdrop-blur-sm border border-white/10 rounded-xl p-8 hover:-translate-y-1 active:scale-[0.98] transition-all duration-300"
+            >
               <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
                 <div>
                   <h4 className="text-2xl font-bold text-white group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
                     {job.role}
                   </h4>
-                  <div className="text-lg text-purple-400 font-medium mt-1">{job.company}</div>
+                  <div className="text-lg text-purple-400 font-medium mt-1">
+                    {job.company}
+                  </div>
                 </div>
                 <div className="text-slate-500 font-mono text-sm mt-2 md:mt-0">
                   <time>{job.period}</time>
@@ -35,7 +40,10 @@ export function ExperienceSection() {
               {job.bullets && (
                 <ul className="space-y-3 mb-6">
                   {job.bullets.map((bullet, bIdx) => (
-                    <li key={bIdx} className="text-slate-400 text-base leading-relaxed flex items-start gap-3">
+                    <li
+                      key={bIdx}
+                      className="text-slate-400 text-base leading-relaxed flex items-start gap-3"
+                    >
                       <span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0 shadow-[0_0_8px_rgba(34,211,238,0.8)]"></span>
                       <span>{bullet}</span>
                     </li>
@@ -44,7 +52,10 @@ export function ExperienceSection() {
               )}
               <div className="flex flex-wrap gap-3">
                 {job.tags.map((tag, tIdx) => (
-                  <span key={tIdx} className="text-xs font-mono text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20">
+                  <span
+                    key={tIdx}
+                    className="text-xs font-mono text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20"
+                  >
                     {tag}
                   </span>
                 ))}
@@ -55,7 +66,7 @@ export function ExperienceSection() {
                   {job.projects.map((project, pIdx) => (
                     <article key={pIdx} className="relative">
                       <div className="absolute -left-[31px] md:-left-[39px] top-2 w-3 h-3 bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.5)]"></div>
-                      
+
                       <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-3">
                         <h5 className="text-xl font-bold text-white group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
                           {project.role}
@@ -64,21 +75,27 @@ export function ExperienceSection() {
                           <time>{project.period}</time>
                         </div>
                       </div>
-                      
+
                       {project.bullets && (
                         <ul className="space-y-2 mb-4">
                           {project.bullets.map((bullet, bIdx) => (
-                            <li key={bIdx} className="text-slate-400 text-sm leading-relaxed flex items-start gap-3">
+                            <li
+                              key={bIdx}
+                              className="text-slate-400 text-sm leading-relaxed flex items-start gap-3"
+                            >
                               <span className="mt-1.5 w-1 h-1 rounded-full bg-cyan-400 shrink-0 shadow-[0_0_8px_rgba(34,211,238,0.8)]"></span>
                               <span>{bullet}</span>
                             </li>
                           ))}
                         </ul>
                       )}
-                      
+
                       <div className="flex flex-wrap gap-2">
                         {project.tags.map((tag, tIdx) => (
-                          <span key={tIdx} className="text-[10px] font-mono text-slate-300 bg-white/5 px-2 py-1 rounded-full border border-white/10">
+                          <span
+                            key={tIdx}
+                            className="text-[10px] font-mono text-slate-300 bg-white/5 px-2 py-1 rounded-full border border-white/10"
+                          >
                             {tag}
                           </span>
                         ))}

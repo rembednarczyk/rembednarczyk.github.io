@@ -1,6 +1,6 @@
-import { motion } from 'motion/react';
-import { SectionHeading } from '../ui/SectionHeading';
-import { brandPresenceData } from '../../data/portfolioData';
+import { motion } from "motion/react";
+import { SectionHeading } from "../ui/SectionHeading";
+import { brandPresenceData } from "../../data/portfolioData";
 
 export function BrandPresenceSection() {
   return (

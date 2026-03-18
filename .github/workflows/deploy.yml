@@ -1,7 +1,10 @@
-name: Deploy to GitHub Pages
+name: CI/CD Pipeline -> GitHub Pages
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -11,7 +14,7 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,23 +24,30 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "22.11.0"
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Run Type Check
+        run: npx tsc --noEmit
+
       - name: Build project
         run: npm run build
 
-      - name: Upload build
+      - name: Upload build artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
   deploy:
-    needs: build
+    needs: build-and-test
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
 
     environment:
       name: github-pages
