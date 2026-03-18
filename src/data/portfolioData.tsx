@@ -61,7 +61,7 @@ export const aboutData = {
     "Beyond technical strategy, my core focus is on people. I am dedicated to mentoring engineers, shaping QA talent, and elevating the standards of the testing community. Whether through designing comprehensive training programs or guiding organizations through digital transformations, my goal is to empower teams to deliver excellence.",
     "When I'm not evaluating test processes or managing projects, I am a happy father, a runner, and a kettlebell training enthusiast practicing the Hardstyle Kettlebell method developed by Pavel Tsatsouline."
   ],
-  imageUrl: "https://raw.githubusercontent.com/rembednarczyk/rembednarczyk.github.io/refs/heads/main/img/Remi_original.jpg"
+  imageUrl: "public/img/Remi_original.jpg"
 };
 
 export const skillsData: SkillCategory[] = [
