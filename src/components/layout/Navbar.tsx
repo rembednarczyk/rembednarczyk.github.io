@@ -194,41 +194,41 @@ export function Navbar() {
       {isMobileMenuOpen && (
         <div
           ref={menuRef}
-          className="lg:hidden absolute top-16 left-0 right-0 bg-[#020617]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl py-4 px-6 flex flex-col gap-4 text-sm font-medium"
+          className="lg:hidden absolute top-20 right-4 w-56 sm:w-64 bg-[#020617]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-5 flex flex-col gap-3 text-sm font-medium origin-top-right animate-in fade-in slide-in-from-top-4 duration-200"
         >
           <button
             onClick={() => scrollToSection("about")}
-            className={`text-left py-2 hover:text-cyan-400 active:text-cyan-400 active:pl-2 transition-all border-b border-white/5 ${activeSection === "about" ? "text-cyan-400" : "text-slate-200"}`}
+            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "about" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             About
           </button>
           <button
             onClick={() => scrollToSection("skills")}
-            className={`text-left py-2 hover:text-cyan-400 active:text-cyan-400 active:pl-2 transition-all border-b border-white/5 ${activeSection === "skills" ? "text-cyan-400" : "text-slate-200"}`}
+            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "skills" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Skills
           </button>
           <button
             onClick={() => scrollToSection("experience")}
-            className={`text-left py-2 hover:text-cyan-400 active:text-cyan-400 active:pl-2 transition-all border-b border-white/5 ${activeSection === "experience" ? "text-cyan-400" : "text-slate-200"}`}
+            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "experience" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Experience
           </button>
           <button
             onClick={() => scrollToSection("community")}
-            className={`text-left py-2 hover:text-cyan-400 active:text-cyan-400 active:pl-2 transition-all border-b border-white/5 ${activeSection === "community" ? "text-cyan-400" : "text-slate-200"}`}
+            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "community" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Community
           </button>
           <button
             onClick={() => scrollToSection("projects")}
-            className={`text-left py-2 hover:text-cyan-400 active:text-cyan-400 active:pl-2 transition-all border-b border-white/5 ${activeSection === "projects" ? "text-cyan-400" : "text-slate-200"}`}
+            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "projects" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Projects
           </button>
           <button
             onClick={() => scrollToSection("contact")}
-            className={`text-left py-2 hover:text-cyan-400 active:text-cyan-400 active:pl-2 transition-all ${activeSection === "contact" ? "text-cyan-400" : "text-slate-200"}`}
+            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "contact" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Contact
           </button>
