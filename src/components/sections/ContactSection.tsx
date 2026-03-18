@@ -47,7 +47,7 @@ export function ContactSection() {
           <a href="https://linkedin.com/in/rembednarczyk" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile" className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 active:bg-white/5 transition-all p-2 hover:bg-white/5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]">
             <Linkedin aria-hidden="true" size={28} />
           </a>
-          <a href="https://github.com/rembednarczyk/rembednarczyk.github.io" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 active:bg-white/5 transition-all p-2 hover:bg-white/5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]">
+          <a href="https://github.com/rembednarczyk" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 active:bg-white/5 transition-all p-2 hover:bg-white/5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]">
             <Github aria-hidden="true" size={28} />
           </a>
         </div>
