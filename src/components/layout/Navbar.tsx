@@ -194,7 +194,7 @@ export function Navbar() {
       {isMobileMenuOpen && (
         <div
           ref={menuRef}
-          className="lg:hidden absolute top-20 right-4 w-56 sm:w-64 bg-[#020617]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-5 flex flex-col gap-3 text-sm font-medium origin-top-right animate-in fade-in slide-in-from-top-4 duration-200"
+          className="lg:hidden absolute top-20 right-4 w-56 sm:w-64 max-h-[calc(100vh-6rem)] overflow-y-auto bg-[#020617]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-5 flex flex-col gap-3 text-sm font-medium origin-top-right animate-in fade-in slide-in-from-top-4 duration-200 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
         >
           <button
             onClick={() => scrollToSection("about")}
