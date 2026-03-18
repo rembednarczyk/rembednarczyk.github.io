@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Linkedin, Globe, MapPin } from "lucide-react";
+import { Mail, Linkedin, Globe, MapPin, Phone } from "lucide-react";
 
 export const CVTemplate = () => {
   return (
@@ -15,9 +15,31 @@ export const CVTemplate = () => {
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
           <div className="flex items-center gap-1.5">
+            <Phone size={14} />
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = "tel:" + ["+", "48", "530", "333", "243"].join("");
+              }}
+            >
+              {["+", "48", " ", "530", " ", "333", " ", "243"].map((part, i) => (
+                <span key={i}>{part}</span>
+              ))}
+            </a>
+          </div>
+          <div className="flex items-center gap-1.5">
             <Mail size={14} />
-            <a href="mailto:rem.bednarczyk@gmail.com">
-              rem.bednarczyk@gmail.com
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = "mailto:" + ["rem", ".", "bednarczyk", "@", "gmail", ".", "com"].join("");
+              }}
+            >
+              {["rem", ".", "bednarczyk", "@", "gmail", ".", "com"].map((part, i) => (
+                <span key={i}>{part}</span>
+              ))}
             </a>
           </div>
           <div className="flex items-center gap-1.5">
