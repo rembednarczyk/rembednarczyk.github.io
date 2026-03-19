@@ -8,6 +8,12 @@ import { ParticleBackground } from "./components/ParticleBackground";
 import { CVTemplate } from "./components/CVTemplate";
 import { ScrollToTop } from "./components/ui/ScrollToTop";
 
+const NotFound = lazy(() =>
+  import("./components/NotFound").then((m) => ({
+    default: m.NotFound,
+  })),
+);
+
 const SkillsSection = lazy(() =>
   import("./components/sections/SkillsSection").then((m) => ({
     default: m.SkillsSection,
@@ -51,6 +57,7 @@ const ContactSection = lazy(() =>
 
 export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,6 +66,23 @@ export default function App() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    // Basic SPA routing for 404
+    // If the path is not the root path, show the 404 page
+    // We also ignore hash changes since those are used for section navigation
+    if (window.location.pathname !== "/" && window.location.pathname !== "/index.html") {
+      setIsNotFound(true);
+    }
+  }, []);
+
+  if (isNotFound) {
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-[#020617] flex items-center justify-center text-cyan-500">Loading...</div>}>
+        <NotFound />
+      </Suspense>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-cyan-500/30 overflow-x-hidden print:overflow-visible print:bg-white">
