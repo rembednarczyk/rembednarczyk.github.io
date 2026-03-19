@@ -140,25 +140,25 @@ export function NotFound() {
 
       {/* Drifting Rocket */}
       <motion.div
-        className="absolute z-0 text-slate-700/30"
+        className="absolute z-0 text-slate-500/20 left-[-20px] sm:left-[5%] lg:left-[12%] top-[15%] sm:top-[25%]"
         aria-hidden="true"
-        initial={{ x: "-10vw", y: "110vh", rotate: 45 }}
+        initial={{ rotate: 45 }}
         animate={
           shouldReduceMotion
-            ? { x: "80vw", y: "20vh", rotate: 45 }
+            ? { rotate: 45 }
             : {
-                x: ["-10vw", "110vw"],
-                y: ["110vh", "-20vh"],
-                rotate: [45, 90, 120],
+                y: [0, -40, 0],
+                x: [0, 20, 0],
+                rotate: [45, 55, 45],
               }
         }
         transition={{
-          duration: 35,
+          duration: 12,
           repeat: Infinity,
-          ease: "linear",
+          ease: "easeInOut",
         }}
       >
-        <Rocket size={160} strokeWidth={1} />
+        <Rocket className="w-48 h-48 sm:w-64 sm:h-64" strokeWidth={1} />
       </motion.div>
 
       <main className="relative z-10 w-full px-6 flex flex-col items-center">
