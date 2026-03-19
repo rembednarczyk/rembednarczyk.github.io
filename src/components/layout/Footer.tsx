@@ -4,7 +4,7 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center text-center gap-4">
         <div className="text-slate-400 text-sm">
           <p>Designed and built in deep vastness of the space.</p>
-          <p className="mt-2 font-mono text-xs opacity-50">
+          <p className="mt-2 font-mono text-xs">
             © {new Date().getFullYear()} Remigiusz Bednarczyk. All rights
             reserved.
           </p>

@@ -27,6 +27,8 @@ export function AboutSection() {
                 src={aboutData.imageUrl}
                 alt="Remigiusz Bednarczyk"
                 loading="lazy"
+                width="600"
+                height="600"
                 className="w-full h-auto max-h-[600px] object-contain rounded-lg grayscale group-hover/img:grayscale-0 group-active/img:grayscale-0 transition-all duration-500"
                 referrerPolicy="no-referrer"
               />
