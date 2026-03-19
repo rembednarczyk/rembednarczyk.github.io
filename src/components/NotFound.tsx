@@ -131,35 +131,77 @@ const TerminalWindow = () => {
   );
 };
 
+const generateFlight = (isInitial: boolean) => {
+  const isUp = Math.random() > 0.5;
+  // Lucide rocket points top-right (45deg) by default.
+  // Straight up is -45deg. Slight right angle up is -25deg.
+  // Straight down is 135deg. Slight right angle down is 155deg.
+  const rotation = isUp ? -25 : 155;
+
+  const startX = `${Math.random() * 10 + 2}vw`;
+  const endX = `${Math.random() * 10 + 2}vw`;
+
+  let startY, endY, duration;
+
+  if (isInitial) {
+    const startPercent = Math.random() * 60 + 20; // 20 to 80
+    startY = `${startPercent}vh`;
+    endY = isUp ? "-20vh" : "120vh";
+    const distance = isUp ? startPercent + 20 : 120 - startPercent;
+    duration = Math.max((distance / 140) * 15, 3); // min 3s
+  } else {
+    startY = isUp ? "120vh" : "-20vh";
+    endY = isUp ? "-20vh" : "120vh";
+    duration = 12 + Math.random() * 6;
+  }
+
+  return {
+    id: Math.random().toString(36).substring(2, 11),
+    startX,
+    endX,
+    startY,
+    endY,
+    rotation,
+    duration,
+  };
+};
+
 export function NotFound() {
   const shouldReduceMotion = useReducedMotion();
+  const [flight, setFlight] = useState(() => generateFlight(true));
+
+  const handleAnimationComplete = () => {
+    setFlight(generateFlight(false));
+  };
 
   return (
     <div className="relative min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-cyan-500/30 overflow-hidden flex items-center justify-center">
       <ParticleBackground />
 
       {/* Drifting Rocket */}
-      <motion.div
-        className="absolute z-0 text-slate-500/20 left-[-20px] sm:left-[5%] lg:left-[12%] top-[15%] sm:top-[25%]"
-        aria-hidden="true"
-        initial={{ rotate: 45 }}
-        animate={
-          shouldReduceMotion
-            ? { rotate: 45 }
-            : {
-                y: [0, -40, 0],
-                x: [0, 20, 0],
-                rotate: [45, 55, 45],
-              }
-        }
-        transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      >
-        <Rocket className="w-48 h-48 sm:w-64 sm:h-64" strokeWidth={1} />
-      </motion.div>
+      {!shouldReduceMotion ? (
+        <motion.div
+          key={flight.id}
+          className="absolute z-0 text-cyan-400"
+          aria-hidden="true"
+          initial={{ x: flight.startX, y: flight.startY, rotate: flight.rotation }}
+          animate={{ x: flight.endX, y: flight.endY, rotate: flight.rotation }}
+          transition={{
+            duration: flight.duration,
+            ease: "linear",
+          }}
+          onAnimationComplete={handleAnimationComplete}
+        >
+          <Rocket className="w-16 h-16 sm:w-20 sm:h-20" strokeWidth={1.5} />
+        </motion.div>
+      ) : (
+        <div
+          className="absolute z-0 text-cyan-400 left-[10%] top-[30%] -rotate-[25deg]"
+          aria-hidden="true"
+        >
+          <Rocket className="w-16 h-16 sm:w-20 sm:h-20" strokeWidth={1.5} />
+        </div>
+      )}
 
       <main className="relative z-10 w-full px-6 flex flex-col items-center">
         <motion.div
