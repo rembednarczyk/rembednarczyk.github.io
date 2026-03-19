@@ -1,12 +1,12 @@
 <div align="center">
-<img width="1200" height="475" alt="Remigiusz Bednarczyk" src="https://rembednarczyk.github.io/img/og-image.png" />
+<img width="1200" height="475" alt="Remigiusz Bednarczyk" src="https://remigiuszbednarczyk.com/img/og-image.png" />
 </div>
 
 # Remigiusz Bednarczyk | Quality Engineering Portfolio
 
 Personal website of a **Quality Engineering Lead / Test Manager** specializing in **GxP-regulated environments, test strategy, and AI-assisted testing**.
 
-**Live:** [rembednarczyk.github.io](https://rembednarczyk.github.io/)
+**Live:** [remigiuszbednarczyk.com](https://remigiuszbednarczyk.com/)
 
 Deployed: [![CI/CD Pipeline](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml)
 

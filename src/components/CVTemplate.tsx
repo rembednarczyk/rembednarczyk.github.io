@@ -34,10 +34,10 @@ export const CVTemplate = () => {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                window.location.href = "mailto:" + ["rem", ".", "bednarczyk", "@", "gmail", ".", "com"].join("");
+                window.location.href = "mailto:" + ["hello", "@", "remigiuszbednarczyk", ".", "com"].join("");
               }}
             >
-              {["rem", ".", "bednarczyk", "@", "gmail", ".", "com"].map((part, i) => (
+              {["hello", "@", "remigiuszbednarczyk", ".", "com"].map((part, i) => (
                 <span key={i}>{part}</span>
               ))}
             </a>
@@ -50,8 +50,8 @@ export const CVTemplate = () => {
           </div>
           <div className="flex items-center gap-1.5">
             <Globe size={14} />
-            <a href="https://rembednarczyk.github.io">
-              rembednarczyk.github.io
+            <a href="https://remigiuszbednarczyk.com">
+              remigiuszbednarczyk.com
             </a>
           </div>
           <div className="flex items-center gap-1.5">

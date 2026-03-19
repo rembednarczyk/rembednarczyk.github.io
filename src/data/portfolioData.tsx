@@ -93,7 +93,7 @@ export const aboutData = {
     "When I'm not evaluating test processes or managing projects, I am a happy father, a runner, and a kettlebell training enthusiast practicing the Hardstyle Kettlebell method developed by Pavel Tsatsouline.",
   ],
   imageUrl:
-    "https://raw.githubusercontent.com/rembednarczyk/rembednarczyk.github.io/refs/heads/main/public/img/Remi_original.jpg",
+    "https://remigiuszbednarczyk.com/img/Remi_original.jpg",
 };
 
 export const skillsData: SkillCategory[] = [

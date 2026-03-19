@@ -7,8 +7,8 @@ export function ContactSection() {
 
   useEffect(() => {
     // Obfuscate email to prevent simple scrapers
-    const user = "rem.bednarczyk";
-    const domain = "gmail.com";
+    const user = "hello";
+    const domain = "remigiuszbednarczyk.com";
     setEmail(`${user}@${domain}`);
   }, []);
 
