@@ -14,6 +14,8 @@ Using: [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoCol
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 
+Lighthouse score: [![Performance](https://img.shields.io/badge/Performance-100-00CC66?logo=lighthouse&logoColor=white)](https://remigiuszbednarczyk.com/) [![Accessibility](https://img.shields.io/badge/Accessibility-100-00CC66?logo=lighthouse&logoColor=white)](https://remigiuszbednarczyk.com/) [![Best Practices](https://img.shields.io/badge/Best%20Practices-100-00CC66?logo=lighthouse&logoColor=white)](https://remigiuszbednarczyk.com/) [![SEO](https://img.shields.io/badge/SEO-100-00CC66?logo=lighthouse&logoColor=white)](https://remigiuszbednarczyk.com/)
+
 ---
 
 ## What Makes This Project Different
@@ -78,6 +80,7 @@ Chosen for **speed, maintainability, and developer experience**.
 - Scroll event throttling and passive listeners to maintain 60fps
 - Preconnect directives for third-party scripts (Google Tag Manager)
 - Optimized initial load (fast FCP & LCP)
+- ViteSingleFile was under consideration - to not over-optimize, the decision was made to not introduce this change and mitigate future scalability problems
 
 ---
 
