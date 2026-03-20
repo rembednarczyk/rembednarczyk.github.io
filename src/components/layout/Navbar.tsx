@@ -145,15 +145,15 @@ export function Navbar() {
           {/* Always visible CV Button */}
           <button
             onClick={() => window.print()}
-            className="px-3 py-2 lg:px-5 lg:py-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 active:from-cyan-400 active:to-purple-400 active:scale-95 text-white font-semibold rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-cyan-500/20 text-sm lg:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
+            className="px-3 py-2 xl:px-5 xl:py-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 active:from-cyan-400 active:to-purple-400 active:scale-95 text-white font-semibold rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-cyan-500/20 text-sm xl:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
           >
             <Download
               aria-hidden="true"
               size={18}
-              className="w-4 h-4 lg:w-[18px] lg:h-[18px]"
+              className="w-4 h-4 xl:w-[18px] xl:h-[18px]"
             />
-            <span className="hidden lg:inline">Resume (PDF)</span>
-            <span className="lg:hidden">CV</span>
+            <span className="hidden xl:inline">Resume (PDF)</span>
+            <span className="xl:hidden">CV</span>
           </button>
 
           {/* Mobile Menu Toggle */}
