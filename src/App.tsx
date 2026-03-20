@@ -9,6 +9,7 @@ import { CVTemplate } from "./components/CVTemplate";
 import { ScrollToTop } from "./components/ui/ScrollToTop";
 import { NotFound } from "./components/NotFound";
 import { SkillsSection } from "./components/sections/SkillsSection";
+import { CertificationsSection } from "./components/sections/CertificationsSection";
 import { AchievementsSection } from "./components/sections/AchievementsSection";
 import { RecognitionSection } from "./components/sections/RecognitionSection";
 import { ExperienceSection } from "./components/sections/ExperienceSection";
@@ -66,6 +67,7 @@ export default function App() {
           <AchievementsSection />
           <RecognitionSection />
           <ExperienceSection />
+          <CertificationsSection />
           <CommunitySection />
           <BrandPresenceSection />
           <ProjectsSection />

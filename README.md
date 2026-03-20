@@ -40,6 +40,7 @@ Even for a personal project, I applied engineering discipline:
 - Print-ready layout (A4 optimized via `@media print`)
 - SEO optimization + Open Graph + JSON-LD
 - LLM-friendly structure (`llm.txt`, structured sections)
+- Print-ready CV Template with comprehensive Certifications & Credentials tracking
 
 ---
 
@@ -47,7 +48,7 @@ Even for a personal project, I applied engineering discipline:
 
 ### Data-Driven Design
 
-All content is separated from UI (`portfolioData.tsx`).
+All content is separated from UI (`portfolioData.tsx`), including dynamic sections like Core Expertise, Experience, and Certifications.
 
 → Easy to maintain  
 → Scalable  

@@ -25,7 +25,7 @@ export function ContactSection() {
         className="w-full"
       >
         <h3 className="text-cyan-400 font-mono mb-4 text-lg">
-          10. What's next?
+          11. What's next?
         </h3>
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
           Get In Touch

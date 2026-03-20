@@ -13,7 +13,7 @@ export function SkillsSection() {
       >
         <SectionHeading number="03" title="Technologies & Skills" />
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {skillsData.map((category, idx) => (
             <article
               key={idx}

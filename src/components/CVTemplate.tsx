@@ -1,5 +1,6 @@
 import React from "react";
 import { Mail, Linkedin, Globe, MapPin, Phone } from "lucide-react";
+import { fullCertificationsList } from "../data/portfolioData";
 
 export const CVTemplate = () => {
   return (
@@ -450,6 +451,21 @@ export const CVTemplate = () => {
             nationwide campaigns, city murals (#UnstoppableSii), Great Place to
             Work 2018, and Sii Calendar (2019-2020).
           </li>
+        </ul>
+      </section>
+      
+      {/* Certifications & Credentials */}
+      <section className="mb-6 print:break-inside-avoid">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3">
+          Certifications & Credentials
+        </h3>
+        <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
+          {fullCertificationsList.map((cert, idx) => (
+            <li key={idx}>
+              <strong>{cert.name}</strong> – {cert.issuer} ({cert.date})
+              {cert.id && <span className="text-slate-500 ml-1">ID: {cert.id}</span>}
+            </li>
+          ))}
         </ul>
       </section>
     </div>

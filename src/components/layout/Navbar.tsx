@@ -11,7 +11,7 @@ export function Navbar() {
     const sections = document.querySelectorAll("section[id]");
     const observerOptions = {
       root: null,
-      rootMargin: "-40% 0px -40% 0px",
+      rootMargin: "-100px 0px -65% 0px",
       threshold: 0,
     };
 
@@ -117,6 +117,12 @@ export function Navbar() {
               Experience
             </button>
             <button
+              onClick={() => scrollToSection("certifications")}
+              className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "certifications" ? "text-cyan-400" : "text-slate-200"}`}
+            >
+              Certifications
+            </button>
+            <button
               onClick={() => scrollToSection("community")}
               className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "community" ? "text-cyan-400" : "text-slate-200"}`}
             >
@@ -190,6 +196,12 @@ export function Navbar() {
             className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "experience" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Experience
+          </button>
+          <button
+            onClick={() => scrollToSection("certifications")}
+            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "certifications" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
+          >
+            Certifications
           </button>
           <button
             onClick={() => scrollToSection("community")}

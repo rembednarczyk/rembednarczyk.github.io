@@ -11,7 +11,7 @@ export function BrandPresenceSection() {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
       >
-        <SectionHeading number="08" title="Community & Brand Presence" />
+        <SectionHeading number="09" title="Community & Brand Presence" />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {brandPresenceData.map((item, idx) => (

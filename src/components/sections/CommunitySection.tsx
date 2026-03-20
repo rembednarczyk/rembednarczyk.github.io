@@ -11,7 +11,7 @@ export function CommunitySection() {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
       >
-        <SectionHeading number="07" title="Community & Leadership" />
+        <SectionHeading number="08" title="Community & Leadership" />
 
         <ul className="grid gap-4 max-w-4xl mx-auto">
           {communityData.map((item, idx) => {
