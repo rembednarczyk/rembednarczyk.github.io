@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, lazy } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { HeroSection } from "./components/sections/HeroSection";
@@ -7,65 +7,18 @@ import { AboutSection } from "./components/sections/AboutSection";
 import { ParticleBackground } from "./components/ParticleBackground";
 import { CVTemplate } from "./components/CVTemplate";
 import { ScrollToTop } from "./components/ui/ScrollToTop";
-
-const NotFound = lazy(() =>
-  import("./components/NotFound").then((m) => ({
-    default: m.NotFound,
-  })),
-);
-
-const SkillsSection = lazy(() =>
-  import("./components/sections/SkillsSection").then((m) => ({
-    default: m.SkillsSection,
-  })),
-);
-const AchievementsSection = lazy(() =>
-  import("./components/sections/AchievementsSection").then((m) => ({
-    default: m.AchievementsSection,
-  })),
-);
-const RecognitionSection = lazy(() =>
-  import("./components/sections/RecognitionSection").then((m) => ({
-    default: m.RecognitionSection,
-  })),
-);
-const ExperienceSection = lazy(() =>
-  import("./components/sections/ExperienceSection").then((m) => ({
-    default: m.ExperienceSection,
-  })),
-);
-const CommunitySection = lazy(() =>
-  import("./components/sections/CommunitySection").then((m) => ({
-    default: m.CommunitySection,
-  })),
-);
-const BrandPresenceSection = lazy(() =>
-  import("./components/sections/BrandPresenceSection").then((m) => ({
-    default: m.BrandPresenceSection,
-  })),
-);
-const ProjectsSection = lazy(() =>
-  import("./components/sections/ProjectsSection").then((m) => ({
-    default: m.ProjectsSection,
-  })),
-);
-const ContactSection = lazy(() =>
-  import("./components/sections/ContactSection").then((m) => ({
-    default: m.ContactSection,
-  })),
-);
+import { NotFound } from "./components/NotFound";
+import { SkillsSection } from "./components/sections/SkillsSection";
+import { AchievementsSection } from "./components/sections/AchievementsSection";
+import { RecognitionSection } from "./components/sections/RecognitionSection";
+import { ExperienceSection } from "./components/sections/ExperienceSection";
+import { CommunitySection } from "./components/sections/CommunitySection";
+import { BrandPresenceSection } from "./components/sections/BrandPresenceSection";
+import { ProjectsSection } from "./components/sections/ProjectsSection";
+import { ContactSection } from "./components/sections/ContactSection";
 
 export default function App() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     // Basic SPA routing for 404
@@ -78,9 +31,9 @@ export default function App() {
 
   if (isNotFound) {
     return (
-      <Suspense fallback={<div className="min-h-screen bg-[#020617] flex items-center justify-center text-cyan-500">Loading...</div>}>
+      <div className="min-h-screen bg-[#020617] flex items-center justify-center text-cyan-500">
         <NotFound />
-      </Suspense>
+      </div>
     );
   }
 
@@ -109,20 +62,14 @@ export default function App() {
           <HeroSection />
           <ExpertiseSection />
           <AboutSection />
-          <Suspense
-            fallback={
-              <div className="py-24 text-center text-slate-500">Loading...</div>
-            }
-          >
-            <SkillsSection />
-            <AchievementsSection />
-            <RecognitionSection />
-            <ExperienceSection />
-            <CommunitySection />
-            <BrandPresenceSection />
-            <ProjectsSection />
-            <ContactSection />
-          </Suspense>
+          <SkillsSection />
+          <AchievementsSection />
+          <RecognitionSection />
+          <ExperienceSection />
+          <CommunitySection />
+          <BrandPresenceSection />
+          <ProjectsSection />
+          <ContactSection />
         </main>
 
         {/* Footer */}

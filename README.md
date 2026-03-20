@@ -66,7 +66,7 @@ Chosen for **speed, maintainability, and developer experience**.
 
 ### UX & Interaction
 
-- Custom ScrollSpy (viewport-based logic instead of default IntersectionObserver)
+- High-performance ScrollSpy using `IntersectionObserver` (eliminating forced reflows)
 - Smooth navigation between sections
 - Subtle animations supporting readability, not distracting
 
@@ -74,9 +74,10 @@ Chosen for **speed, maintainability, and developer experience**.
 
 ### Performance Optimization
 
-- Lazy loading (`React.lazy`, `Suspense`)
-- Above-the-fold prioritization
-- Optimized initial load (fast FCP)
+- Bundle optimization (removed initially implemented `React.lazy` to eliminate HTTP/1.1 waterfall and improve LCP)
+- Scroll event throttling and passive listeners to maintain 60fps
+- Preconnect directives for third-party scripts (Google Tag Manager)
+- Optimized initial load (fast FCP & LCP)
 
 ---
 

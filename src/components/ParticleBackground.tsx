@@ -137,21 +137,27 @@ export const ParticleBackground: React.FC = () => {
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
-    });
-    window.addEventListener("mouseout", () => {
+    };
+
+    const handleMouseOut = () => {
       mouse.x = -1000;
       mouse.y = -1000;
-    });
+    };
+
+    window.addEventListener("resize", resize, { passive: true });
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseout", handleMouseOut, { passive: true });
 
     resize();
     animate();
 
     return () => {
       window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseout", handleMouseOut);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);

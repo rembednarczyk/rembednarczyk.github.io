@@ -8,62 +8,39 @@ export function Navbar() {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const sections = document.querySelectorAll("section[id]");
-      // Punkt zapalny na środku ekranu (50% wysokości)
-      const triggerPoint = window.innerHeight * 0.5;
-
-      let currentActive = "";
-
-      sections.forEach((section) => {
-        const rect = section.getBoundingClientRect();
-        // Jeśli góra sekcji przekroczyła środek ekranu
-        if (rect.top <= triggerPoint) {
-          currentActive = section.id;
-        }
-      });
-
-      // Mapowanie podsekcji do głównych sekcji w nawigacji
-      if (currentActive === "achievements" || currentActive === "recognition") {
-        currentActive = "skills";
-      } else if (currentActive === "brand") {
-        currentActive = "community";
-      } else if (currentActive === "expertise") {
-        currentActive = "about";
-      }
-
-      // Zabezpieczenie: jeśli jesteśmy na samym dole strony,
-      // zawsze podświetl ostatnią sekcję (przydatne dla krótkich sekcji kontaktowych)
-      const isBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 50;
-      if (isBottom && sections.length > 0) {
-        currentActive = "contact";
-      }
-
-      if (currentActive) {
-        setActiveSection(currentActive);
-      }
+    const sections = document.querySelectorAll("section[id]");
+    const observerOptions = {
+      root: null,
+      rootMargin: "-40% 0px -40% 0px",
+      threshold: 0,
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          let currentActive = entry.target.id;
 
-    // Ponowne sprawdzenie, gdy DOM się zmieni (np. załadują się leniwe sekcje)
-    const mutationObserver = new MutationObserver(() => {
-      handleScroll();
-    });
+          // Sub-section to section mapping
+          if (currentActive === "achievements" || currentActive === "recognition") {
+            currentActive = "skills";
+          } else if (currentActive === "brand") {
+            currentActive = "community";
+          } else if (currentActive === "expertise") {
+            currentActive = "about";
+          }
 
-    mutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
+          setActiveSection(currentActive);
+        }
+      });
+    };
 
-    // Inicjalne sprawdzenie
-    handleScroll();
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach((section) => observer.observe(section));
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      mutationObserver.disconnect();
+      sections.forEach((section) => observer.unobserve(section));
+      observer.disconnect();
     };
   }, []);
 

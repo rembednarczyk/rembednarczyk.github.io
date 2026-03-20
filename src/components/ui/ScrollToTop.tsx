@@ -6,17 +6,25 @@ export function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    let timeoutId: number | null = null;
     const toggleVisibility = () => {
-      // Show button when page is scrolled down 300px
-      if (window.scrollY > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      if (timeoutId) return;
+      timeoutId = window.setTimeout(() => {
+        // Show button when page is scrolled down 300px
+        if (window.scrollY > 300) {
+          setIsVisible(true);
+        } else {
+          setIsVisible(false);
+        }
+        timeoutId = null;
+      }, 100);
     };
 
-    window.addEventListener("scroll", toggleVisibility);
-    return () => window.removeEventListener("scroll", toggleVisibility);
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", toggleVisibility);
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
   }, []);
 
   const scrollToTop = () => {
