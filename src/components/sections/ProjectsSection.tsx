@@ -12,7 +12,7 @@ export function ProjectsSection() {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
       >
-        <SectionHeading number="10" title="Key Projects" />
+        <SectionHeading number="08" title="Selected Initiatives" />
 
         <div className="grid md:grid-cols-2 gap-8">
           {keyProjectsData.map((project, idx) => (

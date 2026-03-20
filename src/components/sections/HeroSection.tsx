@@ -79,7 +79,7 @@ export function HeroSection() {
             onClick={() => scrollToSection("projects")}
             className="px-6 py-3 bg-white/5 hover:bg-white/10 active:bg-white/10 active:scale-95 border border-white/10 text-white font-semibold rounded-lg transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
           >
-            Key Projects
+            Selected Initiatives
           </button>
           <button
             onClick={() => scrollToSection("contact")}

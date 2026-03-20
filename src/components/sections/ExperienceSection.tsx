@@ -11,7 +11,7 @@ export function ExperienceSection() {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
       >
-        <SectionHeading number="06" title="Professional Experience" />
+        <SectionHeading number="03" title="Professional Experience" />
 
         <div className="space-y-8">
           {experienceData.map((job, idx) => (

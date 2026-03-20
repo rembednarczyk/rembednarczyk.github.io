@@ -8,40 +8,44 @@ export function Navbar() {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const sections = document.querySelectorAll("section[id]");
-    const observerOptions = {
-      root: null,
-      rootMargin: "-100px 0px -65% 0px",
-      threshold: 0,
-    };
+    const handleScroll = () => {
+      const sections = Array.from(document.querySelectorAll("section[id]"));
+      let currentActive = "";
+      const scrollPosition = window.scrollY + 250; // Offset for navbar + padding
 
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          let currentActive = entry.target.id;
-
-          // Sub-section to section mapping
-          if (currentActive === "achievements" || currentActive === "recognition") {
-            currentActive = "skills";
-          } else if (currentActive === "brand") {
-            currentActive = "community";
-          } else if (currentActive === "expertise") {
-            currentActive = "about";
-          }
-
-          setActiveSection(currentActive);
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i] as HTMLElement;
+        const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+        
+        if (sectionTop <= scrollPosition) {
+          currentActive = section.id;
+          break;
         }
-      });
+      }
+
+      // Fallback for bottom of page
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50) {
+        const lastSection = sections[sections.length - 1];
+        if (lastSection) currentActive = lastSection.id;
+      }
+
+      if (currentActive) {
+        // Sub-section to section mapping
+        if (currentActive === "achievements" || currentActive === "recognition") {
+          currentActive = "experience";
+        } else if (currentActive === "brand") {
+          currentActive = "community";
+        } else if (currentActive === "expertise") {
+          currentActive = "about";
+        }
+        setActiveSection(currentActive);
+      }
     };
 
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    setTimeout(handleScroll, 100); // Initial check after layout
 
-    sections.forEach((section) => observer.observe(section));
-
-    return () => {
-      sections.forEach((section) => observer.unobserve(section));
-      observer.disconnect();
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -105,16 +109,16 @@ export function Navbar() {
               About
             </button>
             <button
-              onClick={() => scrollToSection("skills")}
-              className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "skills" ? "text-cyan-400" : "text-slate-200"}`}
-            >
-              Skills
-            </button>
-            <button
               onClick={() => scrollToSection("experience")}
               className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "experience" ? "text-cyan-400" : "text-slate-200"}`}
             >
               Experience
+            </button>
+            <button
+              onClick={() => scrollToSection("skills")}
+              className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "skills" ? "text-cyan-400" : "text-slate-200"}`}
+            >
+              Skills
             </button>
             <button
               onClick={() => scrollToSection("certifications")}
@@ -123,16 +127,16 @@ export function Navbar() {
               Certifications
             </button>
             <button
+              onClick={() => scrollToSection("projects")}
+              className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "projects" ? "text-cyan-400" : "text-slate-200"}`}
+            >
+              Initiatives
+            </button>
+            <button
               onClick={() => scrollToSection("community")}
               className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "community" ? "text-cyan-400" : "text-slate-200"}`}
             >
               Community
-            </button>
-            <button
-              onClick={() => scrollToSection("projects")}
-              className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "projects" ? "text-cyan-400" : "text-slate-200"}`}
-            >
-              Projects
             </button>
             <button
               onClick={() => scrollToSection("contact")}
@@ -186,16 +190,16 @@ export function Navbar() {
             About
           </button>
           <button
-            onClick={() => scrollToSection("skills")}
-            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "skills" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
-          >
-            Skills
-          </button>
-          <button
             onClick={() => scrollToSection("experience")}
             className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "experience" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Experience
+          </button>
+          <button
+            onClick={() => scrollToSection("skills")}
+            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "skills" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
+          >
+            Skills
           </button>
           <button
             onClick={() => scrollToSection("certifications")}
@@ -204,16 +208,16 @@ export function Navbar() {
             Certifications
           </button>
           <button
+            onClick={() => scrollToSection("projects")}
+            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "projects" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
+          >
+            Initiatives
+          </button>
+          <button
             onClick={() => scrollToSection("community")}
             className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "community" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Community
-          </button>
-          <button
-            onClick={() => scrollToSection("projects")}
-            className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "projects" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
-          >
-            Projects
           </button>
           <button
             onClick={() => scrollToSection("contact")}

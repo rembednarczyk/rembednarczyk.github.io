@@ -11,7 +11,7 @@ export function SkillsSection() {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
       >
-        <SectionHeading number="03" title="Technologies & Skills" />
+        <SectionHeading number="06" title="Technologies & Skills" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {skillsData.map((category, idx) => (

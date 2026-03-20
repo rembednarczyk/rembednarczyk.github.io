@@ -63,14 +63,14 @@ export default function App() {
           <HeroSection />
           <ExpertiseSection />
           <AboutSection />
-          <SkillsSection />
+          <ExperienceSection />
           <AchievementsSection />
           <RecognitionSection />
-          <ExperienceSection />
+          <SkillsSection />
           <CertificationsSection />
+          <ProjectsSection />
           <CommunitySection />
           <BrandPresenceSection />
-          <ProjectsSection />
           <ContactSection />
         </main>
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Linkedin, Globe, MapPin, Phone } from "lucide-react";
+import { Mail, Linkedin, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm } from "lucide-react";
 import { fullCertificationsList } from "../data/portfolioData";
 
 export const CVTemplate = () => {
@@ -64,7 +64,8 @@ export const CVTemplate = () => {
 
       {/* Summary */}
       <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <IdCard size={20} className="text-slate-600" />
           Summary
         </h3>
         <p className="text-slate-700 text-justify">
@@ -80,7 +81,8 @@ export const CVTemplate = () => {
 
       {/* Skills */}
       <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <BrainCog size={20} className="text-slate-600" />
           Core Competencies & Skills
         </h3>
         <div className="grid grid-cols-1 gap-2 text-sm text-slate-700">
@@ -119,7 +121,8 @@ export const CVTemplate = () => {
 
       {/* Experience */}
       <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <MonitorCog size={20} className="text-slate-600" />
           Professional Experience
         </h3>
 
@@ -399,7 +402,8 @@ export const CVTemplate = () => {
 
       {/* Community & Leadership */}
       <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <UsersRound size={20} className="text-slate-600" />
           Community & Leadership
         </h3>
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
@@ -427,7 +431,8 @@ export const CVTemplate = () => {
 
       {/* Recognition & Brand Presence */}
       <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <Award size={20} className="text-slate-600" />
           Recognition & Brand Presence
         </h3>
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
@@ -456,7 +461,8 @@ export const CVTemplate = () => {
       
       {/* Certifications & Credentials */}
       <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <ShieldCheck size={20} className="text-slate-600" />
           Certifications & Credentials
         </h3>
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
@@ -466,6 +472,22 @@ export const CVTemplate = () => {
               {cert.id && <span className="text-slate-500 ml-1">ID: {cert.id}</span>}
             </li>
           ))}
+        </ul>
+      </section>
+
+      {/* Passions & Hobbies */}
+      <section className="mb-6 print:break-inside-avoid">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <TreePalm size={20} className="text-slate-600" />
+          Passions & Hobbies
+        </h3>
+        <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
+          <li>Strength and endurance training</li>
+          <li>Street Workout & Calisthenics</li>
+          <li>Hardstyle Kettlebell training by Pavel Tsatsouline</li>
+          <li>Investing in Stocks, ETFs as an Individual Investor</li>
+          <li>Running – Participation in competitions</li>
+          <li>Board Games</li>
         </ul>
       </section>
     </div>

@@ -12,7 +12,7 @@ export function RecognitionSection() {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
       >
-        <SectionHeading number="05" title="Recognition" />
+        <SectionHeading number="05" title="Awards & Recognition" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {recognitionData.map((award, idx) => (
