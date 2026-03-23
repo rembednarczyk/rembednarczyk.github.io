@@ -498,9 +498,9 @@ export const CVTemplate = () => {
           {fullCertificationsList.map((category, catIdx) => (
             <div key={catIdx}>
               <h4 className="text-[15px] font-bold text-slate-800 mb-3 pb-1.5 border-b border-slate-200 flex items-center gap-2">
-                {category.category === "Core certifications" && <BadgeCheck size={16} className="text-cyan-600/80" />}
-                {category.category === "AI & Emerging Tech Certifications" && <BrainCircuit size={16} className="text-purple-500/80" />}
-                {category.category === "Additional Training" && <BookOpen size={16} className="text-emerald-600/80" />}
+                {category.category === "Core certifications" && <BadgeCheck size={16} className="text-slate-400/80" />}
+                {category.category === "AI & Emerging Tech Certifications" && <BrainCircuit size={16} className="text-slate-400/80" />}
+                {category.category === "Additional Training" && <BookOpen size={16} className="text-slate-400/80" />}
                 {category.category}
               </h4>
               <div className="space-y-3">
