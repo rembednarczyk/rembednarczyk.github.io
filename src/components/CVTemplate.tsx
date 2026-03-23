@@ -494,18 +494,26 @@ export const CVTemplate = () => {
           <ShieldCheck size={20} className="text-slate-400" />
           Certifications & Credentials
         </h3>
-        <div className="space-y-4">
+        <div className="space-y-5">
           {fullCertificationsList.map((category, catIdx) => (
             <div key={catIdx}>
-              <h4 className="text-[15px] font-bold text-slate-800 mb-1.5">{category.category}</h4>
-              <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
+              <h4 className="text-[15px] font-bold text-slate-800 mb-2">{category.category}</h4>
+              <div className="space-y-3">
                 {category.items.map((cert, idx) => (
-                  <li key={idx}>
-                    <strong>{cert.name}</strong> – {cert.issuer} <span className="text-slate-500 font-medium">({cert.date})</span>
-                    {cert.id && <span className="text-slate-500 ml-1">ID: {cert.id}</span>}
-                  </li>
+                  <div key={idx} className="flex justify-between items-start gap-4">
+                    <div className="text-sm">
+                      <div className="font-bold text-slate-800 leading-snug">{cert.name}</div>
+                      <div className="text-slate-600 text-[13px] mt-0.5">
+                        {cert.issuer}
+                        {cert.id && <span className="text-slate-400 ml-2">ID: {cert.id}</span>}
+                      </div>
+                    </div>
+                    <div className="text-sm font-medium text-slate-500 whitespace-nowrap shrink-0 text-right">
+                      {cert.date}
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           ))}
         </div>
