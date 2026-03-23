@@ -1,24 +1,41 @@
 import React from "react";
+import QRCode from "react-qr-code";
 import { Mail, Linkedin, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm } from "lucide-react";
 import { fullCertificationsList } from "../data/portfolioData";
 
 export const CVTemplate = () => {
   return (
     <div className="bg-white text-black font-sans max-w-[210mm] mx-auto p-8 text-[11pt] leading-snug">
+      <style>
+        {`
+          @media print {
+            @page {
+              size: A4;
+              margin: 12mm 15mm;
+            }
+            body {
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+          }
+        `}
+      </style>
       {/* Header */}
-      <header className="border-b-2 border-slate-800 pb-4 mb-6">
-        <h1 className="text-4xl font-bold text-slate-900 mb-1">
-          Remigiusz Bednarczyk
-        </h1>
-        <h2 className="text-xl text-slate-600 font-medium mb-3">
-          Test Manager
-        </h2>
+      <header className="border-b-2 border-slate-800 pb-4 mb-6 flex justify-between items-start">
+        <div>
+          <h1 className="text-4xl font-bold text-slate-900 mb-1">
+            Remigiusz Bednarczyk
+          </h1>
+          <h2 className="text-xl text-slate-600 font-medium mb-3">
+            Test Manager
+          </h2>
 
-        <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+          <div className="flex flex-wrap gap-y-2 text-sm text-slate-600">
           <div className="flex items-center gap-1.5">
-            <Phone size={14} />
+            <Phone size={14} className="text-slate-400" />
             <a
               href="#"
+              className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400"
               onClick={(e) => {
                 e.preventDefault();
                 window.location.href = "tel:" + ["+", "48", "530", "333", "243"].join("");
@@ -29,10 +46,11 @@ export const CVTemplate = () => {
               ))}
             </a>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Mail size={14} />
+          <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
+            <Mail size={14} className="text-slate-400" />
             <a
               href="#"
+              className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400"
               onClick={(e) => {
                 e.preventDefault();
                 window.location.href = "mailto:" + ["hello", "@", "remigiuszbednarczyk", ".", "com"].join("");
@@ -43,29 +61,34 @@ export const CVTemplate = () => {
               ))}
             </a>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Linkedin size={14} />
-            <a href="https://linkedin.com/in/rembednarczyk">
+          <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
+            <Linkedin size={14} className="text-slate-400" />
+            <a href="https://linkedin.com/in/rembednarczyk" className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400">
               linkedin.com/in/rembednarczyk
             </a>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Globe size={14} />
-            <a href="https://remigiuszbednarczyk.com">
+          <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
+            <Globe size={14} className="text-slate-400" />
+            <a href="https://remigiuszbednarczyk.com" className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400">
               remigiuszbednarczyk.com
             </a>
           </div>
-          <div className="flex items-center gap-1.5">
-            <MapPin size={14} />
+          <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
+            <MapPin size={14} className="text-slate-400" />
             <span>Poland</span>
           </div>
+        </div>
+        </div>
+        <div className="flex flex-col items-center opacity-75 shrink-0 ml-6 mt-1">
+          <QRCode value="https://linkedin.com/in/rembednarczyk" size={72} className="mb-1.5" />
+          <span className="text-[9px] text-slate-500 uppercase tracking-wider font-semibold">Scan for LinkedIn</span>
         </div>
       </header>
 
       {/* Summary */}
-      <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <IdCard size={20} className="text-slate-600" />
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <IdCard size={20} className="text-slate-400" />
           Summary
         </h3>
         <p className="text-slate-700 text-justify">
@@ -80,9 +103,9 @@ export const CVTemplate = () => {
       </section>
 
       {/* Skills */}
-      <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <BrainCog size={20} className="text-slate-600" />
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <BrainCog size={20} className="text-slate-400" />
           Core Competencies & Skills
         </h3>
         <div className="grid grid-cols-1 gap-2 text-sm text-slate-700">
@@ -120,20 +143,22 @@ export const CVTemplate = () => {
       </section>
 
       {/* Experience */}
-      <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <MonitorCog size={20} className="text-slate-600" />
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <MonitorCog size={20} className="text-slate-400" />
           Professional Experience
         </h3>
 
-        {/* Sii Poland */}
-        <div className="mb-5">
-          <div className="flex justify-between items-baseline mb-1">
-            <h4 className="text-base font-bold text-slate-900">
+        <div className="border-l-2 border-slate-200 ml-2">
+          {/* Sii Poland */}
+          <div className="relative pl-5 mb-5">
+            <div className="absolute w-3 h-3 bg-slate-400 border-2 border-white rounded-full -left-[7px] top-1.5"></div>
+            <div className="flex justify-between items-baseline mb-1">
+            <h4 className="text-[17px] font-bold text-slate-900">
               Test Manager{" "}
               <span className="text-slate-500 font-normal">| Sii Poland</span>
             </h4>
-            <span className="text-sm font-semibold text-slate-600">
+            <span className="text-sm font-medium text-slate-500">
               2021 – Present
             </span>
           </div>
@@ -168,7 +193,7 @@ export const CVTemplate = () => {
               <h5 className="text-sm font-bold text-slate-800">
                 Test Manager / Genmab
               </h5>
-              <span className="text-xs font-semibold text-slate-600">
+              <span className="text-xs font-medium text-slate-500">
                 2024 – Present
               </span>
             </div>
@@ -226,7 +251,7 @@ export const CVTemplate = () => {
               <h5 className="text-sm font-bold text-slate-800">
                 Test Manager / Roche
               </h5>
-              <span className="text-xs font-semibold text-slate-600">
+              <span className="text-xs font-medium text-slate-500">
                 2021 – Present
               </span>
             </div>
@@ -266,15 +291,16 @@ export const CVTemplate = () => {
         </div>
 
         {/* Acxiom (Senior) */}
-        <div className="mb-5 print:break-inside-avoid">
+        <div className="relative pl-5 mb-5 print:break-inside-avoid">
+          <div className="absolute w-3 h-3 bg-slate-400 border-2 border-white rounded-full -left-[7px] top-1.5"></div>
           <div className="flex justify-between items-baseline mb-1">
-            <h4 className="text-base font-bold text-slate-900">
+            <h4 className="text-[17px] font-bold text-slate-900">
               Senior Test & Analysis Engineer{" "}
               <span className="text-slate-500 font-normal">
                 | Sii Poland (Acxiom)
               </span>
             </h4>
-            <span className="text-sm font-semibold text-slate-600">
+            <span className="text-sm font-medium text-slate-500">
               2018 – 2021
             </span>
           </div>
@@ -316,15 +342,16 @@ export const CVTemplate = () => {
         </div>
 
         {/* Acxiom (Regular) */}
-        <div className="mb-5 print:break-inside-avoid">
+        <div className="relative pl-5 mb-5 print:break-inside-avoid">
+          <div className="absolute w-3 h-3 bg-slate-400 border-2 border-white rounded-full -left-[7px] top-1.5"></div>
           <div className="flex justify-between items-baseline mb-1">
-            <h4 className="text-base font-bold text-slate-900">
+            <h4 className="text-[17px] font-bold text-slate-900">
               Test & Analysis Engineer{" "}
               <span className="text-slate-500 font-normal">
                 | Sii Poland (Acxiom)
               </span>
             </h4>
-            <span className="text-sm font-semibold text-slate-600">
+            <span className="text-sm font-medium text-slate-500">
               2017 – 2018
             </span>
           </div>
@@ -353,15 +380,16 @@ export const CVTemplate = () => {
         </div>
 
         {/* Simple S.A. */}
-        <div className="mb-5 print:break-inside-avoid">
+        <div className="relative pl-5 mb-5 print:break-inside-avoid">
+          <div className="absolute w-3 h-3 bg-slate-400 border-2 border-white rounded-full -left-[7px] top-1.5"></div>
           <div className="flex justify-between items-baseline mb-1">
-            <h4 className="text-base font-bold text-slate-900">
+            <h4 className="text-[17px] font-bold text-slate-900">
               Application Tester{" "}
               <span className="text-slate-500 font-normal">
                 | Simple S.A. (Bazus)
               </span>
             </h4>
-            <span className="text-sm font-semibold text-slate-600">
+            <span className="text-sm font-medium text-slate-500">
               2014 – 2017
             </span>
           </div>
@@ -398,12 +426,13 @@ export const CVTemplate = () => {
             </li>
           </ul>
         </div>
+        </div>
       </section>
 
       {/* Community & Leadership */}
-      <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <UsersRound size={20} className="text-slate-600" />
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <UsersRound size={20} className="text-slate-400" />
           Community & Leadership
         </h3>
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
@@ -430,9 +459,9 @@ export const CVTemplate = () => {
       </section>
 
       {/* Recognition & Brand Presence */}
-      <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <Award size={20} className="text-slate-600" />
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <Award size={20} className="text-slate-400" />
           Recognition & Brand Presence
         </h3>
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
@@ -460,25 +489,32 @@ export const CVTemplate = () => {
       </section>
       
       {/* Certifications & Credentials */}
-      <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <ShieldCheck size={20} className="text-slate-600" />
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <ShieldCheck size={20} className="text-slate-400" />
           Certifications & Credentials
         </h3>
-        <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
-          {fullCertificationsList.map((cert, idx) => (
-            <li key={idx}>
-              <strong>{cert.name}</strong> – {cert.issuer} ({cert.date})
-              {cert.id && <span className="text-slate-500 ml-1">ID: {cert.id}</span>}
-            </li>
+        <div className="space-y-4">
+          {fullCertificationsList.map((category, catIdx) => (
+            <div key={catIdx}>
+              <h4 className="text-[15px] font-bold text-slate-800 mb-1.5">{category.category}</h4>
+              <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
+                {category.items.map((cert, idx) => (
+                  <li key={idx}>
+                    <strong>{cert.name}</strong> – {cert.issuer} <span className="text-slate-500 font-medium">({cert.date})</span>
+                    {cert.id && <span className="text-slate-500 ml-1">ID: {cert.id}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
       </section>
 
       {/* Passions & Hobbies */}
-      <section className="mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-wider border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <TreePalm size={20} className="text-slate-600" />
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
+        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
+          <TreePalm size={20} className="text-slate-400" />
           Passions & Hobbies
         </h3>
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">

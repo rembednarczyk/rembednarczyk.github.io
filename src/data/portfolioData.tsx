@@ -481,171 +481,186 @@ export const certificationsData = [
 
 export const fullCertificationsList = [
   {
-    name: "Ai_devs 3 Agents",
-    issuer: "AI_devs",
-    date: "Dec 2024",
-    id: "88fd734b-0390-4c14-81ae-a69e400f1dd1",
+    category: "Core certifications",
+    items: [
+      {
+        name: "ISTQB Accredited Trainer - CTFL 4.0 + Agile Tester Accreditation Extension",
+        issuer: "Stowarzyszenie Jakości Systemów Informatycznych (Polish Testing Board)",
+        date: "Nov 2023",
+        id: "ISTQB/ATP/61/2023/40",
+      },
+      {
+        name: "ISTQB Certified Tester Foundation Level Agile Tester",
+        issuer: "Stowarzyszenie Jakości Systemów Informatycznych (Polish Testing Board)",
+        date: "Nov 2023",
+        id: "FLAT-2023-00628-SJSI",
+      },
+      {
+        name: "ISTQB Certified Tester Advanced Level Test Manager",
+        issuer: "GASQ",
+        date: "Mar 2021",
+        id: "10960-1",
+      },
+      {
+        name: "ISTQB Certified Tester Advanced Level Technical Test Analyst",
+        issuer: "GASQ",
+        date: "Aug 2018",
+        id: "10960-3",
+      },
+      {
+        name: "ISTQB Certified Tester Foundation Level",
+        issuer: "Stowarzyszenie Jakości Systemów Informatycznych (Polish Testing Board)",
+        date: "Aug 2018",
+        id: "10262/FLCT/2018",
+      },
+      {
+        name: "Certified SAFe® 6 Agilist",
+        issuer: "SAFe by Scaled Agile, Inc.",
+        date: "Jun 2023",
+      },  
+      {
+        name: "AgilePM® Foundation",
+        issuer: "APMG International",
+        date: "Oct 2019",
+        id: "2000913818 / 04303830-01-FEDM"
+      }
+    ]
   },
   {
-    name: "ISTQB Accredited Trainer - CTFL 4.0 + Agile Tester Accreditation Extension",
-    issuer: "Stowarzyszenie Jakości Systemów Informatycznych (Polish Testing Board)",
-    date: "Nov 2023",
-    id: "ISTQB/ATP/61/2023/40",
+    category: "AI & Emerging Tech Certifications",
+    items: [
+      {
+        name: "Ai_devs 3 Agents",
+        issuer: "AI_devs",
+        date: "Dec 2024",
+        id: "88fd734b-0390-4c14-81ae-a69e400f1dd1",
+      },
+      {
+        name: "Fundamentals of Artificial Intelligence and Machine Learning for IT Specialists and Managers",
+        issuer: "FUTURE SKILLS INSTITUTE",
+        date: "Nov 2025"
+      }
+    ]
   },
   {
-    name: "ISTQB Certified Tester Foundation Level Agile Tester",
-    issuer: "Stowarzyszenie Jakości Systemów Informatycznych (Polish Testing Board)",
-    date: "Nov 2023",
-    id: "FLAT-2023-00628-SJSI",
-  },
-  {
-    name: "ISTQB Accredited Trainer",
-    issuer: "Stowarzyszenie Jakości Systemów Informatycznych (Polish Testing Board)",
-    date: "Jul 2023",
-    id: "ISTQB/ATP/61/2024/13",
-  },
-  {
-    name: "Certified SAFe® 6 Agilist",
-    issuer: "SAFe by Scaled Agile, Inc.",
-    date: "Jun 2023",
-  },
-  {
-    name: "ISTQB Certified Tester Advanced Level Test Manager",
-    issuer: "GASQ",
-    date: "Mar 2021",
-    id: "10960-1",
-  },
-  {
-    name: "AgilePM® Foundation",
-    issuer: "APMG International",
-    date: "Oct 2019",
-  },
-  {
-    name: "Reasoning About Asynchronous JavaScript",
-    issuer: "Pluralsight",
-    date: "Aug 2019",
-    id: "REP ID 4127",
-  },
-  {
-    name: "Javascript: Getting Started",
-    issuer: "Pluralsight",
-    date: "Jul 2019",
-    id: "REP ID 4127",
-  },
-  {
-    name: "Szkolenie Trenerskie",
-    issuer: "Barbara Smoczyńska Usługi Rozwojowe",
-    date: "Jun 2019",
-  },
-  {
-    name: "How Git Works",
-    issuer: "Pluralsight",
-    date: "May 2019",
-    id: "REP ID 4127",
-  },
-  {
-    name: "Continuous Integration and Continuous Delivery: The Big Picture",
-    issuer: "Pluralsight",
-    date: "May 2019",
-    id: "REP ID 4127",
-  },
-  {
-    name: "Applying the Lambda Architecture with Spark, Kafka, and Cassandra",
-    issuer: "Pluralsight",
-    date: "Jan 2019",
-    id: "REP ID 4127",
-  },
-  {
-    name: "Introduction to MongoDB",
-    issuer: "Pluralsight",
-    date: "Dec 2018",
-    id: "REP ID 4127",
-  },
-  {
-    name: "Take Control of Your Big Data with HUE in Cloudera CDH",
-    issuer: "Pluralsight",
-    date: "Dec 2018",
-    id: "REP ID 4127",
-  },
-  {
-    name: "Beginning Data Exploration and Analysis with Apache Spark",
-    issuer: "Pluralsight",
-    date: "Dec 2018",
-    id: "REP ID 4127",
-  },
-  {
-    name: "The Successful Technical Interview for Interviewers",
-    issuer: "Pluralsight",
-    date: "Nov 2018",
-    id: "REP ID 4127",
-  },
-  {
-    name: "Getting Started with Apache Kafka",
-    issuer: "Pluralsight",
-    date: "Nov 2018",
-    id: "REP ID 4127",
-  },
-  {
-    name: "The Building Blocks of Hadoop - HDFS, MapReduce, and YARN",
-    issuer: "Pluralsight",
-    date: "Nov 2018",
-    id: "REP ID 4127",
-  },
-  {
-    name: "Getting Started with HDFS",
-    issuer: "Pluralsight",
-    date: "Nov 2018",
-    id: "REP ID 4127",
-  },
-  {
-    name: "Rest API Automation With Rest Assured - Novice To Ninja",
-    issuer: "Udemy",
-    date: "Nov 2018",
-    id: "UC-Q65D6ON9",
-  },
-  {
-    name: "Complete Step By Step Java For Testers",
-    issuer: "Udemy",
-    date: "Oct 2018",
-    id: "UC-PQ9O07Q1",
-  },
-  {
-    name: "TestNG Complete Bootcamp For Beginners - Novice To Ninja",
-    issuer: "Udemy",
-    date: "Oct 2018",
-    id: "UC-F1ZWOJAP",
-  },
-  {
-    name: "ISTQB Certified Tester Advanced Level Technical Test Analyst",
-    issuer: "GASQ",
-    date: "Aug 2018",
-    id: "10960-3",
-  },
-  {
-    name: "ISTQB Certified Tester Foundation Level",
-    issuer: "Stowarzyszenie Jakości Systemów Informatycznych (Polish Testing Board)",
-    date: "Aug 2018",
-    id: "10262/FLCT/2018",
-  },
-  {
-    name: "Microsoft SQL Server 2012",
-    issuer: "Wyższa Szkoła Przedsiębiorczości i Administracji w Lublinie",
-    date: "Apr 2014",
-  },
-  {
-    name: "Bazy danych - podstawy projektowania relacyjnych baz danych",
-    issuer: "Polsko-Japońska Akademia Technik Komputerowych w Warszawie",
-    date: "Mar 2014",
-  },
-  {
-    name: "Programista stron z obsługą bazy danych",
-    issuer: "Centrum Szkoleń i Innowacji",
-    date: "Aug 2013",
-    id: "40/CSI/MEN/2013",
-  },
-  {
-    name: "Testy automatyczne [Automated Testing]",
-    issuer: "Altkom Akademia",
-    date: "Jan 2018",
-  },
+    category: "Additional Training",
+    items: [
+      {
+        name: "Reasoning About Asynchronous JavaScript",
+        issuer: "Pluralsight",
+        date: "Aug 2019",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Javascript: Getting Started",
+        issuer: "Pluralsight",
+        date: "Jul 2019",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Szkolenie Trenerskie",
+        issuer: "Barbara Smoczyńska Usługi Rozwojowe",
+        date: "Jun 2019",
+      },
+      {
+        name: "How Git Works",
+        issuer: "Pluralsight",
+        date: "May 2019",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Continuous Integration and Continuous Delivery: The Big Picture",
+        issuer: "Pluralsight",
+        date: "May 2019",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Applying the Lambda Architecture with Spark, Kafka, and Cassandra",
+        issuer: "Pluralsight",
+        date: "Jan 2019",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Introduction to MongoDB",
+        issuer: "Pluralsight",
+        date: "Dec 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Take Control of Your Big Data with HUE in Cloudera CDH",
+        issuer: "Pluralsight",
+        date: "Dec 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Beginning Data Exploration and Analysis with Apache Spark",
+        issuer: "Pluralsight",
+        date: "Dec 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "The Successful Technical Interview for Interviewers",
+        issuer: "Pluralsight",
+        date: "Nov 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Getting Started with Apache Kafka",
+        issuer: "Pluralsight",
+        date: "Nov 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "The Building Blocks of Hadoop - HDFS, MapReduce, and YARN",
+        issuer: "Pluralsight",
+        date: "Nov 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Getting Started with HDFS",
+        issuer: "Pluralsight",
+        date: "Nov 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Rest API Automation With Rest Assured - Novice To Ninja",
+        issuer: "Udemy",
+        date: "Nov 2018",
+        id: "UC-Q65D6ON9",
+      },
+      {
+        name: "Complete Step By Step Java For Testers",
+        issuer: "Udemy",
+        date: "Oct 2018",
+        id: "UC-PQ9O07Q1",
+      },
+      {
+        name: "TestNG Complete Bootcamp For Beginners - Novice To Ninja",
+        issuer: "Udemy",
+        date: "Oct 2018",
+        id: "UC-F1ZWOJAP",
+      },
+      {
+        name: "Microsoft SQL Server 2012",
+        issuer: "Wyższa Szkoła Przedsiębiorczości i Administracji w Lublinie",
+        date: "Apr 2014",
+      },
+      {
+        name: "Bazy danych - podstawy projektowania relacyjnych baz danych",
+        issuer: "Polsko-Japońska Akademia Technik Komputerowych w Warszawie",
+        date: "Mar 2014",
+      },
+      {
+        name: "Programista stron z obsługą bazy danych",
+        issuer: "Centrum Szkoleń i Innowacji",
+        date: "Aug 2013",
+        id: "40/CSI/MEN/2013",
+      },
+      {
+        name: "Testy automatyczne [Automated Testing]",
+        issuer: "Altkom Akademia",
+        date: "Jan 2018",
+      }
+    ]
+  }
 ];
