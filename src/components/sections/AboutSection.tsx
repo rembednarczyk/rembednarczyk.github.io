@@ -25,7 +25,7 @@ export function AboutSection() {
               <img
                 itemProp="image"
                 src={aboutData.imageUrl}
-                alt="Remigiusz Bednarczyk"
+                alt="Portrait of Remigiusz Bednarczyk"
                 loading="lazy"
                 width="600"
                 height="600"

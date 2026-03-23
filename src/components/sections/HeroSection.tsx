@@ -71,15 +71,9 @@ export function HeroSection() {
         <div className="flex flex-wrap gap-4 print:hidden">
           <button
             onClick={() => scrollToSection("experience")}
-            className="px-6 py-3 bg-white/5 hover:bg-white/10 active:bg-white/10 active:scale-95 border border-white/10 text-white font-semibold rounded-lg transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
+            className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 active:bg-cyan-600 active:scale-95 text-slate-900 font-bold rounded-lg transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617] shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:shadow-[0_0_25px_rgba(34,211,238,0.5)]"
           >
-            View Experience
-          </button>
-          <button
-            onClick={() => scrollToSection("projects")}
-            className="px-6 py-3 bg-white/5 hover:bg-white/10 active:bg-white/10 active:scale-95 border border-white/10 text-white font-semibold rounded-lg transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
-          >
-            Selected Initiatives
+            Explore Experience
           </button>
           <button
             onClick={() => scrollToSection("contact")}

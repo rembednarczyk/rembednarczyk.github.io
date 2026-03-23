@@ -32,7 +32,7 @@ export const CVTemplate = () => {
 
           <div className="flex flex-wrap gap-y-2 text-sm text-slate-600">
           <div className="flex items-center gap-1.5">
-            <Phone size={14} className="text-slate-400" />
+            <Phone size={14} className="text-slate-400" aria-hidden="true" />
             <a
               href="#"
               className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400"
@@ -47,7 +47,7 @@ export const CVTemplate = () => {
             </a>
           </div>
           <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
-            <Mail size={14} className="text-slate-400" />
+            <Mail size={14} className="text-slate-400" aria-hidden="true" />
             <a
               href="#"
               className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400"
@@ -62,25 +62,25 @@ export const CVTemplate = () => {
             </a>
           </div>
           <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
-            <Linkedin size={14} className="text-slate-400" />
+            <Linkedin size={14} className="text-slate-400" aria-hidden="true" />
             <a href="https://linkedin.com/in/rembednarczyk" className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400">
               linkedin.com/in/rembednarczyk
             </a>
           </div>
           <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
-            <Globe size={14} className="text-slate-400" />
+            <Globe size={14} className="text-slate-400" aria-hidden="true" />
             <a href="https://remigiuszbednarczyk.com" className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400">
               remigiuszbednarczyk.com
             </a>
           </div>
           <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
-            <MapPin size={14} className="text-slate-400" />
+            <MapPin size={14} className="text-slate-400" aria-hidden="true" />
             <span>Poland</span>
           </div>
         </div>
         </div>
         <div className="flex flex-col items-center opacity-75 shrink-0 ml-6 mt-1">
-          <QRCode value="https://linkedin.com/in/rembednarczyk" size={72} className="mb-1.5" />
+          <QRCode value="https://linkedin.com/in/rembednarczyk" size={72} className="mb-1.5" aria-label="QR Code to LinkedIn profile" />
           <span className="text-[9px] text-slate-500 uppercase tracking-wider font-semibold">Scan for LinkedIn</span>
         </div>
       </header>
@@ -88,7 +88,7 @@ export const CVTemplate = () => {
       {/* Summary */}
       <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <IdCard size={20} className="text-slate-400" />
+          <IdCard size={20} className="text-slate-400" aria-hidden="true" />
           Summary
         </h3>
         <p className="text-slate-700 text-justify">
@@ -105,7 +105,7 @@ export const CVTemplate = () => {
       {/* Skills */}
       <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <BrainCog size={20} className="text-slate-400" />
+          <BrainCog size={20} className="text-slate-400" aria-hidden="true" />
           Core Competencies & Skills
         </h3>
         <div className="grid grid-cols-1 gap-2 text-sm text-slate-700">
@@ -145,7 +145,7 @@ export const CVTemplate = () => {
       {/* Experience */}
       <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <MonitorCog size={20} className="text-slate-400" />
+          <MonitorCog size={20} className="text-slate-400" aria-hidden="true" />
           Professional Experience
         </h3>
 
@@ -432,7 +432,7 @@ export const CVTemplate = () => {
       {/* Community & Leadership */}
       <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <UsersRound size={20} className="text-slate-400" />
+          <UsersRound size={20} className="text-slate-400" aria-hidden="true" />
           Community & Leadership
         </h3>
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
@@ -461,7 +461,7 @@ export const CVTemplate = () => {
       {/* Recognition & Brand Presence */}
       <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <Award size={20} className="text-slate-400" />
+          <Award size={20} className="text-slate-400" aria-hidden="true" />
           Recognition & Brand Presence
         </h3>
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
@@ -491,16 +491,16 @@ export const CVTemplate = () => {
       {/* Certifications & Credentials */}
       <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <ShieldCheck size={20} className="text-slate-400" />
+          <ShieldCheck size={20} className="text-slate-400" aria-hidden="true" />
           Certifications & Credentials
         </h3>
         <div className="space-y-6">
           {fullCertificationsList.map((category, catIdx) => (
             <div key={catIdx}>
               <h4 className="text-[15px] font-bold text-slate-800 mb-3 pb-1.5 border-b border-slate-200 flex items-center gap-2">
-                {category.category === "Core certifications" && <BadgeCheck size={16} className="text-slate-400/80" />}
-                {category.category === "AI & Emerging Tech Certifications" && <BrainCircuit size={16} className="text-slate-400/80" />}
-                {category.category === "Additional Training" && <BookOpen size={16} className="text-slate-400/80" />}
+                {category.category === "Core certifications" && <BadgeCheck size={16} className="text-slate-400/80" aria-hidden="true" />}
+                {category.category === "AI & Emerging Tech Certifications" && <BrainCircuit size={16} className="text-slate-400/80" aria-hidden="true" />}
+                {category.category === "Additional Training" && <BookOpen size={16} className="text-slate-400/80" aria-hidden="true" />}
                 {category.category}
               </h4>
               <div className="space-y-3">
@@ -527,7 +527,7 @@ export const CVTemplate = () => {
       {/* Passions & Hobbies */}
       <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <TreePalm size={20} className="text-slate-400" />
+          <TreePalm size={20} className="text-slate-400" aria-hidden="true" />
           Passions & Hobbies
         </h3>
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
