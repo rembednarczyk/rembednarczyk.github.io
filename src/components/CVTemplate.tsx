@@ -1,6 +1,6 @@
 import React from "react";
 import QRCode from "react-qr-code";
-import { Mail, Linkedin, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm } from "lucide-react";
+import { Mail, Linkedin, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm, BadgeCheck, BrainCircuit, BookOpen } from "lucide-react";
 import { fullCertificationsList } from "../data/portfolioData";
 
 export const CVTemplate = () => {
@@ -494,10 +494,15 @@ export const CVTemplate = () => {
           <ShieldCheck size={20} className="text-slate-400" />
           Certifications & Credentials
         </h3>
-        <div className="space-y-5">
+        <div className="space-y-6">
           {fullCertificationsList.map((category, catIdx) => (
             <div key={catIdx}>
-              <h4 className="text-[15px] font-bold text-slate-800 mb-2">{category.category}</h4>
+              <h4 className="text-[15px] font-bold text-slate-800 mb-3 pb-1.5 border-b border-slate-200 flex items-center gap-2">
+                {category.category === "Core certifications" && <BadgeCheck size={16} className="text-cyan-600/80" />}
+                {category.category === "AI & Emerging Tech Certifications" && <BrainCircuit size={16} className="text-purple-500/80" />}
+                {category.category === "Additional Training" && <BookOpen size={16} className="text-emerald-600/80" />}
+                {category.category}
+              </h4>
               <div className="space-y-3">
                 {category.items.map((cert, idx) => (
                   <div key={idx} className="flex justify-between items-start gap-4">

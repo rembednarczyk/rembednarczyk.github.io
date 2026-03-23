@@ -485,13 +485,13 @@ export const fullCertificationsList = [
     items: [
       {
         name: "ISTQB Accredited Trainer - CTFL 4.0 + Agile Tester Accreditation Extension",
-        issuer: "Stowarzyszenie Jakości Systemów Informatycznych (Polish Testing Board)",
+        issuer: "SJSI (Polish Testing Board)",
         date: "Nov 2023",
         id: "ISTQB/ATP/61/2023/40",
       },
       {
         name: "ISTQB Certified Tester Foundation Level Agile Tester",
-        issuer: "Stowarzyszenie Jakości Systemów Informatycznych (Polish Testing Board)",
+        issuer: "SJSI (Polish Testing Board)",
         date: "Nov 2023",
         id: "FLAT-2023-00628-SJSI",
       },
@@ -509,7 +509,7 @@ export const fullCertificationsList = [
       },
       {
         name: "ISTQB Certified Tester Foundation Level",
-        issuer: "Stowarzyszenie Jakości Systemów Informatycznych (Polish Testing Board)",
+        issuer: "SJSI (Polish Testing Board)",
         date: "Aug 2018",
         id: "10262/FLCT/2018",
       },
@@ -641,6 +641,11 @@ export const fullCertificationsList = [
         id: "UC-F1ZWOJAP",
       },
       {
+        name: "Testy automatyczne [Automated Testing]",
+        issuer: "Altkom Akademia",
+        date: "Jan 2018",
+      },
+      {
         name: "Microsoft SQL Server 2012",
         issuer: "Wyższa Szkoła Przedsiębiorczości i Administracji w Lublinie",
         date: "Apr 2014",
@@ -655,11 +660,6 @@ export const fullCertificationsList = [
         issuer: "Centrum Szkoleń i Innowacji",
         date: "Aug 2013",
         id: "40/CSI/MEN/2013",
-      },
-      {
-        name: "Testy automatyczne [Automated Testing]",
-        issuer: "Altkom Akademia",
-        date: "Jan 2018",
       }
     ]
   }
