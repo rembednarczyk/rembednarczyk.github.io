@@ -28,6 +28,13 @@ export default function App() {
     if (window.location.pathname !== "/" && window.location.pathname !== "/index.html") {
       setIsNotFound(true);
     }
+
+    // Auto-print logic for QR codes
+    if (window.location.search.includes("print=true")) {
+      setTimeout(() => {
+        window.print();
+      }, 1500); // Slight delay to ensure fonts and styles are fully loaded
+    }
   }, []);
 
   if (isNotFound) {
