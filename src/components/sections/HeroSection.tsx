@@ -1,14 +1,10 @@
 import { motion } from "motion/react";
 import { Terminal } from "lucide-react";
 import { heroData } from "../../data/portfolioData";
+import { useScrollToSection } from "../../hooks/useScrollToSection";
 
 export function HeroSection() {
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  const scrollToSection = useScrollToSection();
 
   return (
     <section className="relative min-h-[80vh] flex flex-col justify-center items-start">

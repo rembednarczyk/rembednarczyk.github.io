@@ -8,7 +8,7 @@ Personal website of a **Quality Engineering Lead / Test Manager** specializing i
 
 **Live:** [remigiuszbednarczyk.com](https://remigiuszbednarczyk.com/)
 
-Deployed: [![CI/CD Pipeline](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml)
+Deployed: [![CI/CD Pipeline](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml) [![Tests](https://img.shields.io/github/actions/workflow/status/rembednarczyk/rembednarczyk.github.io/deploy.yml?label=Tests)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml)
 
 Using: [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -29,6 +29,8 @@ It is a **production-grade, quality-driven frontend project** built to demonstra
 - Accessibility and UX consistency
 - SEO and **LLM-ready content structure**
 
+> **Disclaimer:** This project is intentionally over-engineered for a simple portfolio website. The architectural decisions (strict component decomposition, domain logic separation, CI/CD quality gates, and unit testing) were implemented deliberately to showcase my approach to software quality, maintainability, and engineering standards in enterprise environments.
+
 ---
 
 ## Quality-Driven Approach
@@ -46,13 +48,32 @@ Even for a personal project, I applied engineering discipline:
 
 ## Architecture & Key Decisions
 
-### Data-Driven Design
+### Data-Driven Design & Domain Logic
 
 All content is separated from UI (`portfolioData.tsx`), including dynamic sections like Core Expertise, Experience, and Certifications.
+A dedicated domain logic layer (`src/utils/domain.ts`) handles pure functions independent of React, improving testability and separation of concerns.
 
 → Easy to maintain  
 → Scalable  
 → Clean separation of concerns
+
+---
+
+### Component Decomposition & Custom Hooks
+
+The application follows a modular architecture where large monolithic sections are decomposed into smaller, focused components (e.g., `ExperienceItem`, `ProjectCard`, `SkillCategoryCard`).
+Custom hooks (`useActiveSection`, `useScrollToSection`) encapsulate side effects and DOM manipulation, keeping UI components declarative and clean.
+
+---
+
+### Software Engineering Best Practices
+
+The codebase strictly adheres to modern software engineering principles to ensure maintainability and testability:
+
+- Single Responsibility Principle (SRP): Components are highly focused. For example, `ExperienceSection` only handles layout and iteration, while `ExperienceItem` handles the rendering of a specific job entry.
+- Separation of Concerns: Data (`portfolioData.tsx`), domain logic (`utils/domain.ts`), side effects (`hooks/`), and UI (`components/`) are strictly isolated.
+- DRY (Don't Repeat Yourself): Reusable UI elements (e.g., `SectionHeading`, `Badge`) are extracted into a shared `ui/` directory.
+- Strong Typing: Comprehensive TypeScript interfaces (`src/types/index.ts`) enforce data contracts across the entire application, preventing runtime errors.
 
 ---
 
@@ -62,6 +83,7 @@ All content is separated from UI (`portfolioData.tsx`), including dynamic sectio
 - Vite
 - Tailwind CSS
 - Framer Motion
+- Vitest & React Testing Library (for unit and integration testing)
 
 Chosen for **speed, maintainability, and developer experience**.
 
@@ -126,4 +148,12 @@ git clone https://github.com/rembednarczyk/rembednarczyk.github.io.git
 cd rembednarczyk.github.io
 npm install
 npm run dev
+```
+
+## Running Tests
+
+The project uses Vitest and React Testing Library for unit and integration testing.
+
+```bash
+npm test
 ```

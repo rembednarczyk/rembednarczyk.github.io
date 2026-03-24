@@ -1,52 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { ShieldCheck, Download, Menu, X } from "lucide-react";
+import { useActiveSection } from "../../hooks/useActiveSection";
+import { useScrollToSection } from "../../hooks/useScrollToSection";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("");
+  const activeSection = useActiveSection();
+  const scrollToSection = useScrollToSection();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = Array.from(document.querySelectorAll("section[id]"));
-      let currentActive = "";
-      const scrollPosition = window.scrollY + 250; // Offset for navbar + padding
-
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = sections[i] as HTMLElement;
-        const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-        
-        if (sectionTop <= scrollPosition) {
-          currentActive = section.id;
-          break;
-        }
-      }
-
-      // Fallback for bottom of page
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50) {
-        const lastSection = sections[sections.length - 1];
-        if (lastSection) currentActive = lastSection.id;
-      }
-
-      if (currentActive) {
-        // Sub-section to section mapping
-        if (currentActive === "achievements" || currentActive === "recognition") {
-          currentActive = "experience";
-        } else if (currentActive === "brand") {
-          currentActive = "community";
-        } else if (currentActive === "expertise") {
-          currentActive = "about";
-        }
-        setActiveSection(currentActive);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    setTimeout(handleScroll, 100); // Initial check after layout
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -65,12 +27,8 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setIsMobileMenuOpen(false);
-    }
+  const handleScrollToSection = (id: string) => {
+    scrollToSection(id, () => setIsMobileMenuOpen(false));
   };
 
   return (
@@ -103,43 +61,43 @@ export function Navbar() {
           {/* Desktop Links */}
           <div className="hidden lg:flex items-center space-x-6 text-sm font-medium">
             <button
-              onClick={() => scrollToSection("about")}
+              onClick={() => handleScrollToSection("about")}
               className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "about" ? "text-cyan-400" : "text-slate-200"}`}
             >
               About
             </button>
             <button
-              onClick={() => scrollToSection("experience")}
+              onClick={() => handleScrollToSection("experience")}
               className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "experience" ? "text-cyan-400" : "text-slate-200"}`}
             >
               Experience
             </button>
             <button
-              onClick={() => scrollToSection("skills")}
+              onClick={() => handleScrollToSection("skills")}
               className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "skills" ? "text-cyan-400" : "text-slate-200"}`}
             >
               Skills
             </button>
             <button
-              onClick={() => scrollToSection("certifications")}
+              onClick={() => handleScrollToSection("certifications")}
               className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "certifications" ? "text-cyan-400" : "text-slate-200"}`}
             >
               Certifications
             </button>
             <button
-              onClick={() => scrollToSection("projects")}
+              onClick={() => handleScrollToSection("projects")}
               className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "projects" ? "text-cyan-400" : "text-slate-200"}`}
             >
               Initiatives
             </button>
             <button
-              onClick={() => scrollToSection("community")}
+              onClick={() => handleScrollToSection("community")}
               className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "community" ? "text-cyan-400" : "text-slate-200"}`}
             >
               Community
             </button>
             <button
-              onClick={() => scrollToSection("contact")}
+              onClick={() => handleScrollToSection("contact")}
               className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded px-1 ${activeSection === "contact" ? "text-cyan-400" : "text-slate-200"}`}
             >
               Contact
@@ -184,43 +142,43 @@ export function Navbar() {
           className="lg:hidden absolute top-20 right-4 w-56 sm:w-64 max-h-[calc(100vh-6rem)] overflow-y-auto bg-[#020617]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-5 flex flex-col gap-3 text-sm font-medium origin-top-right animate-in fade-in slide-in-from-top-4 duration-200 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
         >
           <button
-            onClick={() => scrollToSection("about")}
+            onClick={() => handleScrollToSection("about")}
             className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "about" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             About
           </button>
           <button
-            onClick={() => scrollToSection("experience")}
+            onClick={() => handleScrollToSection("experience")}
             className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "experience" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Experience
           </button>
           <button
-            onClick={() => scrollToSection("skills")}
+            onClick={() => handleScrollToSection("skills")}
             className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "skills" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Skills
           </button>
           <button
-            onClick={() => scrollToSection("certifications")}
+            onClick={() => handleScrollToSection("certifications")}
             className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "certifications" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Certifications
           </button>
           <button
-            onClick={() => scrollToSection("projects")}
+            onClick={() => handleScrollToSection("projects")}
             className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "projects" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Initiatives
           </button>
           <button
-            onClick={() => scrollToSection("community")}
+            onClick={() => handleScrollToSection("community")}
             className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "community" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Community
           </button>
           <button
-            onClick={() => scrollToSection("contact")}
+            onClick={() => handleScrollToSection("contact")}
             className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === "contact" ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
           >
             Contact

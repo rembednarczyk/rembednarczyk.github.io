@@ -97,6 +97,18 @@ export const aboutData = {
     "https://remigiuszbednarczyk.com/img/Remi_original.webp",
 };
 
+export const thinkingData = [
+  {
+    quote: "AI changes testing from execution to orchestration",
+  },
+  {
+    quote: "Quality engineering becomes risk management in regulated systems",
+  },
+  {
+    quote: "Senior engineers shift from coding to decision-making",
+  },
+];
+
 export const skillsData: SkillCategory[] = [
   {
     name: "Quality Engineering",

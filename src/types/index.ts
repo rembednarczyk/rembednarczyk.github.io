@@ -50,6 +50,18 @@ export interface BrandItem {
   icon: ReactNode;
 }
 
+export interface Certification {
+  title: string;
+  icon: ReactNode;
+  desc: string;
+}
+
+export interface Expertise {
+  title: string;
+  icon: ReactNode;
+  desc: string;
+}
+
 export interface KeyProjectLink {
   url: string;
   icon: ReactNode;
