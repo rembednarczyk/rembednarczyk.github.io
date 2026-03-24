@@ -1,16 +1,11 @@
-import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Mail, Download, Linkedin, Github } from "lucide-react";
 
 export function ContactSection() {
-  const [email, setEmail] = useState("");
-
-  useEffect(() => {
-    // Obfuscate email to prevent simple scrapers
-    const user = "hello";
-    const domain = "remigiuszbednarczyk.com";
-    setEmail(`${user}@${domain}`);
-  }, []);
+  // Obfuscate email to prevent simple scrapers
+  const user = "hello";
+  const domain = "remigiuszbednarczyk.com";
+  const email = `${user}@${domain}`;
 
   return (
     <section
@@ -25,14 +20,14 @@ export function ContactSection() {
         className="w-full"
       >
         <p className="text-cyan-400 font-mono mb-4 text-lg">
-          11. What's next?
+          11. What&apos;s next?
         </p>
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
           Get In Touch
         </h2>
         <p className="text-slate-400 mb-10 leading-relaxed text-lg">
           Whether you have a question, want to discuss a project, or need a hard
-          copy of my experience—I'm just an email away.
+          copy of my experience—I&apos;m just an email away.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
           <a

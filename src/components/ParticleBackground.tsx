@@ -26,39 +26,39 @@ export const ParticleBackground: React.FC = () => {
       initParticles();
     };
 
-    class Particle {
+    type Particle = {
       x: number;
       y: number;
       vx: number;
       vy: number;
       size: number;
+      update: () => void;
+      draw: () => void;
+    };
 
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        // Slower, floating movement for a "space" feel
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
-        this.size = Math.random() * 2 + 0.5;
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-
-        // Bounce off edges
-        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-      }
-
-      draw() {
-        if (!ctx) return;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(139, 92, 246, 0.8)"; // Purple-ish star/node
-        ctx.fill();
-      }
-    }
+    const createParticle = (): Particle => {
+      const p: Particle = {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 2 + 0.5,
+        update: () => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+          if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        },
+        draw: () => {
+          if (!ctx) return;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(139, 92, 246, 0.8)";
+          ctx.fill();
+        }
+      };
+      return p;
+    };
 
     const initParticles = () => {
       particles = [];
@@ -68,7 +68,7 @@ export const ParticleBackground: React.FC = () => {
         120,
       );
       for (let i = 0; i < numParticles; i++) {
-        particles.push(new Particle());
+        particles.push(createParticle());
       }
     };
 

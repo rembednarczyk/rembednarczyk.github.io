@@ -20,7 +20,7 @@ export function ThinkingSection() {
           />
         </div>
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-cyan-300 to-slate-300 leading-tight md:leading-tight tracking-tight italic">
-          "{thinkingQuote}"
+          &quot;{thinkingQuote}&quot;
         </h2>
         <div className="mt-10 w-24 h-1 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent rounded-full" />
       </motion.div>

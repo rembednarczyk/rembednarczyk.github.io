@@ -6,7 +6,6 @@ import {
   Layers,
   Globe,
   Users,
-  CheckCircle,
   Star,
   Trophy,
   Award,

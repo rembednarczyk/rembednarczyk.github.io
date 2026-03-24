@@ -107,14 +107,6 @@ Chosen for **speed, maintainability, and developer experience**.
 
 ---
 
-### CI/CD Pipeline (GitHub Actions)
-
-- Quality Gates (CI): Every push and pull request triggers ESLint and TypeScript type checking (`tsc --noEmit`).
-- Fail-Fast: The build process is aborted if any quality gate fails, preventing broken code from reaching production.
-- Continuous Deployment (CD): Successful merges to `main` are automatically built and deployed to GitHub Pages.
-
----
-
 ## Why This Matters
 
 As a Test Manager, I don’t just validate systems.
@@ -162,10 +154,29 @@ npm install
 npm run dev
 ```
 
-## Running Tests
+## Running Tests & Quality Checks
 
-The project uses Vitest and React Testing Library for unit and integration testing.
+The project uses Vitest and React Testing Library for unit and integration testing, along with a strict ESLint configuration to enforce architecture and performance rules.
 
 ```bash
-npm test
+# Run the development server
+npm run dev
+
+# Run unit and integration tests
+npm run test
+
+# Run the strict linter (ESLint + TypeScript)
+npm run lint
+
+# Run the full Quality Gate (Lint -> Test -> Build)
+npm run check:quality
 ```
+
+---
+
+## CI/CD Pipeline & Quality Gate (GitHub Actions)
+
+- **Quality Gate (CI)**: Every push and pull request to `main` triggers the `npm run check:quality` script.
+- **Strict Linting**: Custom ESLint rules enforce the Single Responsibility Principle (preventing UI components from importing sections), prevent Layout Thrashing in Framer Motion, and ensure Lighthouse 100/100/100/100 compliance (e.g., enforcing `aria-label` and correct image loading attributes).
+- **Fail-Fast**: The build process is aborted if any quality gate fails, preventing broken or suboptimal code from reaching production.
+- **Continuous Deployment (CD)**: Successful merges to `main` are automatically built and deployed.

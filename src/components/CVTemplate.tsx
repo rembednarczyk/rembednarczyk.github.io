@@ -1,4 +1,3 @@
-import React from "react";
 import QRCode from "react-qr-code";
 import { Mail, Linkedin, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm, BadgeCheck, BrainCircuit, BookOpen } from "lucide-react";
 import { fullCertificationsList, cvData, experienceData } from "../data/portfolioData";
@@ -34,12 +33,8 @@ export const CVTemplate = () => {
           <div className="flex items-center gap-1.5">
             <Phone size={14} className="text-slate-400" aria-hidden="true" />
             <a
-              href="#"
+              href={`tel:${cvData.header.phone.href}`}
               className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400"
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.href = "tel:" + cvData.header.phone.href;
-              }}
             >
               {cvData.header.phone.display.map((part, i) => (
                 <span key={i}>{part}</span>
@@ -49,12 +44,8 @@ export const CVTemplate = () => {
           <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
             <Mail size={14} className="text-slate-400" aria-hidden="true" />
             <a
-              href="#"
+              href={`mailto:${cvData.header.email.href}`}
               className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400"
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.href = "mailto:" + cvData.header.email.href;
-              }}
             >
               {cvData.header.email.display.map((part, i) => (
                 <span key={i}>{part}</span>

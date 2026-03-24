@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { HeroSection } from "./components/sections/HeroSection";
@@ -20,16 +20,12 @@ import { ProjectsSection } from "./components/sections/Projects/ProjectsSection"
 import { ContactSection } from "./components/sections/ContactSection";
 
 export default function App() {
-  const [isNotFound, setIsNotFound] = useState(false);
+  // Basic SPA routing for 404
+  // If the path is not the root path, show the 404 page
+  // We also ignore hash changes since those are used for section navigation
+  const isNotFound = window.location.pathname !== "/" && window.location.pathname !== "/index.html";
 
   useEffect(() => {
-    // Basic SPA routing for 404
-    // If the path is not the root path, show the 404 page
-    // We also ignore hash changes since those are used for section navigation
-    if (window.location.pathname !== "/" && window.location.pathname !== "/index.html") {
-      setIsNotFound(true);
-    }
-
     // Auto-print logic for QR codes
     if (window.location.search.includes("print=true")) {
       setTimeout(() => {

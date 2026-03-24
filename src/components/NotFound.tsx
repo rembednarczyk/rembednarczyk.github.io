@@ -3,14 +3,15 @@ import { Terminal } from "lucide-react";
 import { ParticleBackground } from "./ParticleBackground";
 import { useEffect, useState } from "react";
 
+const lines = [
+  { text: "Resource not found", delay: 500 },
+  { text: "Navigation context: invalid", delay: 1500 },
+  { text: "Recovery action required", delay: 3000 },
+  { text: "Redirect to a stable system state.", delay: 4500, isRecommendation: true },
+];
+
 const TerminalWindow = () => {
   const shouldReduceMotion = useReducedMotion();
-  const lines = [
-    { text: "Resource not found", delay: 500 },
-    { text: "Navigation context: invalid", delay: 1500 },
-    { text: "Recovery action required", delay: 3000 },
-    { text: "Redirect to a stable system state.", delay: 4500, isRecommendation: true },
-  ];
 
   const [visibleLines, setVisibleLines] = useState<number>(shouldReduceMotion ? lines.length : 0);
   const [currentText, setCurrentText] = useState("");
