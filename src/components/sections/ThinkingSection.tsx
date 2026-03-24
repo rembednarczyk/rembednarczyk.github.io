@@ -1,27 +1,29 @@
 import { motion } from "motion/react";
 import { Quote } from "lucide-react";
-import { thinkingData } from "../../data/portfolioData";
+import { thinkingQuote } from "../../data/portfolioData";
 
 export function ThinkingSection() {
   return (
-    <section className="py-12 print:hidden">
-      <div className="grid md:grid-cols-3 gap-6">
-        {thinkingData.map((item, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5, delay: idx * 0.1 }}
-            className="relative bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 active:bg-white/10 hover:-translate-y-1 active:scale-95 transition-all duration-300 group flex flex-col items-center text-center"
-          >
-            <Quote className="text-cyan-400/30 w-10 h-10 mb-4 group-hover:text-cyan-400/60 group-active:text-cyan-400/60 transition-colors" aria-hidden="true" />
-            <p className="text-lg font-medium text-slate-300 leading-relaxed italic">
-              "{item.quote}"
-            </p>
-          </motion.div>
-        ))}
-      </div>
+    <section className="py-24 print:hidden relative overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative max-w-3xl mx-auto flex flex-col items-center text-center px-6"
+      >
+        <div className="relative mb-8">
+          <div className="absolute inset-0 bg-cyan-500/20 blur-2xl rounded-full" />
+          <Quote 
+            className="relative text-cyan-400/60 w-16 h-16 md:w-20 md:h-20" 
+            aria-hidden="true" 
+          />
+        </div>
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-cyan-300 to-slate-300 leading-tight md:leading-tight tracking-tight italic">
+          "{thinkingQuote}"
+        </h2>
+        <div className="mt-10 w-24 h-1 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent rounded-full" />
+      </motion.div>
     </section>
   );
 }

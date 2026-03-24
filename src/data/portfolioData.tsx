@@ -97,17 +97,7 @@ export const aboutData = {
     "https://remigiuszbednarczyk.com/img/Remi_original.webp",
 };
 
-export const thinkingData = [
-  {
-    quote: "AI changes testing from execution to orchestration",
-  },
-  {
-    quote: "Quality engineering becomes risk management in regulated systems",
-  },
-  {
-    quote: "Senior engineers shift from coding to decision-making",
-  },
-];
+export const thinkingQuote = "AI-first engineering shifts value from writing code to making decisions.";
 
 export const skillsData: SkillCategory[] = [
   {
@@ -230,18 +220,18 @@ export const experienceData: Job[] = [
     ],
     projects: [
       {
-        role: "Test Manager / Genmab",
-        period: "2024 - Present",
+        role: "Test Manager / GxP Projects",
+        period: "2021 - Present",
         bullets: [
-          "Ensured predictable delivery across multiple regulated projects by owning end-to-end test management, including planning, coordination, execution oversight, and reporting.",
-          "Defined and approved Test Strategies and Test Plans aligned with business goals, regulatory requirements, and project constraints.",
-          "Enabled risk-aware delivery planning by estimating, prioritizing, and scheduling testing activities under tight timelines and compliance constraints.",
-          "Ensured testing compliance within a validated GxP/CSV environment by taking full accountability for testing activities and validation alignment.",
+          "Managed testing teams across multiple concurrent GxP-regulated projects within a distributed international environment, collaborating daily with global cross-functional stakeholders (USA, Switzerland, UK, Malaysia).",
+          "Ensured predictable delivery by owning end-to-end test management, including defining and approving Test Strategies and Test Plans aligned with business goals, regulatory requirements, and project constraints.",
+          "Ensured testing compliance within a validated GxP/CSV environment, taking full accountability for testing activities, validation alignment, and formal documentation (RTMs, Release Test Plans, Test Reports).",
+          "Established QA processes from scratch by conducting discovery phases, assessing existing workflows, and implementing governance, entry/exit criteria, and best practices.",
+          "Successfully delivered and rolled out a digitalized testing and documentation process used across regulated IRT workflows, transitioning from paper-based to digital test documentation (Jira with Xray).",
           "Enabled regulatory compliance of the German pharmaceutical supply chain by leading the implementation of the EU Module in TraceLink.",
           "Acted as Validation Lead for the QC Lab EMSuite project, with decision authority over validation approach, documentation scope, and lifecycle coverage.",
-          "Drove the assessment and Proof of Concept of Jira with Xray, enabling the go/no-go decision for transitioning from paper-based to digital test documentation in IRT processes.",
+          "Implemented time-optimizing solutions, such as Unscripted Testing and alternative automation approaches, to increase team efficiency under tight timelines.",
           "Resolved conflicts between delivery timelines, quality expectations, and compliance requirements by aligning multiple stakeholders across business, QA, and project management.",
-          "Successfully delivered and rolled out a digitalized testing and documentation process used across regulated IRT workflows.",
         ],
         tags: [
           "Test Management",
@@ -251,30 +241,9 @@ export const experienceData: Job[] = [
           "Jira",
           "Xray",
           "Agile/Scrum",
-          "GxP",
-        ],
-      },
-      {
-        role: "Test Manager / Roche",
-        period: "2021 - Present",
-        bullets: [
-          "Managed testing teams across three concurrent GxP-regulated projects within a distributed international environment, collaborating daily with global cross-functional stakeholders (USA, Switzerland, UK, Malaysia).",
-          "Established QA processes from scratch by conducting discovery phases, assessing existing workflows, and implementing governance, entry/exit criteria, and best practices.",
-          "Authored and maintained formal validation documentation required for compliance, including Requirements Traceability Matrices (RTM), Release Test Plans, and Test Reports.",
-          "Implemented time-optimizing solutions, such as Unscripted Testing and alternative automation approaches, to increase team efficiency.",
-          "Configured testing tools and synchronized schedules to ensure seamless integration and delivery across all managed projects.",
-          "Executed a comprehensive scope of tests, covering exploratory, integration, functional, non-functional, regressive, and automated testing.",
-        ],
-        tags: [
-          "Test Management",
-          "Risk Analysis",
-          "Process Implementation",
-          "Jira",
-          "Xray",
-          "Agile/Scrum",
           "SAFe",
-          "Waterfall",
           "GxP",
+          "CSV",
         ],
       },
     ],

@@ -4,6 +4,7 @@ import { Footer } from "./components/layout/Footer";
 import { HeroSection } from "./components/sections/HeroSection";
 import { ExpertiseSection } from "./components/sections/Expertise/ExpertiseSection";
 import { AboutSection } from "./components/sections/About/AboutSection";
+import { ThinkingSection } from "./components/sections/ThinkingSection";
 import { ParticleBackground } from "./components/ParticleBackground";
 import { CVTemplate } from "./components/CVTemplate";
 import { ScrollToTop } from "./components/ui/ScrollToTop";
@@ -70,6 +71,7 @@ export default function App() {
           <HeroSection />
           <ExpertiseSection />
           <AboutSection />
+          <ThinkingSection />
           <ExperienceSection />
           <AchievementsSection />
           <RecognitionSection />
