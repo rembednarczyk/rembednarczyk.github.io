@@ -10,9 +10,9 @@ export const ExpertiseCard: React.FC<{ item: Expertise }> = ({ item }) => {
       >
         {item.icon}
       </div>
-      <h4 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
+      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
         {item.title}
-      </h4>
+      </h3>
       <p className="text-slate-400 text-sm leading-relaxed">
         {item.desc}
       </p>

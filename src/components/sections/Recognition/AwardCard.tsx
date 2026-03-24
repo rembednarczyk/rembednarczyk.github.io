@@ -19,9 +19,9 @@ export const AwardCard: React.FC<{ award: Award }> = ({ award }) => {
           {award.icon}
         </div>
 
-        <h4 className="text-xl font-bold text-white mb-4 group-hover:text-white group-active:text-white transition-colors">
+        <h3 className="text-xl font-bold text-white mb-4 group-hover:text-white group-active:text-white transition-colors">
           {award.title}
-        </h4>
+        </h3>
 
         <div className="flex items-center justify-between mb-4">
           <div className="text-sm text-slate-400 font-medium">

@@ -24,9 +24,9 @@ export const ProjectCard: React.FC<{ project: KeyProject }> = ({ project }) => {
         </div>
       </div>
 
-      <h4 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
+      <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
         {project.title}
-      </h4>
+      </h3>
       <p className="text-slate-400 text-base leading-relaxed mb-8 flex-grow">
         {project.desc}
       </p>

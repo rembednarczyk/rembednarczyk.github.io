@@ -34,15 +34,9 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#020617]/80 backdrop-blur-md border-b border-white/10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <div
+        <button
           className="flex items-center gap-2 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617] rounded-lg p-1 -ml-1 transition-transform active:scale-95"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          tabIndex={0}
-          role="button"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ")
-              window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
         >
           <ShieldCheck
             aria-hidden="true"
@@ -55,7 +49,7 @@ export function Navbar() {
           <div className="text-xl font-bold tracking-tighter text-white sm:hidden">
             R<span className="text-cyan-400">B</span>
           </div>
-        </div>
+        </button>
 
         <div className="flex items-center gap-3 lg:gap-4">
           {/* Desktop Links */}

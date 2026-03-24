@@ -24,9 +24,9 @@ export function ContactSection() {
         transition={{ duration: 0.5 }}
         className="w-full"
       >
-        <h3 className="text-cyan-400 font-mono mb-4 text-lg">
+        <p className="text-cyan-400 font-mono mb-4 text-lg">
           11. What's next?
-        </h3>
+        </p>
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
           Get In Touch
         </h2>

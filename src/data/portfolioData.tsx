@@ -491,6 +491,69 @@ export const certificationsData = [
   },
 ];
 
+export const cvData = {
+  header: {
+    name: "Remigiusz Bednarczyk",
+    title: "Test Manager",
+    phone: {
+      display: ["+", "48", " ", "530", " ", "333", " ", "243"],
+      href: ["+", "48", "530", "333", "243"].join(""),
+    },
+    email: {
+      display: ["hello", "@", "remigiuszbednarczyk", ".", "com"],
+      href: ["hello", "@", "remigiuszbednarczyk", ".", "com"].join(""),
+    },
+    linkedin: "linkedin.com/in/rembednarczyk",
+    website: "remigiuszbednarczyk.com",
+    location: "Poland",
+  },
+  summary:
+    "Quality Engineering Lead and Test Manager with extensive experience in regulated environments, particularly in the pharmaceutical sector (GxP). Specialized in designing testing strategies, managing cross-functional QA teams, and driving digital transformation in testing processes. Proven track record of combining technical rigor with a deep understanding of business and compliance requirements to deliver predictable, high-quality software solutions.",
+  skills: [
+    {
+      category: "Test Management",
+      items: "Test Strategy & Planning, Risk-Based Testing, Defect Management, QA Process Design, GxP / CSV Compliance, Audit Preparation.",
+    },
+    {
+      category: "Delivery & Leadership",
+      items: "Test Leadership, Stakeholder Management, SAFe / Agile Delivery, ITIL, AgilePM, Quality Governance at Scale.",
+    },
+    {
+      category: "Technical & Data Background",
+      items: "API Testing, SQL / Data Validation, ETL & Data Pipelines, Frontend Testing, CI/CD Awareness, AI-assisted Testing.",
+    },
+    {
+      category: "Methodologies",
+      items: "Agile / Scrum, Waterfall, V-Model, Shift-Left Testing.",
+    },
+    {
+      category: "Tools & Technologies",
+      items: "Jira & Xray, HP ALM / Micro Focus, TraceLink, Postman, noSQL / MongoDB.",
+    },
+  ],
+  passions: [
+    "Strength and endurance training",
+    "Street Workout & Calisthenics",
+    "Hardstyle Kettlebell training by Pavel Tsatsouline",
+    "Investing in Stocks, ETFs as an Individual Investor",
+    "Running – Participation in competitions",
+    "Board Games",
+  ],
+  community: [
+    { title: "Vice President", desc: "of the Polish Testing Board (SJSI)." },
+    { title: "Conference Host & Speaker", desc: "at major IT events including TestWarez and Na Podbój IT." },
+    { title: "Trainer & Mentor", desc: "for 500+ software testers, specializing in QA practices and ISTQB preparation." },
+    { title: "Lead Technical Assessor", desc: "responsible for evaluating testing professionals from Junior to Test Manager level." },
+    { title: "Author", desc: "of technical articles on software testing and quality assurance practices." },
+  ],
+  recognition: [
+    { title: "League of Honor – The Star (Sii Poland, 2023):", desc: "Highest distinction awarded to top contributors shaping company growth and strategic direction." },
+    { title: "Top Gun – Leadership Award (Sii Poland, 2022):", desc: "Recognized as a role model and impactful leader in the organization." },
+    { title: "Sii Star – Employee of the Year (Sii Poland, 2022 & 2018):", desc: "Awarded for outstanding performance and measurable impact." },
+    { title: "Brand Ambassador & Representative:", desc: "Featured in nationwide campaigns, city murals (#UnstoppableSii), Great Place to Work 2018, and Sii Calendar (2019-2020)." },
+  ],
+};
+
 export const fullCertificationsList = [
   {
     category: "Core certifications",

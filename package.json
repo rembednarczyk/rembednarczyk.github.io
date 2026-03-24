@@ -36,7 +36,6 @@
     "autoprefixer": "^10.4.21",
     "jsdom": "^29.0.1",
     "puppeteer": "^24.39.1",
-    "qrcode": "^1.5.4",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",

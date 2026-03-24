@@ -130,6 +130,18 @@ This project reflects that mindset.
 
 ---
 
+## Development Guidelines & Guardrails
+
+To maintain the high quality, performance, and consistency of this project, all future development must adhere to the documented guidelines. These documents serve as strict guardrails for the AI and human contributors:
+
+- [AI Instructions (Entry Point)](docs/guidelines/AI_INSTRUCTIONS.md) - The overarching master instruction file for all AI agents and contributors.
+- [Architecture & Tech Stack](docs/guidelines/architecture.md) - React, Vite, TS, and component decomposition rules.
+- [Lighthouse 100/100/100/100 Guardrails](docs/guidelines/quality.md) - Strict rules for Performance, Accessibility, Best Practices, and SEO.
+- [UI/UX & Styling](docs/guidelines/ui.md) - Dark mode, glassmorphism, Tailwind conventions, and Framer Motion animations.
+- [Workflow & Git](docs/guidelines/workflow.md) - CI/CD, asset management (including QR codes), and deployment processes.
+
+---
+
 ## Tech Stack
 
 - React 18 + TypeScript

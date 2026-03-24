@@ -6,9 +6,9 @@ export const ExperienceItem: React.FC<{ job: Job }> = ({ job }) => {
     <article className="group relative bg-[#0a1128]/80 backdrop-blur-sm border border-white/10 rounded-xl p-8 hover:-translate-y-1 active:scale-[0.98] transition-all duration-300">
       <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
         <div>
-          <h4 className="text-2xl font-bold text-white group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
+          <h3 className="text-2xl font-bold text-white group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
             {job.role}
-          </h4>
+          </h3>
           <div className="text-lg text-purple-400 font-medium mt-1">
             {job.company}
           </div>
@@ -63,9 +63,9 @@ const ProjectItem: React.FC<{ project: Project }> = ({ project }) => {
       <div className="absolute -left-[31px] md:-left-[39px] top-2 w-3 h-3 bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.5)]"></div>
 
       <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-3">
-        <h5 className="text-xl font-bold text-white group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
+        <h4 className="text-xl font-bold text-white group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
           {project.role}
-        </h5>
+        </h4>
         <div className="text-slate-500 font-mono text-sm mt-1 md:mt-0">
           <time>{project.period}</time>
         </div>

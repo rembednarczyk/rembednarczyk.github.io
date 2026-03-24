@@ -7,7 +7,7 @@ export const BrandCard: React.FC<{ item: BrandItem }> = ({ item }) => {
       <div className="mb-4" aria-hidden="true">
         {item.icon}
       </div>
-      <h4 className="text-white font-bold mb-2">{item.title}</h4>
+      <h3 className="text-white font-bold mb-2">{item.title}</h3>
       <p className="text-slate-400 text-sm">{item.desc}</p>
     </article>
   );

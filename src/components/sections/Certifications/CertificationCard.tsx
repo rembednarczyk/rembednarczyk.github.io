@@ -10,9 +10,9 @@ export const CertificationCard: React.FC<{ item: Certification }> = ({ item }) =
       >
         {item.icon}
       </div>
-      <h4 className="text-xl font-bold text-white mb-4 group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
+      <h3 className="text-xl font-bold text-white mb-4 group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
         {item.title}
-      </h4>
+      </h3>
       <ul className="space-y-2">
         {item.desc.split("\n").map((line, i) => (
           <li

@@ -7,20 +7,9 @@ export const ParticleBackground: React.FC = () => {
     "(prefers-reduced-motion: reduce)",
   ).matches;
 
-  if (prefersReducedMotion) {
-    return (
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          background:
-            "radial-gradient(circle at center, #0f172a 0%, #020617 100%)",
-        }}
-      />
-    );
-  }
-
   useEffect(() => {
+    if (prefersReducedMotion) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -160,7 +149,20 @@ export const ParticleBackground: React.FC = () => {
       window.removeEventListener("mouseout", handleMouseOut);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [prefersReducedMotion]);
+
+  if (prefersReducedMotion) {
+    return (
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          background:
+            "radial-gradient(circle at center, #0f172a 0%, #020617 100%)",
+        }}
+      />
+    );
+  }
 
   return (
     <canvas
