@@ -10,7 +10,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint . && tsc --noEmit",
     "test": "vitest run",
-    "check:quality": "npm run lint && npm run test && npm run build-storybook && concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:6006 && test-storybook\" && npm run build",
+    "check:quality": "npm run lint && npm run test && npm run build-storybook && concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:6006 && test-storybook --url http://127.0.0.1:6006\" && npm run build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test-storybook": "test-storybook"
