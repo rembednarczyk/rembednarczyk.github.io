@@ -1,8 +1,8 @@
-import { HTMLAttributes, forwardRef } from "react";
+import { HTMLAttributes, forwardRef, ReactNode } from "react";
 
 export interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "outline" | "success" | "error";
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }
 
 export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
