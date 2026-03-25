@@ -10,7 +10,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint . && tsc --noEmit",
     "test": "vitest run",
-    "check:quality": "npm run lint && npm run test && npm run build-storybook && npx test-storybook --url file://$(pwd)/storybook-static && npm run build",
+    "check:quality": "npm run lint && npm run test && npm run build-storybook && concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:6006 && test-storybook\" && npm run build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test-storybook": "test-storybook"
@@ -53,6 +53,7 @@
     "@vitest/coverage-v8": "^4.1.1",
     "autoprefixer": "^10.4.21",
     "axe-playwright": "^2.2.2",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -61,6 +62,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "eslint-plugin-storybook": "^10.3.3",
     "globals": "^17.4.0",
+    "http-server": "^14.1.1",
     "jest-axe": "^10.0.0",
     "jsdom": "^29.0.1",
     "playwright": "^1.58.2",
@@ -71,6 +73,7 @@
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.57.2",
     "vite": "^6.2.0",
-    "vitest": "^4.1.1"
+    "vitest": "^4.1.1",
+    "wait-on": "^9.0.4"
   }
 }

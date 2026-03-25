@@ -2,6 +2,7 @@ node_modules/
 build/
 dist/
 coverage/
+storybook-static/
 .DS_Store
 *.log
 .env*
