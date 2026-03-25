@@ -8,7 +8,7 @@ Personal website of a **Quality Engineering Lead / Test Manager** specializing i
 
 **Live:** [remigiuszbednarczyk.com](https://remigiuszbednarczyk.com/)
 
-Deployed: [![CI/CD Pipeline](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml) [![Tests](https://img.shields.io/github/actions/workflow/status/rembednarczyk/rembednarczyk.github.io/deploy.yml?label=Tests)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml)
+Deployed: [![CI/CD Pipeline](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml) [![Quality Gate](https://img.shields.io/github/actions/workflow/status/rembednarczyk/rembednarczyk.github.io/deploy.yml?label=Quality%20Gate)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml) [![Tests](https://img.shields.io/github/actions/workflow/status/rembednarczyk/rembednarczyk.github.io/deploy.yml?label=Tests)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml)
 
 Using: [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -126,11 +126,7 @@ This project reflects that mindset.
 
 To maintain the high quality, performance, and consistency of this project, all future development must adhere to the documented guidelines. These documents serve as strict guardrails for the AI and human contributors:
 
-- [AI Instructions (Entry Point)](docs/guidelines/AI_INSTRUCTIONS.md) - The overarching master instruction file for all AI agents and contributors.
-- [Architecture & Tech Stack](docs/guidelines/architecture.md) - React, Vite, TS, and component decomposition rules.
-- [Lighthouse 100/100/100/100 Guardrails](docs/guidelines/quality.md) - Strict rules for Performance, Accessibility, Best Practices, and SEO.
-- [UI/UX & Styling](docs/guidelines/ui.md) - Dark mode, glassmorphism, Tailwind conventions, and Framer Motion animations.
-- [Workflow & Git](docs/guidelines/workflow.md) - CI/CD, asset management (including QR codes), and deployment processes.
+- [AI Instructions (Entry Point)](docs/guidelines/AI_INSTRUCTIONS.md) - The overarching master instruction file (One-Pager Protocol) for all AI agents and contributors. It contains the strict Execution Protocol, Architecture Rules, Lighthouse Guardrails, and UI/UX guidelines.
 
 ---
 
@@ -180,6 +176,8 @@ npm run check:quality
 ## Component Driven Development & Storybook
 
 This project uses **Storybook** not just as a component library, but as an **Automated Accessibility (A11y) Quality Gate**. 
+
+Every reusable component in `src/components/ui/` (e.g., `Button`, `Badge`, `Card`, `ScrollToTop`, `SectionHeading`) is required to have a corresponding `.stories.tsx` file.
 
 ### Use Cases and Edge Case: AI-Assisted Component Usage
 To demonstrate UI engineering, the Storybook apart from basic coverage, includes an `AiAssistedCard` story. This story models how the UI behaves when handling unpredictable, AI-generated dynamic data (e.g., extremely long text, missing fields, unexpected formatting). 
