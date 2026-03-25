@@ -8,7 +8,7 @@ import react from 'eslint-plugin-react';
 import importPlugin from 'eslint-plugin-import';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'storybook-static'] },
   {
     extends: [
       js.configs.recommended,

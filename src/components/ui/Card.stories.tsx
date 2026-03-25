@@ -58,7 +58,7 @@ export const Solid: Story = {
 export const EmptyState: Story = {
   args: {
     children: (
-      <div className="p-10 flex flex-col items-center justify-center text-center text-slate-500">
+      <div className="p-10 flex flex-col items-center justify-center text-center text-slate-400">
         <p>No data available</p>
       </div>
     ),
