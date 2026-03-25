@@ -6,6 +6,7 @@ The following rules MUST be followed in every implementation:
 - NEVER animate properties that cause layout thrashing (margin, padding, width)
 - ALWAYS start styling from the mobile view (Mobile-First)
 - NEVER use inline styles for standard UI elements
+- ALWAYS create a `.stories.tsx` file for every new component in `src/components/ui/`
 
 # UI/UX and Styling Guidelines
 
@@ -86,3 +87,18 @@ The portfolio also serves as a CV.
 - Use `print:hidden` classes for elements that should not be printed (e.g., navigation, action buttons, video backgrounds).
 - Use `print:text-black` and `print:bg-white` to ensure readability on paper.
 - Ensure proper page breaks (`break-inside-avoid` for experience cards).
+
+## 7. Storybook & Component Driven Development
+
+Every new component added to `src/components/ui/` **MUST** have a corresponding `.stories.tsx` file.
+
+- **Why?** Storybook serves as a living documentation of our Design System and acts as an automated Quality Gate for Accessibility (A11y) and visual regressions.
+- **State-Driven Stories:** Do not just create "Primary" and "Secondary" stories. Model real-world states: `Loading`, `ErrorState`, `EmptyState`, `LongTextOverflow`, `DisabledWithIcon`.
+- **Behavioral & Edge Case Modeling:** Test extreme inputs and accessibility edge cases.
+- **A11y Assertions:** Every story's `play` function must include an accessibility assertion using `jest-axe`:
+  ```tsx
+  play: async ({ canvasElement }) => {
+    expect(await axe(canvasElement)).toHaveNoViolations();
+  }
+  ```
+  This ensures that if a component fails contrast or ARIA checks, the CI pipeline will fail the build.

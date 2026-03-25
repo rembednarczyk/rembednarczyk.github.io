@@ -168,15 +168,34 @@ npm run test
 # Run the strict linter (ESLint + TypeScript)
 npm run lint
 
-# Run the full Quality Gate (Lint -> Test -> Build)
+# Start Storybook (Component Driven Development & A11y Testing)
+npm run storybook
+
+# Run the full Quality Gate (Lint -> Test -> Build Storybook -> Test Storybook -> Build App)
 npm run check:quality
 ```
 
 ---
 
+## Component Driven Development & Storybook
+
+This project uses **Storybook** not just as a component library, but as an **Automated Accessibility (A11y) Quality Gate**. 
+
+### Use Cases and Edge Case: AI-Assisted Component Usage
+To demonstrate UI engineering, the Storybook apart from basic coverage, includes an `AiAssistedCard` story. This story models how the UI behaves when handling unpredictable, AI-generated dynamic data (e.g., extremely long text, missing fields, unexpected formatting). 
+Instead of simple "Primary/Secondary" states, stories are state-driven (`Loading`, `ErrorState`, `EmptyState`, `LongTextOverflow`) and include behavioral edge-case modeling.
+
+Every story includes an assertion using `jest-axe`:
+```tsx
+expect(await axe(canvasElement)).toHaveNoViolations();
+```
+If a component fails contrast or ARIA checks, the CI pipeline fails.
+
+---
+
 ## CI/CD Pipeline & Quality Gate (GitHub Actions)
 
-- **Quality Gate (CI)**: Every push and pull request to `main` triggers the `npm run check:quality` script.
-- **Strict Linting**: Custom ESLint rules enforce the Single Responsibility Principle (preventing UI components from importing sections), prevent Layout Thrashing in Framer Motion, and ensure Lighthouse 100/100/100/100 compliance (e.g., enforcing `aria-label` and correct image loading attributes).
-- **Fail-Fast**: The build process is aborted if any quality gate fails, preventing broken or suboptimal code from reaching production.
-- **Continuous Deployment (CD)**: Successful merges to `main` are automatically built and deployed.
+- Quality Gate (CI): Every push and pull request to `main` triggers the `npm run check:quality` script.
+- Strict Linting: Custom ESLint rules enforce the Single Responsibility Principle (preventing UI components from importing sections), prevent Layout Thrashing in Framer Motion, and ensure Lighthouse 100/100/100/100 compliance (e.g., enforcing `aria-label` and correct image loading attributes).
+- Fail-Fast: The build process is aborted if any quality gate fails, preventing broken or suboptimal code from reaching production.
+- Continuous Deployment (CD): Successful merges to `main` are automatically built and deployed.
