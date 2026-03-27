@@ -35,19 +35,45 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
     e.preventDefault();
     setStatus("loading");
 
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData);
+    
+    // Add Web3Forms required fields
+    const payload = {
+      ...data,
+      access_key: "e08b2649-ead0-4885-91a3-5c8809b38c29",
+      subject: `New message from ${data.name} (Portfolio)`,
+      from_name: "Portfolio Contact Form",
+    };
+
     try {
-      // Simulate API call for UI demonstration
-      // TODO: Replace with actual fetch to Web3Forms or similar service
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setStatus("success");
-      setTimeout(() => {
-        onClose();
-        // Reset state after exit animation completes
-        setTimeout(() => setStatus("idle"), 300);
-      }, 3000);
-    } catch {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setStatus("success");
+        setTimeout(() => {
+          onClose();
+          // Reset state after exit animation completes
+          setTimeout(() => setStatus("idle"), 300);
+        }, 3000);
+      } else {
+        console.error("Form submission error:", result);
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 3000);
+      }
+    } catch (error) {
+      console.error("Form submission failed:", error);
       setStatus("error");
+      setTimeout(() => setStatus("idle"), 3000);
     }
   };
 
