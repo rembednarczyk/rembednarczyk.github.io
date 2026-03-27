@@ -440,7 +440,7 @@ export const keyProjectsData: KeyProject[] = [
     ],
   },
   {
-    title: "Brand Ambassador & Community Presence",
+    title: "Brand Ambassador",
     desc: "Featured as a Brand Ambassador in nationwide campaigns, including the #UnstoppableSii eco-murals project across major Polish cities. Selected as a company representative for the Great Place to Work campaign and official Sii Calendars, actively contributing to employer branding and organizational culture.",
     tags: ["Employer Branding", "Brand Ambassador", "#UnstoppableSii", "Community"],
     mainIcon: <Image size={32} />,
