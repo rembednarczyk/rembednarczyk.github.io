@@ -43,14 +43,17 @@ export const CVTemplate = () => {
           </div>
           <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
             <Mail size={14} className="text-slate-400" aria-hidden="true" />
-            <a
-              href={`mailto:${cvData.header.email.href}`}
-              className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400"
+            <button
+              type="button"
+              className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400 cursor-pointer bg-transparent border-none p-0 text-inherit font-inherit"
+              onClick={() => {
+                window.location.href = `mail${"to"}:${cvData.header.email.href}`;
+              }}
             >
               {cvData.header.email.display.map((part, i) => (
                 <span key={i}>{part}</span>
               ))}
-            </a>
+            </button>
           </div>
           <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
             <Linkedin size={14} className="text-slate-400" aria-hidden="true" />
