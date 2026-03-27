@@ -1,11 +1,10 @@
+import { useState } from "react";
 import { motion } from "motion/react";
 import { Mail, Download, Linkedin, Github } from "lucide-react";
+import { ContactModal } from "../ui/ContactModal";
 
 export function ContactSection() {
-  // Obfuscate email to prevent simple scrapers
-  const user = "hello";
-  const domain = "remigiuszbednarczyk.com";
-  const email = `${user}@${domain}`;
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <section
@@ -26,24 +25,28 @@ export function ContactSection() {
           Get In Touch
         </h2>
         <p className="text-slate-400 mb-10 leading-relaxed text-lg">
-          Whether you have a question, want to discuss a project, or need a hard
-          copy of my experience—I&apos;m just an email away.
+          Whether you have a question, want to discuss a project, or just want to say hi—my inbox is always open.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-          <a
-            href={email ? `mailto:${email}` : "#"}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent border border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 active:bg-cyan-500/10 active:scale-95 font-semibold rounded-lg transition-all w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
+        
+        <div className="flex flex-col items-center justify-center gap-8 mb-16">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 active:from-cyan-400 active:to-purple-400 active:scale-95 text-white font-bold rounded-lg transition-all shadow-lg shadow-cyan-500/20 w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
           >
             <Mail aria-hidden="true" size={20} />
             Say Hello
-          </a>
-          <button
-            onClick={() => window.print()}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 active:from-cyan-400 active:to-purple-400 active:scale-95 text-white font-semibold rounded-lg transition-all shadow-lg shadow-cyan-500/20 print:hidden w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
-          >
-            <Download aria-hidden="true" size={20} />
-            Save as PDF
           </button>
+
+          <div className="flex flex-col items-center gap-4 print:hidden">
+            <p className="text-sm text-slate-500 font-medium">Prefer to keep a copy of my experience?</p>
+            <button
+              onClick={() => window.print()}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-transparent border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white active:scale-95 font-semibold rounded-lg transition-all w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
+            >
+              <Download aria-hidden="true" size={18} />
+              Save as PDF
+            </button>
+          </div>
         </div>
 
         <div className="flex justify-center gap-6 mb-16">
@@ -67,6 +70,11 @@ export function ContactSection() {
           </a>
         </div>
       </motion.div>
+      
+      <ContactModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </section>
   );
 }

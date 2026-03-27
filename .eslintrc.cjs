@@ -29,14 +29,14 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
-    // 1. KRYTYCZNE: Lighthouse 100/100/100/100
-    // Zakaz console.log
+    // 1. CRITICAL: Lighthouse 100/100/100/100
+    // Disallow console.log
     'no-console': ['error', { allow: ['warn', 'error'] }],
-    // rel="noopener noreferrer" dla zewnętrznych linków
+    // Require rel="noopener noreferrer" for external links
     'react/jsx-no-target-blank': 'error',
     
-    // 3. Stylizacja (UI/UX)
-    // Brak animacji margin/padding/width we Framer Motion - zapobieganie Layout Thrashing
+    // 3. Styling (UI/UX)
+    // Prevent layout thrashing in Framer Motion by restricting animation of layout properties (margin, padding, width, etc.)
     'no-restricted-syntax': [
       'error',
       {

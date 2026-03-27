@@ -33,17 +33,17 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
-      // 1. KRYTYCZNE: Lighthouse 100/100/100/100
-      // Zakaz console.log
+      // 1. CRITICAL: Lighthouse 100/100/100/100
+      // Forbid console.log to keep production clean
       'no-console': ['error', { allow: ['warn', 'error'] }],
-      // rel="noopener noreferrer" dla zewnętrznych linków
+      // Enforce rel="noopener noreferrer" for external links
       'react/jsx-no-target-blank': 'error',
-      // Wymagaj aria-label dla elementów interaktywnych bez tekstu (np. ikon)
+      // Require aria-label for interactive elements without text (e.g., icons)
       'jsx-a11y/control-has-associated-label': 'error',
       'jsx-a11y/anchor-has-content': 'error',
       
-      // 3. Stylizacja (UI/UX)
-      // Brak animacji margin/padding/width we Framer Motion - zapobieganie Layout Thrashing
+      // 2. Styling (UI/UX)
+      // Prevent Layout Thrashing by forbidding margin/padding/width animations in Framer Motion
       'no-restricted-syntax': [
         'error',
         {
