@@ -25,7 +25,8 @@ export function ContactSection() {
           Get In Touch
         </h2>
         <p className="text-slate-400 mb-10 leading-relaxed text-lg">
-          Whether you have a question, want to discuss a project, or just want to say hi—my inbox is always open.
+          Whether you have a question, want to discuss a project, 
+          or just want to say hi - my inbox is always open.
         </p>
         
         <div className="flex flex-col items-center justify-center gap-8 mb-16">
