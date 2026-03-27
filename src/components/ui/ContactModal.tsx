@@ -99,10 +99,10 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="contact-modal-title"
-            className="relative w-full max-w-lg bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl overflow-hidden text-left"
+            className="relative w-full max-w-lg max-h-full flex flex-col bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl overflow-hidden text-left"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-slate-800">
+            <div className="flex items-center justify-between p-6 border-b border-slate-800 shrink-0">
               <h2 id="contact-modal-title" className="text-2xl font-bold text-white">
                 Send a Message
               </h2>
@@ -116,7 +116,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
             </div>
 
             {/* Body */}
-            <div className="p-6">
+            <div className="p-6 overflow-y-auto">
               {status === "success" ? (
                 <motion.div 
                   initial={{ opacity: 0 }} 

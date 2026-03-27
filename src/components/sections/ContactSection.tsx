@@ -9,7 +9,7 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="py-32 text-center max-w-2xl mx-auto flex flex-col items-center"
+      className="pt-32 pb-16 text-center max-w-2xl mx-auto flex flex-col items-center"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}

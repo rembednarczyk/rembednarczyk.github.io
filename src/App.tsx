@@ -62,7 +62,7 @@ export default function App() {
           id="main-content"
           itemScope
           itemType="https://schema.org/Person"
-          className="relative z-10 max-w-6xl mx-auto px-6 pt-24 pb-20"
+          className="relative z-10 max-w-6xl mx-auto px-6 pt-24 pb-8"
         >
           <HeroSection />
           <ExpertiseSection />
