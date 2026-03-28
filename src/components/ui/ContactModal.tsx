@@ -67,12 +67,10 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
           setTimeout(() => setStatus("idle"), 300);
         }, 3000);
       } else {
-        console.error("Form submission error:", result);
         setStatus("error");
         setTimeout(() => setStatus("idle"), 3000);
       }
-    } catch (error) {
-      console.error("Form submission failed:", error);
+    } catch {
       setStatus("error");
       setTimeout(() => setStatus("idle"), 3000);
     }
