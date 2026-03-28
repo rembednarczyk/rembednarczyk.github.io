@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Mail, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "./Button";
@@ -77,7 +78,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
     }
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
@@ -193,6 +194,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
