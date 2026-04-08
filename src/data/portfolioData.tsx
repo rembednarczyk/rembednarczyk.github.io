@@ -381,7 +381,16 @@ export const keyProjectsData: KeyProject[] = [
     desc: "Participated as a jury member in a Sii TestingLab research initiative aimed at evaluating selected software testing solutions. Contributed to defining the study scope, designing the testing scenarios, and establishing evaluation criteria. Performed code reviews as part of the technical assessment and co-developed the final evaluation results and report.",
     tags: ["Code Review", "AI-driven testing", "Quality Engineering"],
     mainIcon: <Code2 size={32} />,
-    links: [{ url: "#", icon: <Lightbulb size={20} /> }],
+        links: [
+      {
+        url: "https://sii.pl/en/news-feed/ai-in-software-testing-sii-poland-publishes-a-breakthrough-testing-lab-ai-edition-report/",
+        icon: <Lightbulb size={20} />,
+      },
+      {
+        url: "https://sii.pl/blog/en/sii-testing-lab-study-exploring-the-ai-boom-in-test-automation/",
+        icon: <Globe size={20} />,
+      },
+    ],
   },
   {
     title: "Polish Testing Board (SJSI) Vice-President",
