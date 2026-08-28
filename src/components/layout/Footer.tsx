@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { PrivacyPolicyModal } from "../ui/PrivacyPolicyModal";
+import { CookieConsent } from "../ui/CookieConsent";
+import { useCookieConsent } from "../../hooks/useCookieConsent";
 
 export function Footer() {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const { consent, accept, decline, reset } = useCookieConsent();
 
   return (
     <footer className="relative z-10 pt-8 pb-24 sm:pb-12 border-t border-white/10">
@@ -23,7 +26,17 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <PrivacyPolicyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+      <PrivacyPolicyModal
+        isOpen={isPrivacyOpen}
+        onClose={() => setIsPrivacyOpen(false)}
+        onChangeConsent={consent === "unset" ? undefined : reset}
+      />
+      <CookieConsent
+        isVisible={consent === "unset"}
+        onAccept={accept}
+        onDecline={decline}
+        onOpenPolicy={() => setIsPrivacyOpen(true)}
+      />
     </footer>
   );
 }
