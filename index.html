@@ -5,16 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="msvalidate.01" content="4073A84C94A6264F5270B59500AB18EA" />
 
-    <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) with Consent Mode v2 -->
     <link rel="preconnect" href="https://www.googletagmanager.com" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJPCFFZWSB"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
+      // Deny every storage type up front. This must run before gtag.js
+      // loads, otherwise the tag writes cookies before consent is known.
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'denied',
+        personalization_storage: 'denied',
+        security_storage: 'granted',
+        wait_for_update: 500
+      });
+
+      // Re-apply an earlier opt-in before the first pageview is sent.
+      try {
+        if (localStorage.getItem('cookie-consent') === 'granted') {
+          gtag('consent', 'update', { analytics_storage: 'granted' });
+        }
+      } catch (e) {
+        // Site data blocked by the browser: stay denied.
+      }
+
+      gtag('js', new Date());
       gtag('config', 'G-ZJPCFFZWSB');
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJPCFFZWSB"></script>
 
     <!-- Primary Meta Tags -->
     <title>
