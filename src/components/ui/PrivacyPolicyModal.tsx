@@ -7,9 +7,15 @@ import { cvData } from "../../data/portfolioData";
 export interface PrivacyPolicyModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /**
+   * Clears the stored analytics choice and brings the consent banner back.
+   * Omitted while no choice has been made yet, since there is nothing to
+   * withdraw.
+   */
+  onChangeConsent?: () => void;
 }
 
-export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps) {
+export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: PrivacyPolicyModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // Handle ESC key and body scroll lock
@@ -134,8 +140,25 @@ export function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyModalProps)
               <section className="space-y-3">
                 <h3 className="text-lg font-semibold text-white">4. Cookies and Analytics</h3>
                 <p>
-                  This website does not use any intrusive tracking cookies. If any analytics tools (like Google Analytics or Google Tag Manager) are implemented to monitor basic website traffic and performance, they are configured to anonymize IP addresses and do not collect personally identifiable information (PII).
+                  This website uses <strong className="text-slate-200">Google Analytics 4</strong> to measure basic traffic and see which parts of the portfolio get read. It does not use advertising, remarketing or cross-site tracking cookies.
                 </p>
+                <p>
+                  Analytics runs on <strong className="text-slate-200">Google Consent Mode v2</strong> with every storage type denied by default. No analytics cookies are written and no measurement data is collected until you explicitly accept via the consent banner. Declining is a fully working state &ndash; the site behaves identically either way. Google Analytics 4 does not log full IP addresses, and no personally identifiable information is collected through it.
+                </p>
+                <p>
+                  Your choice is stored locally in your own browser under the key <code className="text-cyan-400 font-mono text-xs">cookie-consent</code>. It never leaves your device.
+                </p>
+                {onChangeConsent && (
+                  <p>
+                    <button
+                      type="button"
+                      onClick={onChangeConsent}
+                      className="text-cyan-400 underline underline-offset-2 hover:text-cyan-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-sm"
+                    >
+                      Change or withdraw your analytics choice
+                    </button>
+                  </p>
+                )}
               </section>
 
               <section className="space-y-3">
