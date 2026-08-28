@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Mail, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "./Button";
+import { useModalA11y } from "../../hooks/useModalA11y";
 
 export interface ContactModalProps {
   isOpen: boolean;
@@ -12,25 +13,28 @@ export interface ContactModalProps {
 export function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // Handle ESC key and body scroll lock
+  useModalA11y({
+    isOpen,
+    onClose,
+    containerRef: dialogRef,
+    initialFocusRef: firstInputRef,
+  });
+
+  /** Tracked so pending status transitions cannot fire after unmount. */
+  const schedule = (fn: () => void, delay: number) => {
+    timeoutsRef.current.push(setTimeout(fn, delay));
+  };
+
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    
-    if (isOpen) {
-      window.addEventListener("keydown", handleEsc);
-      document.body.style.overflow = "hidden";
-      // Focus the first input when modal opens for accessibility
-      setTimeout(() => firstInputRef.current?.focus(), 100);
-    }
-    
+    const timeouts = timeoutsRef;
     return () => {
-      window.removeEventListener("keydown", handleEsc);
-      document.body.style.overflow = "unset";
+      timeouts.current.forEach(clearTimeout);
+      timeouts.current = [];
     };
-  }, [isOpen, onClose]);
+  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -61,18 +65,18 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
       if (result.success) {
         setStatus("success");
-        setTimeout(() => {
+        schedule(() => {
           onClose();
           // Reset state after exit animation completes
-          setTimeout(() => setStatus("idle"), 300);
+          schedule(() => setStatus("idle"), 300);
         }, 3000);
       } else {
         setStatus("error");
-        setTimeout(() => setStatus("idle"), 3000);
+        schedule(() => setStatus("idle"), 3000);
       }
     } catch {
       setStatus("error");
-      setTimeout(() => setStatus("idle"), 3000);
+      schedule(() => setStatus("idle"), 3000);
     }
   };
 
@@ -95,6 +99,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="contact-modal-title"

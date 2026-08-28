@@ -131,11 +131,13 @@ export const CVTemplate = () => {
                   {job.desc}
                 </p>
               )}
-              <ul className={`list-disc list-outside ml-4 text-sm text-slate-700 space-y-1 ${job.projects ? 'mb-3' : ''}`}>
-                {job.bullets.map((bullet, bulletIdx) => (
-                  <li key={bulletIdx}>{bullet}</li>
-                ))}
-              </ul>
+              {job.bullets && (
+                <ul className={`list-disc list-outside ml-4 text-sm text-slate-700 space-y-1 ${job.projects ? 'mb-3' : ''}`}>
+                  {job.bullets.map((bullet, bulletIdx) => (
+                    <li key={bulletIdx}>{bullet}</li>
+                  ))}
+                </ul>
+              )}
 
               {job.projects && job.projects.map((project, projectIdx) => (
                 <div key={projectIdx} className="ml-4 print:break-inside-avoid mt-3">
