@@ -7,6 +7,16 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
 import importPlugin from 'eslint-plugin-import';
 
+/**
+ * Flat config replaces rule options rather than merging them, so any
+ * override that sets `no-restricted-syntax` must repeat this entry or it
+ * silently loses the layout-thrashing protection for those files.
+ */
+const noLayoutAnimation = {
+  selector: "JSXAttribute[name.name='animate'] > JSXExpressionContainer > ObjectExpression > Property[key.name=/^(margin|padding|width|height|top|left|right|bottom)$/]",
+  message: "Do not animate layout properties (margin, padding, width, etc.) as it causes Layout Thrashing. Use transform (x, y, scale) or opacity instead."
+};
+
 export default tseslint.config(
   { ignores: ['dist', 'storybook-static'] },
   {
@@ -19,7 +29,7 @@ export default tseslint.config(
     ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       globals: globals.browser,
     },
     plugins: {
@@ -44,13 +54,7 @@ export default tseslint.config(
       
       // 2. Styling (UI/UX)
       // Prevent Layout Thrashing by forbidding margin/padding/width animations in Framer Motion
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: "JSXAttribute[name.name='animate'] > JSXExpressionContainer > ObjectExpression > Property[key.name=/^(margin|padding|width|height|top|left|right|bottom)$/]",
-          message: "Do not animate layout properties (margin, padding, width, etc.) as it causes Layout Thrashing. Use transform (x, y, scale) or opacity instead."
-        }
-      ]
+      'no-restricted-syntax': ['error', noLayoutAnimation]
     },
     settings: {
       react: {
@@ -85,6 +89,7 @@ export default tseslint.config(
     rules: {
       'no-restricted-syntax': [
         'error',
+        noLayoutAnimation,
         {
           selector: "JSXAttribute[name.name='loading'][value.value='lazy']",
           message: "Do not use loading=\"lazy\" on above-the-fold images (HeroSection). Use fetchpriority=\"high\" instead."
