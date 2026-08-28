@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Shield } from "lucide-react";
 import { cvData } from "../../data/portfolioData";
+import { useModalA11y } from "../../hooks/useModalA11y";
 
 export interface PrivacyPolicyModalProps {
   isOpen: boolean;
@@ -17,25 +18,14 @@ export interface PrivacyPolicyModalProps {
 
 export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: PrivacyPolicyModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Handle ESC key and body scroll lock
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    
-    if (isOpen) {
-      window.addEventListener("keydown", handleEsc);
-      document.body.style.overflow = "hidden";
-      // Focus the close button when modal opens for accessibility
-      setTimeout(() => closeButtonRef.current?.focus(), 100);
-    }
-    
-    return () => {
-      window.removeEventListener("keydown", handleEsc);
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen, onClose]);
+  useModalA11y({
+    isOpen,
+    onClose,
+    containerRef: dialogRef,
+    initialFocusRef: closeButtonRef,
+  });
 
   return createPortal(
     <AnimatePresence>
@@ -56,6 +46,7 @@ export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: Privacy
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="privacy-modal-title"
