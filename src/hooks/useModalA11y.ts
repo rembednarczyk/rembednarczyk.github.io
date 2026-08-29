@@ -1,4 +1,5 @@
 import { RefObject, useEffect, useRef } from "react";
+import { useScrollLock } from "./useScrollLock";
 
 /** Elements that can receive keyboard focus inside a dialog. */
 const FOCUSABLE_SELECTOR = [
@@ -20,10 +21,13 @@ export interface UseModalA11yOptions {
 }
 
 /**
- * Dialog keyboard and focus behaviour: Escape to close, a focus trap so
- * Tab cannot reach the page behind, focus moved in on open and returned
- * to the trigger on close, and a body scroll lock that restores whatever
- * overflow was there before.
+ * Dialog keyboard and focus behaviour: Escape to close, a focus trap so Tab
+ * cannot reach the page behind, and focus moved in on open then returned to
+ * the trigger on close.
+ *
+ * Holding the page still is not focus behaviour and lives in useScrollLock,
+ * which counts its holders so overlapping overlays cannot release each
+ * other's lock.
  *
  * `aria-modal="true"` only tells assistive technology that the rest of
  * the page is inert -- it does not stop Tab from walking out of the
@@ -47,7 +51,6 @@ export function useModalA11y({
 
     const container = containerRef.current;
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    const previousOverflow = document.body.style.overflow;
 
     const focusable = () =>
       Array.from(
@@ -95,13 +98,13 @@ export function useModalA11y({
     });
 
     document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
 
     return () => {
       cancelAnimationFrame(frame);
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
       previouslyFocused?.focus();
     };
   }, [isOpen, containerRef, initialFocusRef]);
+
+  useScrollLock(isOpen);
 }
