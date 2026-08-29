@@ -40,7 +40,7 @@ export function ContactSection() {
           </button>
 
           <div className="flex flex-col items-center gap-4 print:hidden">
-            <p className="text-sm text-slate-500 font-medium">Prefer to keep a copy of my experience?</p>
+            <p className="text-sm text-slate-400 font-medium">Prefer to keep a copy of my experience?</p>
             <button
               onClick={() => window.print()}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-transparent border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white active:scale-95 font-semibold rounded-lg transition-all w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"

@@ -13,7 +13,7 @@ export const ExperienceItem: React.FC<{ job: Job }> = ({ job }) => {
             {job.company}
           </div>
         </div>
-        <div className="text-slate-500 font-mono text-sm mt-2 md:mt-0">
+        <div className="text-slate-400 font-mono text-sm mt-2 md:mt-0">
           <time>{job.period}</time>
         </div>
       </div>
@@ -66,7 +66,7 @@ const ProjectItem: React.FC<{ project: Project }> = ({ project }) => {
         <h4 className="text-xl font-bold text-white group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">
           {project.role}
         </h4>
-        <div className="text-slate-500 font-mono text-sm mt-1 md:mt-0">
+        <div className="text-slate-400 font-mono text-sm mt-1 md:mt-0">
           <time>{project.period}</time>
         </div>
       </div>
