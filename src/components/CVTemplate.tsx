@@ -1,7 +1,7 @@
-import QRCode from "react-qr-code";
 import { Mail, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm, BadgeCheck, BrainCircuit, BookOpen } from "lucide-react";
 import { LinkedinIcon } from "./ui/BrandIcon";
 import { fullCertificationsList, cvData, experienceData } from "../data/portfolioData";
+import { LINKEDIN_QR } from "../data/linkedinQr";
 
 export const CVTemplate = () => {
   return (
@@ -75,7 +75,19 @@ export const CVTemplate = () => {
         </div>
         </div>
         <div className="flex flex-col items-center opacity-75 shrink-0 ml-6 mt-1">
-          <QRCode value={`https://${cvData.header.linkedin}`} size={72} className="mb-1.5" aria-label="QR Code to LinkedIn profile" />
+          <svg
+            width={72}
+            height={72}
+            viewBox={`0 0 ${LINKEDIN_QR.size} ${LINKEDIN_QR.size}`}
+            xmlns="http://www.w3.org/2000/svg"
+            className="mb-1.5"
+            role="img"
+            aria-label="QR Code to LinkedIn profile"
+          >
+            {/* Printed on paper of unknown colour, so the quiet zone is drawn rather than assumed. */}
+            <rect width={LINKEDIN_QR.size} height={LINKEDIN_QR.size} fill="#FFFFFF" />
+            <path d={LINKEDIN_QR.path} fill="#000000" shapeRendering="crispEdges" />
+          </svg>
           <span className="text-[9px] text-slate-500 uppercase tracking-wider font-semibold">Scan for LinkedIn</span>
         </div>
       </header>
