@@ -9,6 +9,7 @@ import {
   skillsData,
   yearsOfExperience,
 } from "./data/portfolioData";
+import { NAV_ITEMS } from "./data/navigation";
 
 // The canvas background needs APIs jsdom does not provide, and it renders
 // nothing meaningful to assert on.
@@ -16,16 +17,12 @@ vi.mock("./components/ParticleBackground", () => ({
   ParticleBackground: () => null,
 }));
 
-/** Every id the navbar scrolls to, with the label that triggers it. */
-const NAV_TARGETS = [
-  ["About", "about"],
-  ["Experience", "experience"],
-  ["Skills", "skills"],
-  ["Certifications", "certifications"],
-  ["Initiatives", "projects"],
-  ["Community", "community"],
-  ["Contact", "contact"],
-] as const;
+/**
+ * Read from the shared model rather than restated here. This list used to be
+ * a fourth hand-maintained copy of the navigation, alongside the two in the
+ * navbar and the roll-up chain in useActiveSection.
+ */
+const NAV_TARGETS = NAV_ITEMS.map((item) => [item.label, item.id] as const);
 
 // jsdom does not implement scrollIntoView, so it has to be supplied
 // before it can be observed.
@@ -62,6 +59,20 @@ describe("navigation targets", () => {
     );
 
     NAV_TARGETS.forEach(([, id]) => expect(spyable).toContain(id));
+  });
+
+  // A sub-section named in `covers` that no longer exists breaks the roll-up
+  // in silence: the parent link simply stops lighting up while the reader is
+  // inside it, and nothing else changes.
+  it("rolls up only sub-sections that are on the page", () => {
+    const { container } = render(<App />);
+    const onPage = Array.from(container.querySelectorAll("section[id]")).map(
+      (s) => s.id,
+    );
+
+    const covered = NAV_ITEMS.flatMap((item) => item.covers ?? []);
+    expect(covered.length).toBeGreaterThan(0);
+    covered.forEach((id) => expect(onPage).toContain(id));
   });
 });
 

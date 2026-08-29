@@ -1,6 +1,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { useActiveSection } from "./useActiveSection";
+import { SECTION_TO_NAV_ENTRY } from "../data/navigation";
 
 /**
  * jsdom performs no layout, so section positions and page height have to
@@ -24,7 +25,7 @@ function renderSections(sections: { id: string; top: number }[], scrollY = 0) {
   });
   Object.defineProperty(window, "scrollY", { value: scrollY, configurable: true });
 
-  return renderHook(() => useActiveSection());
+  return renderHook(() => useActiveSection(SECTION_TO_NAV_ENTRY));
 }
 
 afterEach(() => {
@@ -80,7 +81,7 @@ describe("useActiveSection", () => {
     });
     Object.defineProperty(window, "scrollY", { value: 1000, configurable: true });
 
-    const { result } = renderHook(() => useActiveSection());
+    const { result } = renderHook(() => useActiveSection(SECTION_TO_NAV_ENTRY));
     await waitFor(() => expect(result.current).toBe("contact"));
   });
 });
