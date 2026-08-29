@@ -473,10 +473,20 @@ export const keyProjectsData: KeyProject[] = [
   },
 ];
 
+/**
+ * The screen list and `fullCertificationsList` below are deliberately not
+ * the same, and should not be merged.
+ *
+ * The print CV is tailored so a reader is not flooded, so it carries the
+ * full official certificate names and the complete training history. This
+ * list is the shorter, readable summary the page shows. An earlier review
+ * read the difference as drift and proposed unifying them; it is a choice,
+ * recorded here so the next reader does not undo it.
+ */
 export const certificationsData = [
   {
     title: "Professional Certifications",
-    desc: "ISTQB CTAL Test Manager\nISTQB CTAL Technical Test Analyst\nISTQB CTFL\nISTQB Accredited Trainer (CTAL + CTFL + Agile)\nCertified SAFe® 6 Agilist\nAgilePM® Foundation",
+    desc: "ISTQB CTAL Test Manager\nISTQB CTAL Technical Test Analyst\nISTQB CTFL Agile Tester\nISTQB CTFL\nISTQB Accredited Trainer (all above)\nCertified SAFe® 6 Agilist\nAgilePM® Foundation",
     icon: <Award size={24} className="text-cyan-400" />,
   },
   {
