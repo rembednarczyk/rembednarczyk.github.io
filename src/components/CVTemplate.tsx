@@ -74,13 +74,18 @@ export const CVTemplate = () => {
           </div>
         </div>
         </div>
-        <div className="flex flex-col items-center opacity-75 shrink-0 ml-6 mt-1">
+        {/*
+          The opacity used to sit here, on the whole block, which dropped the
+          label below it to 2.96:1 on white. A QR code survives being faded;
+          the words under it do not.
+        */}
+        <div className="flex flex-col items-center shrink-0 ml-6 mt-1">
           <svg
             width={72}
             height={72}
             viewBox={`0 0 ${LINKEDIN_QR.size} ${LINKEDIN_QR.size}`}
             xmlns="http://www.w3.org/2000/svg"
-            className="mb-1.5"
+            className="mb-1.5 opacity-75"
             role="img"
             aria-label="QR Code to LinkedIn profile"
           >
@@ -227,7 +232,7 @@ export const CVTemplate = () => {
                       <div className="font-bold text-slate-800 leading-snug">{cert.name}</div>
                       <div className="text-slate-600 text-[13px] mt-0.5">
                         {cert.issuer}
-                        {cert.id && <span className="text-slate-400 ml-2">ID: {cert.id}</span>}
+                        {cert.id && <span className="text-slate-500 ml-2">ID: {cert.id}</span>}
                       </div>
                     </div>
                     <div className="text-sm font-medium text-slate-500 whitespace-nowrap shrink-0 text-right">

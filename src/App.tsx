@@ -1,5 +1,6 @@
 import { LazyMotion, domAnimation } from "motion/react";
 import { useAutoPrint } from "./hooks/useAutoPrint";
+import { isKnownPath } from "./lib/routing";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { HeroSection } from "./components/sections/HeroSection";
@@ -32,29 +33,32 @@ import { ContactSection } from "./components/sections/ContactSection";
  * transition, whileInView and viewport, and no drag, layout or gesture
  * props at all. domMax exists for those.
  */
+/** Chooses between the page and the 404 view. */
 export default function App() {
   return (
     <LazyMotion features={domAnimation} strict>
-      <Page />
+      {isKnownPath(window.location.pathname) ? (
+        <Portfolio />
+      ) : (
+        <div className="min-h-screen bg-[#020617] flex items-center justify-center text-cyan-500">
+          <NotFound />
+        </div>
+      )}
     </LazyMotion>
   );
 }
 
-function Page() {
-  // Basic SPA routing for 404
-  // If the path is not the root path, show the 404 page
-  // We also ignore hash changes since those are used for section navigation
-  const isNotFound = window.location.pathname !== "/" && window.location.pathname !== "/index.html";
-
+/**
+ * The page itself, with the decision of whether to show it left to App.
+ *
+ * Exported so it can be mounted without that decision. Storybook serves its
+ * preview from /iframe.html, so a story rendering App gets the 404 view: the
+ * page-level accessibility scan was reading an error screen and reporting it
+ * clean, which is how the first version of that scan passed.
+ */
+export function Portfolio() {
+  // Only the page can be printed; there is nothing on a 404 worth paper.
   useAutoPrint();
-
-  if (isNotFound) {
-    return (
-      <div className="min-h-screen bg-[#020617] flex items-center justify-center text-cyan-500">
-        <NotFound />
-      </div>
-    );
-  }
 
   return (
     <div className="relative min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-cyan-500/30 overflow-x-hidden print:overflow-visible print:bg-white">
