@@ -22,7 +22,7 @@ export default tseslint.config(
   {
     extends: [
       js.configs.recommended,
-      ...tseslint.configs.recommended,
+      ...tseslint.configs.recommendedTypeChecked,
       jsxA11y.flatConfigs.recommended,
       react.configs.flat.recommended,
       react.configs.flat['jsx-runtime'],
@@ -31,6 +31,13 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 2022,
       globals: globals.browser,
+      // Type information turns on the rules tsc cannot express on its own:
+      // floating promises, promises passed where void is expected, and
+      // values reaching a template literal that have no useful string form.
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
@@ -65,6 +72,16 @@ export default tseslint.config(
         node: true,
       },
     },
+  },
+  {
+    // Type-aware linting stays on for application code. In test scaffolding it
+    // reports third-party typing rather than defects: jest-axe's `axe()` is
+    // typed `any`, and the assertion library declares matchers as
+    // promise-returning although its synchronous ones return nothing. The
+    // assertions themselves are demonstrably effective; the Storybook a11y
+    // suite has failed the build on a real contrast violation.
+    files: ['**/*.stories.tsx', '**/*.test.{ts,tsx}', 'tests/**/*.ts'],
+    extends: [tseslint.configs.disableTypeChecked],
   },
   {
     files: ['src/components/ui/**/*.{ts,tsx}'],

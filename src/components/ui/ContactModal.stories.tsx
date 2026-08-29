@@ -204,3 +204,47 @@ export const MalformedResponse: Story = {
     }
   },
 };
+
+/**
+ * Pins the request body. The fields were previously spread from the raw
+ * FormData entries; they are now read and coerced one by one, so what
+ * actually leaves the browser is worth asserting rather than assuming.
+ */
+export const SendsTheExpectedPayload: Story = {
+  args: { isOpen: true, onClose: () => {} },
+  render: (args) => <ModalWrapper {...args} />,
+  play: async () => {
+    const original = window.fetch;
+    let sent: Record<string, unknown> | null = null;
+
+    globalThis.fetch = (_url, init) => {
+      sent = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      return Promise.resolve(
+        new Response('{"success":true}', {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+    };
+
+    try {
+      const dialog = await openDialog();
+      await fillAndSubmit(dialog);
+
+      // If the stub was bypassed this never appears, which distinguishes a
+      // broken stub from a wrong payload.
+      await waitFor(() => expect(dialog.getByText('Message Sent!')).toBeInTheDocument());
+
+      expect(sent).toMatchObject({
+        name: 'Ada',
+        email: 'ada@example.com',
+        message: 'Hello',
+        botcheck: '',
+        subject: 'New message from Ada (Portfolio)',
+        from_name: 'Portfolio Contact Form',
+      });
+    } finally {
+      window.fetch = original;
+    }
+  },
+};

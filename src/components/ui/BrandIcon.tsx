@@ -9,7 +9,14 @@ import { SVGProps } from "react";
  * The props mirror the lucide call signature (`size`, `className`) so call
  * sites read the same as the icons around them.
  */
-export interface BrandIconProps extends Omit<SVGProps<SVGSVGElement>, "children"> {
+/**
+ * `path` is omitted deliberately. React's SVGAttributes declares it as a real
+ * SVG attribute, so without this a caller could pass `path` and the spread
+ * below would replace the brand mark with it, silently rendering something
+ * other than the LinkedIn or GitHub logo.
+ */
+export interface BrandIconProps
+  extends Omit<SVGProps<SVGSVGElement>, "children" | "path"> {
   size?: number;
 }
 

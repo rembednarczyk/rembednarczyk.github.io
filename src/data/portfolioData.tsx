@@ -21,9 +21,14 @@ import {
   BrainCircuit,
 } from "lucide-react";
 import {
-  Metric,
   SkillCategory,
   Award as AwardType,
+  AboutData,
+  Certification,
+  CredentialGroup,
+  CvData,
+  Expertise,
+  HeroData,
   Job,
   CommunityItem,
   BrandItem,
@@ -37,12 +42,12 @@ import { getYearsOfExperience } from "../utils/domain";
  * `period` display string, which is formatted for reading and would break
  * the moment its wording changes.
  */
-export const CAREER_START = new Date("2014-01-01T00:00:00Z");
+export const CAREER_START: Date = new Date("2014-01-01T00:00:00Z");
 
 /** Recomputed on every page load, so it never goes stale. */
-export const yearsOfExperience = getYearsOfExperience(CAREER_START);
+export const yearsOfExperience: number = getYearsOfExperience(CAREER_START);
 
-export const heroData = {
+export const heroData: HeroData = {
   name: "Remigiusz Bednarczyk.",
   subtitle: "Quality engineering for high-risk systems.",
   description: `Quality engineering professional with ${yearsOfExperience}+ years of experience in software testing and test leadership. I specialize in test management, quality engineering practices, and building testing processes for regulated environments such as pharmaceutical and GxP systems.`,
@@ -51,7 +56,7 @@ export const heroData = {
     { value: "500+", label: "Testers Trained" },
     { value: "300+", label: "Technical Assessments Conducted" },
     { value: "10+", label: "GxP Projects Delivered" },
-  ] as Metric[],
+  ],
   tags: [
     "Test Management",
     "Quality Engineering",
@@ -63,7 +68,7 @@ export const heroData = {
   ],
 };
 
-export const expertiseData = [
+export const expertiseData: Expertise[] = [
   {
     title: "Quality Engineering Leadership",
     desc: "Building and scaling testing processes for complex and regulated environments.",
@@ -96,7 +101,7 @@ export const expertiseData = [
   },
 ];
 
-export const aboutData = {
+export const aboutData: AboutData = {
   paragraphs: [
     "My journey in IT started over a decade ago. Today, my focus lies at the intersection of quality engineering, strategic risk management, and organizational transformation. I specialize in building robust testing processes that ensure the highest quality of software delivery for high-risk and regulated systems.",
     "I am deeply passionate about process optimization and cultivating a culture of quality within engineering teams. I believe that effective testing is not just a phase to find defects, but a continuous practice of building confidence in the product and the critical systems people depend on daily.",
@@ -107,7 +112,7 @@ export const aboutData = {
     "https://remigiuszbednarczyk.com/img/Remi_original.webp",
 };
 
-export const thinkingQuote = "AI-first engineering shifts value from writing code to making decisions.";
+export const thinkingQuote: string = "AI-first engineering shifts value from writing code to making decisions.";
 
 export const skillsData: SkillCategory[] = [
   {
@@ -158,7 +163,7 @@ export const skillsData: SkillCategory[] = [
   },
 ];
 
-export const achievementsData = [
+export const achievementsData: string[] = [
   "Delivered digitalised testing and documentation process for regulated IRT workflows",
   "Led testing across multiple concurrent GxP pharmaceutical projects",
   "Trained over 500 software testers in QA practices and ISTQB preparation",
@@ -483,7 +488,7 @@ export const keyProjectsData: KeyProject[] = [
  * read the difference as drift and proposed unifying them; it is a choice,
  * recorded here so the next reader does not undo it.
  */
-export const certificationsData = [
+export const certificationsData: Certification[] = [
   {
     title: "Professional Certifications",
     desc: "ISTQB CTAL Test Manager\nISTQB CTAL Technical Test Analyst\nISTQB CTFL Agile Tester\nISTQB CTFL\nISTQB Accredited Trainer (all above)\nCertified SAFe® 6 Agilist\nAgilePM® Foundation",
@@ -501,7 +506,7 @@ export const certificationsData = [
   },
 ];
 
-export const cvData = {
+export const cvData: CvData = {
   header: {
     name: "Remigiusz Bednarczyk",
     title: "Test Manager",
@@ -564,7 +569,7 @@ export const cvData = {
   ],
 };
 
-export const fullCertificationsList = [
+export const fullCertificationsList: CredentialGroup[] = [
   {
     category: "Core certifications",
     items: [
@@ -615,7 +620,7 @@ export const fullCertificationsList = [
     category: "AI & Emerging Tech Certifications",
     items: [
       {
-        name: "Ai_devs 3 Agents",
+        name: "AI_devs 3 Agents",
         issuer: "AI_devs",
         date: "Dec 2024",
         id: "88fd734b-0390-4c14-81ae-a69e400f1dd1",

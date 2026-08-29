@@ -13,7 +13,7 @@ export interface PrivacyPolicyModalProps {
    * Omitted while no choice has been made yet, since there is nothing to
    * withdraw.
    */
-  onChangeConsent?: () => void;
+  onChangeConsent?: (() => void) | undefined;
 }
 
 export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: PrivacyPolicyModalProps) {
