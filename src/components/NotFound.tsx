@@ -2,6 +2,15 @@ import { m, useReducedMotion } from "motion/react";
 import { Terminal } from "lucide-react";
 import { ParticleBackground } from "./ParticleBackground";
 import { useEffect, useState } from "react";
+import { cvData } from "../data/portfolioData";
+
+/**
+ * The tab, the history entry and the bookmark all read this, and a screen
+ * reader announces it on load. Left alone it says the portfolio's own
+ * title, which tells a visitor who followed a broken link that they
+ * arrived somewhere that works.
+ */
+export const NOT_FOUND_TITLE = `404 - Page not found | ${cvData.header.name}`;
 
 const lines = [
   { text: "Resource not found", delay: 500 },
@@ -9,6 +18,13 @@ const lines = [
   { text: "Recovery action required", delay: 3000 },
   { text: "Redirect to a stable system state.", delay: 4500, isRecommendation: true },
 ];
+
+/** Milliseconds per character while a line types itself out. */
+const TYPING_SPEED = 40;
+/** Pause on a finished line before the next one starts. */
+const LINE_PAUSE = 500;
+/** Wait before a line after the first begins. */
+const NEXT_LINE_DELAY = 200;
 
 const TerminalWindow = () => {
   const shouldReduceMotion = useReducedMotion();
@@ -22,7 +38,11 @@ const TerminalWindow = () => {
 
     const currentLine = lines[visibleLines];
     let i = 0;
-    let typingInterval: NodeJS.Timeout;
+    // setInterval returns a number in the browser and a Timeout in Node.
+    // The declared type was the Node one, in a component that only ever
+    // runs in a browser.
+    let typingInterval: ReturnType<typeof setInterval>;
+    let pause: ReturnType<typeof setTimeout>;
 
     const startTyping = () => {
       typingInterval = setInterval(() => {
@@ -30,18 +50,23 @@ const TerminalWindow = () => {
         i++;
         if (i >= currentLine.text.length) {
           clearInterval(typingInterval);
-          setTimeout(() => {
+          // Tracked, so it cannot advance a component that has gone.
+          pause = setTimeout(() => {
             setVisibleLines((v) => v + 1);
             setCurrentText("");
-          }, 500); // Pause before next line
+          }, LINE_PAUSE);
         }
-      }, 40); // Typing speed
+      }, TYPING_SPEED);
     };
 
-    const initialDelay = setTimeout(startTyping, visibleLines === 0 ? currentLine.delay : 200);
+    const initialDelay = setTimeout(
+      startTyping,
+      visibleLines === 0 ? currentLine.delay : NEXT_LINE_DELAY,
+    );
 
     return () => {
       clearTimeout(initialDelay);
+      clearTimeout(pause);
       clearInterval(typingInterval);
     };
   }, [visibleLines, shouldReduceMotion]);
@@ -135,6 +160,10 @@ const TerminalWindow = () => {
 export function NotFound() {
   const shouldReduceMotion = useReducedMotion();
 
+  useEffect(() => {
+    document.title = NOT_FOUND_TITLE;
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-cyan-500/30 overflow-hidden flex items-center justify-center">
       <ParticleBackground />
@@ -155,10 +184,20 @@ export function NotFound() {
 
           <TerminalWindow />
 
+          {/*
+            The way out arrives with the page rather than after it.
+
+            This used to fade in on a 6.5s delay, timed to the terminal
+            finishing, which left the only escape from an error page behind
+            six and a half seconds of decoration. It was also focusable
+            throughout: a keyboard visitor could tab straight to a control
+            that rendered at zero opacity, focus ring included, so the focus
+            indicator was invisible while the focus was real.
+          */}
           <m.div
             initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: shouldReduceMotion ? 0 : 6.5, duration: 0.8 }}
+            transition={{ delay: shouldReduceMotion ? 0 : 0.3, duration: 0.5 }}
             className="w-full flex justify-center sm:justify-start mt-4"
           >
             <a
