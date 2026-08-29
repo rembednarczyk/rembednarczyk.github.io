@@ -62,6 +62,21 @@ export default defineConfig(() => {
       structuredDataPlugin(),
       stampSitemapPlugin(),
     ],
+    build: {
+      /**
+       * Published, deliberately.
+       *
+       * Without maps every frame of a production stack reads
+       * `at bl (index-DeyIveWb.js:17:72594)`, which locates nothing: the
+       * error report says what broke and never where. The usual argument
+       * against publishing them is that they expose the source, and this
+       * source is already public in the repository the site is built from.
+       *
+       * They cost visitors nothing. A browser fetches a .map only when
+       * devtools are open, so the download is paid by whoever is debugging.
+       */
+      sourcemap: true,
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "."),
