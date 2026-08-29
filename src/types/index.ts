@@ -11,15 +11,20 @@ export interface SkillCategory {
   skills: string[];
 }
 
-export interface Award {
+/**
+ * How an award card is coloured. A name rather than the colours themselves:
+ * the data says which of the three an entry belongs to, and AwardCard
+ * decides what that looks like. The class strings used to sit in the data
+ * module, which is why it could not be read by anything but a component.
+ */
+export type AwardTone = "gold" | "cyan" | "purple";
+
+export interface AwardRecord {
   title: string;
   company: string;
   issued: string;
   desc: string;
-  icon: ReactNode;
-  borderClass: string;
-  bgClass: string;
-  textClass: string;
+  tone: AwardTone;
 }
 
 export interface Project {

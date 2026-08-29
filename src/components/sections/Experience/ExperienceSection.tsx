@@ -1,6 +1,6 @@
 import { m } from "motion/react";
 import { SectionHeading } from "../../ui/SectionHeading";
-import { experienceData } from "../../../data/portfolioData";
+import { experienceData } from "../../../data/portfolioFacts";
 import { ExperienceItem } from "./ExperienceItem";
 
 export function ExperienceSection() {

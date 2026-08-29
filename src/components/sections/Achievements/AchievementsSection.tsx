@@ -1,6 +1,6 @@
 import { m } from "motion/react";
 import { SectionHeading } from "../../ui/SectionHeading";
-import { achievementsData } from "../../../data/portfolioData";
+import { achievementsData } from "../../../data/portfolioFacts";
 import { AchievementItem } from "./AchievementItem";
 
 export function AchievementsSection() {

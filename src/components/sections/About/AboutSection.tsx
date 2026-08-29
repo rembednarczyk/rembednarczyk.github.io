@@ -1,6 +1,6 @@
 import { m } from "motion/react";
 import { SectionHeading } from "../../ui/SectionHeading";
-import { aboutData } from "../../../data/portfolioData";
+import { aboutData } from "../../../data/portfolioFacts";
 import { AboutImage } from "./AboutImage";
 
 export function AboutSection() {

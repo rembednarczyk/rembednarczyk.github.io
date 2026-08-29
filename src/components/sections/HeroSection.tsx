@@ -1,6 +1,6 @@
 import { m } from "motion/react";
 import { Terminal } from "lucide-react";
-import { heroData } from "../../data/portfolioData";
+import { heroData } from "../../data/portfolioFacts";
 import { useScrollToSection } from "../../hooks/useScrollToSection";
 
 export function HeroSection() {

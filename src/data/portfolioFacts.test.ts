@@ -18,7 +18,7 @@ async function heroAt(now: string) {
   vi.useFakeTimers();
   vi.setSystemTime(new Date(now));
   vi.resetModules();
-  return import("./portfolioData");
+  return import("./portfolioFacts");
 }
 
 describe("years of experience", () => {

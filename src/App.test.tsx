@@ -2,13 +2,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-import {
-  certificationsData,
-  experienceData,
-  keyProjectsData,
-  skillsData,
-  yearsOfExperience,
-} from "./data/portfolioData";
+import { certificationsData, keyProjectsData, skillsData } from "./data/portfolioData";
+import { experienceData, yearsOfExperience } from "./data/portfolioFacts";
 import { NAV_ITEMS } from "./data/navigation";
 
 // The canvas background needs APIs jsdom does not provide, and it renders

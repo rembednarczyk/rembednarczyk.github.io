@@ -1,6 +1,6 @@
 import { m } from "motion/react";
 import { Quote } from "lucide-react";
-import { thinkingQuote } from "../../data/portfolioData";
+import { thinkingQuote } from "../../data/portfolioFacts";
 
 export function ThinkingSection() {
   return (
