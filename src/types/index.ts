@@ -53,7 +53,12 @@ export interface BrandItem {
 export interface Certification {
   title: string;
   icon: ReactNode;
-  desc: string;
+  /**
+   * One entry per credential. This was a single newline-delimited string that
+   * the card split back apart, which meant a list was stored as display text:
+   * nothing could count it, compare it, or notice an entry going missing.
+   */
+  items: string[];
 }
 
 export interface Expertise {
