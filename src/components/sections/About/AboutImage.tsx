@@ -1,10 +1,19 @@
 import React from "react";
 
+/**
+ * Decorative portrait. It is deliberately not interactive: the earlier
+ * `cursor-pointer` and press-scale promised a click that no handler ever
+ * answered, and offered nothing at all to a keyboard user.
+ *
+ * The `group-active` colour reveal stays. It is not press feedback, it is
+ * the touch counterpart of the hover reveal, since `:hover` is unreliable
+ * on touch devices.
+ */
 export const AboutImage: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
   return (
-    <div className="relative group print:hidden cursor-pointer">
+    <div className="relative group print:hidden">
       <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl blur opacity-25 group-hover:opacity-50 group-active:opacity-50 transition duration-1000 group-hover:duration-200 group-active:duration-200"></div>
-      <div className="relative rounded-xl bg-[#0f172a] border border-white/10 overflow-hidden flex items-center justify-center group/img p-2 sm:p-4 group-active:scale-[0.98] transition-transform duration-300">
+      <div className="relative rounded-xl bg-[#0f172a] border border-white/10 overflow-hidden flex items-center justify-center group/img p-2 sm:p-4">
         <img
           itemProp="image"
           src={imageUrl}

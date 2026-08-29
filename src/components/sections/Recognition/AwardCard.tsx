@@ -31,7 +31,7 @@ export const AwardCard: React.FC<{ award: Award }> = ({ award }) => {
             className={`flex items-center gap-1.5 ${award.textClass} font-mono bg-white/5 px-2.5 py-1 rounded-full text-xs`}
           >
             <Terminal size={12} aria-hidden="true" />
-            <time>{award.issued}</time>
+            <time dateTime={award.issued}>{award.issued}</time>
           </div>
         </div>
 

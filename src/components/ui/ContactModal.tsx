@@ -10,8 +10,21 @@ export interface ContactModalProps {
   onClose: () => void;
 }
 
+/**
+ * Why the failure is split in two: a request the service rejected and a
+ * request that never arrived are different statements, and telling someone
+ * "something went wrong" when their connection dropped sends them looking
+ * in the wrong place. Only the second is worth retrying immediately.
+ */
+type FailureReason = "rejected" | "unreachable";
+
+/** Shared by every field, so the three inputs cannot drift apart. */
+const FIELD_CLASSES =
+  "w-full bg-slate-950/50 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all";
+
 export function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [failure, setFailure] = useState<FailureReason | null>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -51,8 +64,18 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
       from_name: "Portfolio Contact Form",
     };
 
+    // Set together in one place so the reason can never disagree with the
+    // status it explains.
+    const fail = (reason: FailureReason) => {
+      setFailure(reason);
+      setStatus("error");
+      schedule(() => setStatus("idle"), 3000);
+    };
+
+    let response: Response;
+
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,24 +83,42 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
         },
         body: JSON.stringify(payload),
       });
-
-      const result = await response.json();
-
-      if (result.success) {
-        setStatus("success");
-        schedule(() => {
-          onClose();
-          // Reset state after exit animation completes
-          schedule(() => setStatus("idle"), 300);
-        }, 3000);
-      } else {
-        setStatus("error");
-        schedule(() => setStatus("idle"), 3000);
-      }
     } catch {
-      setStatus("error");
-      schedule(() => setStatus("idle"), 3000);
+      // fetch only rejects when the request never completed.
+      fail("unreachable");
+      return;
     }
+
+    // An early exit so an error response is not parsed for a result it does
+    // not carry. The outcome matches what the checks below would reach
+    // anyway, so no test distinguishes this branch; it is here for clarity,
+    // not as a guard.
+    if (!response.ok) {
+      fail("rejected");
+      return;
+    }
+
+    let result: { success?: boolean };
+
+    try {
+      result = await response.json();
+    } catch {
+      fail("rejected");
+      return;
+    }
+
+    if (!result.success) {
+      fail("rejected");
+      return;
+    }
+
+    setFailure(null);
+    setStatus("success");
+    schedule(() => {
+      onClose();
+      // Reset state after exit animation completes
+      schedule(() => setStatus("idle"), 300);
+    }, 3000);
   };
 
   return createPortal(
@@ -144,7 +185,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       id="name"
                       name="name"
                       required
-                      className="w-full bg-slate-950/50 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
+                      className={FIELD_CLASSES}
                       placeholder="Your name"
                     />
                   </div>
@@ -156,7 +197,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       id="email"
                       name="email"
                       required
-                      className="w-full bg-slate-950/50 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
+                      className={FIELD_CLASSES}
                       placeholder="your@email.com"
                     />
                   </div>
@@ -168,13 +209,17 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       name="message"
                       required
                       rows={4}
-                      className="w-full bg-slate-950/50 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all resize-none"
+                      className={`${FIELD_CLASSES} resize-none`}
                       placeholder="Let’s talk testing"
                     />
                   </div>
 
                   {status === "error" && (
-                    <p className="text-red-400 text-sm" role="alert">Something went wrong. Please try again later.</p>
+                    <p className="text-red-400 text-sm" role="alert">
+                      {failure === "unreachable"
+                        ? "Could not reach the form service. Check your connection and try again."
+                        : "The message was not accepted. Please try again later, or reach me on LinkedIn."}
+                    </p>
                   )}
 
                   <Button 

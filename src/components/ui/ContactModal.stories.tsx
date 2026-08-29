@@ -118,3 +118,89 @@ export const EscapeRestoresFocus: Story = {
     await waitFor(() => expect(trigger).toHaveFocus());
   },
 };
+
+/**
+ * The two failure modes are different statements, so they are asserted
+ * separately. A stub stands in for the form service here; what is under
+ * test is how the component reads the response, not the service itself.
+ */
+const fillAndSubmit = async (dialog: ReturnType<typeof within>) => {
+  await userEvent.type(dialog.getByLabelText('Name'), 'Ada');
+  await userEvent.type(dialog.getByLabelText('Email'), 'ada@example.com');
+  await userEvent.type(dialog.getByLabelText('Message'), 'Hello');
+  await userEvent.click(dialog.getByRole('button', { name: /Send Message/ }));
+};
+
+const openDialog = async () =>
+  within(
+    await waitFor(() => {
+      const el = document.querySelector<HTMLElement>('[role="dialog"]');
+      if (!el) throw new Error('dialog not mounted');
+      return el;
+    }),
+  );
+
+/** The request never completes: the network is the problem, not the message. */
+export const UnreachableService: Story = {
+  args: { isOpen: true, onClose: () => {} },
+  render: (args) => <ModalWrapper {...args} />,
+  play: async () => {
+    const original = window.fetch;
+    window.fetch = () => Promise.reject(new TypeError('Failed to fetch'));
+
+    try {
+      const dialog = await openDialog();
+      await fillAndSubmit(dialog);
+      await waitFor(() =>
+        expect(dialog.getByRole('alert')).toHaveTextContent(/Could not reach the form service/),
+      );
+    } finally {
+      window.fetch = original;
+    }
+  },
+};
+
+/** The service answered and refused. Retrying the connection will not help. */
+export const RejectedByService: Story = {
+  args: { isOpen: true, onClose: () => {} },
+  render: (args) => <ModalWrapper {...args} />,
+  play: async () => {
+    const original = window.fetch;
+    window.fetch = () =>
+      Promise.resolve(new Response('{}', { status: 422, headers: { 'Content-Type': 'application/json' } }));
+
+    try {
+      const dialog = await openDialog();
+      await fillAndSubmit(dialog);
+      await waitFor(() =>
+        expect(dialog.getByRole('alert')).toHaveTextContent(/was not accepted/),
+      );
+    } finally {
+      window.fetch = original;
+    }
+  },
+};
+
+/**
+ * A 200 carrying an HTML error page. The old code parsed whatever came back
+ * and reported a rejection the service never made.
+ */
+export const MalformedResponse: Story = {
+  args: { isOpen: true, onClose: () => {} },
+  render: (args) => <ModalWrapper {...args} />,
+  play: async () => {
+    const original = window.fetch;
+    window.fetch = () =>
+      Promise.resolve(new Response('<html>gateway</html>', { status: 200 }));
+
+    try {
+      const dialog = await openDialog();
+      await fillAndSubmit(dialog);
+      await waitFor(() =>
+        expect(dialog.getByRole('alert')).toHaveTextContent(/was not accepted/),
+      );
+    } finally {
+      window.fetch = original;
+    }
+  },
+};
