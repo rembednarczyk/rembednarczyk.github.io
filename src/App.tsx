@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { LazyMotion, domAnimation } from "motion/react";
+import { useAutoPrint } from "./hooks/useAutoPrint";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { HeroSection } from "./components/sections/HeroSection";
@@ -46,14 +46,7 @@ function Page() {
   // We also ignore hash changes since those are used for section navigation
   const isNotFound = window.location.pathname !== "/" && window.location.pathname !== "/index.html";
 
-  useEffect(() => {
-    // Auto-print logic for QR codes
-    if (window.location.search.includes("print=true")) {
-      setTimeout(() => {
-        window.print();
-      }, 1500); // Slight delay to ensure fonts and styles are fully loaded
-    }
-  }, []);
+  useAutoPrint();
 
   if (isNotFound) {
     return (
