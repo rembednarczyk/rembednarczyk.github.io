@@ -4,140 +4,120 @@
 
 # Remigiusz Bednarczyk | Quality Engineering Portfolio
 
-Personal website of a **Quality Engineering Lead / Test Manager** specializing in **GxP-regulated environments, test strategy, and AI-assisted testing**.
+Personal website of a **Quality Engineering Lead / Test Manager** working in **GxP-regulated environments, test strategy, and AI-assisted testing**.
 
 **Live:** [remigiuszbednarczyk.com](https://remigiuszbednarczyk.com/)
 
-Deployed: [![CI/CD Pipeline](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml) [![Quality Gate](https://img.shields.io/github/actions/workflow/status/rembednarczyk/rembednarczyk.github.io/deploy.yml?label=Quality%20Gate)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml) [![Tests](https://img.shields.io/github/actions/workflow/status/rembednarczyk/rembednarczyk.github.io/deploy.yml?label=Tests)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/deploy.yml)
+[![CI/CD Pipeline](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/ci.yml/badge.svg)](https://github.com/rembednarczyk/rembednarczyk.github.io/actions/workflows/ci.yml)
 
-Using: [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+Using: [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
 Lighthouse score: [![Performance](https://img.shields.io/badge/Performance-100-00CC66?logo=lighthouse&logoColor=white)](https://remigiuszbednarczyk.com/) [![Accessibility](https://img.shields.io/badge/Accessibility-100-00CC66?logo=lighthouse&logoColor=white)](https://remigiuszbednarczyk.com/) [![Best Practices](https://img.shields.io/badge/Best%20Practices-100-00CC66?logo=lighthouse&logoColor=white)](https://remigiuszbednarczyk.com/) [![SEO](https://img.shields.io/badge/SEO-100-00CC66?logo=lighthouse&logoColor=white)](https://remigiuszbednarczyk.com/)
 
 ---
 
-## What Makes This Project Different
+## Scope and Intent
 
-This is not just a portfolio.
+A production-grade frontend project that demonstrates how I approach:
 
-It is a **production-grade, quality-driven frontend project** built to demonstrate how I approach:
-
-- Quality as a system, not a phase
+- Quality treated as a system that runs on every commit
 - Performance-first architecture
 - Accessibility and UX consistency
 - SEO and **LLM-ready content structure**
 
-> **Disclaimer:** This project is intentionally over-engineered for a simple portfolio website. The architectural decisions (strict component decomposition, domain logic separation, CI/CD quality gates, and unit testing) were implemented deliberately to showcase my approach to software quality, maintainability, and engineering standards in enterprise environments.
+> **Disclaimer:** This project is deliberately over-engineered for a portfolio website. Strict component decomposition, domain logic separation, CI/CD quality gates, and automated testing are here to show how I work on software quality, maintainability, and engineering standards in enterprise environments.
 
 ---
 
 ## Quality-Driven Approach
 
-Even for a personal project, I applied engineering discipline:
+Engineering discipline applied to a personal project:
 
-- Semantic HTML & structured content
-- Accessibility best practices (focus states, navigation, contrast)
+- Semantic HTML and structured content
+- Accessibility practices covering focus management, keyboard navigation, and contrast
 - Print-ready layout (A4 optimized via `@media print`)
-- SEO optimization + Open Graph + JSON-LD
+- SEO with Open Graph and JSON-LD
 - LLM-friendly structure (`llm.txt`, structured sections)
-- Print-ready CV Template with comprehensive Certifications & Credentials tracking
+- Print-ready CV template with certifications and credentials tracking
+- Analytics gated behind explicit consent (Google Consent Mode v2)
 
 ---
 
-## Architecture & Key Decisions
+## Architecture and Key Decisions
 
-### Data-Driven Design & Domain Logic
+### Data-Driven Design and Domain Logic
 
-All content is separated from UI (`portfolioData.tsx`), including dynamic sections like Core Expertise, Experience, and Certifications.
-A dedicated domain logic layer (`src/utils/domain.ts`) handles pure functions independent of React, improving testability and separation of concerns.
+All content lives outside the UI in `portfolioData.tsx`, including dynamic sections such as Core Expertise, Experience, and Certifications.
+A domain logic layer (`src/utils/domain.ts`) holds pure functions independent of React, which keeps them directly testable.
 
-→ Easy to maintain  
-→ Scalable  
-→ Clean separation of concerns
+The result is content that changes without touching components, and logic that can be verified without rendering anything.
 
 ---
 
-### Component Decomposition & Custom Hooks
+### Component Decomposition and Custom Hooks
 
-The application follows a modular architecture where large monolithic sections are decomposed into smaller, focused components (e.g., `ExperienceItem`, `ProjectCard`, `SkillCategoryCard`).
-Custom hooks (`useActiveSection`, `useScrollToSection`) encapsulate side effects and DOM manipulation, keeping UI components declarative and clean.
-
----
-
-### Software Engineering Best Practices
-
-The codebase strictly adheres to modern software engineering principles to ensure maintainability and testability:
-
-- Single Responsibility Principle (SRP): Components are highly focused. For example, `ExperienceSection` only handles layout and iteration, while `ExperienceItem` handles the rendering of a specific job entry.
-- Separation of Concerns: Data (`portfolioData.tsx`), domain logic (`utils/domain.ts`), side effects (`hooks/`), and UI (`components/`) are strictly isolated.
-- DRY (Don't Repeat Yourself): Reusable UI elements (e.g., `SectionHeading`, `Badge`) are extracted into a shared `ui/` directory.
-- Strong Typing: Comprehensive TypeScript interfaces (`src/types/index.ts`) enforce data contracts across the entire application, preventing runtime errors.
+Large sections are decomposed into focused components such as `ExperienceItem`, `ProjectCard`, and `SkillCategoryCard`.
+Custom hooks (`useActiveSection`, `useScrollToSection`, `useModalA11y`, `useCookieConsent`) hold side effects and DOM work, which keeps the components declarative.
 
 ---
 
-### Modern Stack
+### Software Engineering Practices
 
-- React 18 + TypeScript
-- Vite
-- Tailwind CSS
-- Framer Motion
-- Vitest & React Testing Library (for unit and integration testing)
-
-Chosen for **speed, maintainability, and developer experience**.
+- **Single Responsibility Principle:** `ExperienceSection` handles layout and iteration; `ExperienceItem` renders one job entry.
+- **Separation of Concerns:** data (`portfolioData.tsx`), domain logic (`utils/domain.ts`), side effects (`hooks/`), and UI (`components/`) stay isolated.
+- **DRY:** shared UI elements such as `SectionHeading` and `Button` live in `ui/`.
+- **Strong typing:** TypeScript runs in `strict` mode with `@types/react` installed, so component props, hooks, and event handlers are all checked. Shared contracts live in `src/types/index.ts`.
 
 ---
 
-### UX & Interaction
+### Stack
 
-- High-performance ScrollSpy using `IntersectionObserver` (eliminating forced reflows)
+- React 19 with TypeScript 6
+- Vite 8
+- Tailwind CSS 4
+- Motion (Framer Motion)
+- Lucide icons
+- Vitest with React Testing Library
+- Storybook with the accessibility addon and test runner
+
+Chosen for build speed, maintainability, and developer experience.
+
+---
+
+### UX and Interaction
+
+- Scroll spy that maps sub-sections to their parent navigation entry
 - Smooth navigation between sections
-- Subtle animations supporting readability, not distracting
+- Animations restricted to `transform` and `opacity`, which keeps them off the layout path
+- Focus trapped inside open dialogs, and returned to the trigger on close
+- Full `prefers-reduced-motion` alternative for the animated background
 
 ---
 
 ### Performance Optimization
 
-- Bundle optimization (removed initially implemented `React.lazy` to eliminate HTTP/1.1 waterfall and improve LCP)
-- Scroll event throttling and passive listeners to maintain 60fps
-- Preconnect directives for third-party scripts (Google Tag Manager)
-- Optimized initial load (fast FCP & LCP)
-- ViteSingleFile was under consideration - to not over-optimize, the decision was made to not introduce this change and mitigate future scalability problems
+- Single bundle by design. `React.lazy` was tried and removed because the extra requests hurt LCP on HTTP/1.1 more than the smaller entry chunk helped.
+- Passive scroll listeners so scrolling never waits on a handler
+- Canvas background using a spatial hash for particle linking and batched path strokes, with the backing store scaled to `devicePixelRatio`
+- Preconnect directives for the analytics origin
+- ViteSingleFile was considered and rejected to avoid over-optimizing at the cost of future scalability
 
 ---
 
-## Why This Matters
+## Development Guidelines and Guardrails
 
-As a Test Manager, I don’t just validate systems.
+Development follows two documents, both of which apply to human and AI contributors:
 
-I design them to be:
+- [Engineering Principles](docs/guidelines/ENGINEERING_PRINCIPLES.md) governs how changes are made: what a test is for, which defect classes to aim at, how much process a change deserves, and what has to be recorded before a change counts as done. It is project-agnostic and takes precedence.
+- [AI Instructions](docs/guidelines/AI_INSTRUCTIONS.md) covers this repository specifically: execution protocol, architecture rules, Lighthouse guardrails, and UI/UX conventions.
 
-- predictable
-- testable
-- scalable
-- user-centered
+Rules that can be automated are automated, following the principle that a ratchet beats a checklist. Two of them run as tests:
 
-This project reflects that mindset.
-
----
-
-## Development Guidelines & Guardrails
-
-To maintain the high quality, performance, and consistency of this project, all future development must adhere to the documented guidelines. These documents serve as strict guardrails for the AI and human contributors:
-
-- [AI Instructions (Entry Point)](docs/guidelines/AI_INSTRUCTIONS.md) - The overarching master instruction file (One-Pager Protocol) for all AI agents and contributors. It contains the strict Execution Protocol, Architecture Rules, Lighthouse Guardrails, and UI/UX guidelines.
-
----
-
-## Tech Stack
-
-- React 18 + TypeScript
-- Vite
-- Tailwind CSS
-- Framer Motion
-- Lucide Icons
-- GitHub Pages / Vercel
+- `tests/repository-docs.test.ts` re-derives every version and workflow badge in this README from `package.json` and `.github/workflows/`, so a stale claim here fails the build.
+- `tests/module-reachability.test.ts` walks the import graph from the entry point and the stories, and fails on any module nothing imports. The repository previously carried ten duplicated section components that had drifted from the live ones while every check stayed green.
 
 ---
 
@@ -150,50 +130,58 @@ npm install
 npm run dev
 ```
 
-## Running Tests & Quality Checks
-
-The project uses Vitest and React Testing Library for unit and integration testing, along with a strict ESLint configuration to enforce architecture and performance rules.
+## Running Tests and Quality Checks
 
 ```bash
-# Run the development server
+# Development server
 npm run dev
 
-# Run unit and integration tests
+# Unit and integration tests
 npm run test
 
-# Run the strict linter (ESLint + TypeScript)
+# Linter and type check
 npm run lint
 
-# Start Storybook (Component Driven Development & A11y Testing)
+# Storybook (component driven development and a11y testing)
 npm run storybook
 
-# Run the full Quality Gate (Lint -> Test -> Build Storybook -> Test Storybook -> Build App)
+# Full quality gate: lint, test, build Storybook, test Storybook, build app
 npm run check:quality
 ```
 
+Test coverage spans three layers:
+
+- **Unit and integration** through Vitest: navigation targets resolving to real sections, the scroll spy mapping, data from `portfolioData` reaching the page, and heading structure.
+- **Component behaviour** through Storybook interaction tests: focus trapping, keyboard operation, and consent flows.
+- **Accessibility** through `jest-axe` assertions inside every story.
+
 ---
 
-## Component Driven Development & Storybook
+## Component Driven Development and Storybook
 
-This project uses **Storybook** not just as a component library, but as an **Automated Accessibility (A11y) Quality Gate**. 
+Storybook serves as an automated accessibility gate. Every reusable component in `src/components/ui/` is required to have a matching `.stories.tsx` file.
 
-Every reusable component in `src/components/ui/` (e.g., `Button`, `Badge`, `Card`, `ScrollToTop`, `SectionHeading`) is required to have a corresponding `.stories.tsx` file.
+Stories are state-driven, covering `Loading`, `ErrorState`, `EmptyState`, and `LongTextOverflow` alongside behavioural cases such as `FocusIsTrapped` and `EscapeRestoresFocus`.
 
-### Use Cases and Edge Case: AI-Assisted Component Usage
-To demonstrate UI engineering, the Storybook apart from basic coverage, includes an `AiAssistedCard` story. This story models how the UI behaves when handling unpredictable, AI-generated dynamic data (e.g., extremely long text, missing fields, unexpected formatting). 
-Instead of simple "Primary/Secondary" states, stories are state-driven (`Loading`, `ErrorState`, `EmptyState`, `LongTextOverflow`) and include behavioral edge-case modeling.
+### Edge Case: AI-Assisted Component Usage
 
-Every story includes an assertion using `jest-axe`:
+The `AiAssistedCard` story models how the UI behaves with unpredictable, AI-generated data: very long text, missing fields, and unexpected formatting.
+
+Every story asserts accessibility:
+
 ```tsx
 expect(await axe(canvasElement)).toHaveNoViolations();
 ```
-If a component fails contrast or ARIA checks, the CI pipeline fails.
+
+A component that fails a contrast or ARIA check fails the pipeline.
 
 ---
 
-## CI/CD Pipeline & Quality Gate (GitHub Actions)
+## CI/CD Pipeline and Quality Gate (GitHub Actions)
 
-- Quality Gate (CI): Every push and pull request to `main` triggers the `npm run check:quality` script.
-- Strict Linting: Custom ESLint rules enforce the Single Responsibility Principle (preventing UI components from importing sections), prevent Layout Thrashing in Framer Motion, and ensure Lighthouse 100/100/100/100 compliance (e.g., enforcing `aria-label` and correct image loading attributes).
-- Fail-Fast: The build process is aborted if any quality gate fails, preventing broken or suboptimal code from reaching production.
-- Continuous Deployment (CD): Successful merges to `main` are automatically built and deployed.
+One workflow, [`ci.yml`](.github/workflows/ci.yml), handles both verification and deployment.
+
+- **Quality gate:** every push and pull request against `main` runs `npm run check:quality`.
+- **Strict linting:** custom ESLint rules enforce the Single Responsibility Principle by preventing UI components from importing sections, block animation of layout properties in Motion, and hold the conditions for a 100/100/100/100 Lighthouse score such as `aria-label` presence and correct image loading attributes.
+- **Fail-fast:** a failed gate aborts the run before anything reaches production.
+- **Continuous deployment:** merges to `main` build and deploy to GitHub Pages. Only the deploy job holds the Pages credentials.
