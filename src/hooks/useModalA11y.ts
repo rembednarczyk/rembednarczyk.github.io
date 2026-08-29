@@ -84,6 +84,12 @@ export function useModalA11y({
 
     // Wait a frame so the dialog is laid out before focus moves into it.
     const frame = requestAnimationFrame(() => {
+      // That frame is a window in which someone can already have moved focus
+      // themselves. Pulling it back would undo their action: it landed
+      // mid-word in the wrong field, which left the form invalid and stopped
+      // it submitting at all. The dialog claims only focus still outside it.
+      if (container?.contains(document.activeElement)) return;
+
       const target = initialFocusRef?.current ?? focusable()[0];
       target?.focus();
     });
