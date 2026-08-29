@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { createPortal } from "react-dom";
 import { m, AnimatePresence } from "motion/react";
 import { X, Shield } from "lucide-react";
-import { cvData } from "../../data/portfolioData";
+import { cvData } from "../../data/portfolioFacts";
 import { useModalA11y } from "../../hooks/useModalA11y";
 import { CONSENT_STORAGE_KEY } from "../../hooks/useCookieConsent";
 

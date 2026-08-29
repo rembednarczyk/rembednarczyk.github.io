@@ -1,0 +1,484 @@
+import {
+  AboutData,
+  AwardRecord,
+  CredentialGroup,
+  CvData,
+  HeroData,
+  Job,
+} from "../types";
+import { getYearsOfExperience } from "../utils/domain";
+
+/**
+ * Everything the site states as fact, with nothing about how it looks.
+ *
+ * It is a .ts file on purpose. The build reads it to write the JSON-LD that
+ * search engines parse and the profile that language models fetch, and a
+ * module carrying JSX icons and Tailwind class names cannot be loaded from
+ * a Vite config. Splitting the two is what makes those surfaces derived
+ * rather than maintained by hand.
+ *
+ * Presentation that belongs to a single card stayed with that card's data
+ * in portfolioData.tsx. What moved here is what something other than a
+ * component needs to read.
+ */
+
+/**
+ * First professional testing role, from the earliest entry in
+ * experienceData below. Kept as a real date rather than parsed out of the
+ * `period` display string, which is formatted for reading and would break
+ * the moment its wording changes.
+ */
+
+/**
+ * First professional testing role, matching the earliest entry in
+ * experienceData below. Kept as a real date rather than parsed out of the
+ * `period` display string, which is formatted for reading and would break
+ * the moment its wording changes. tests/botLayer.test.ts holds the two to
+ * each other.
+ */
+export const CAREER_START: Date = new Date("2014-01-01T00:00:00Z");
+
+/** Recomputed on every page load, so it never goes stale. */
+export const yearsOfExperience: number = getYearsOfExperience(CAREER_START);
+
+/** Recomputed on every page load, so it never goes stale. */
+
+export const heroData: HeroData = {
+  name: "Remigiusz Bednarczyk.",
+  subtitle: "Quality engineering for high-risk systems.",
+  description: `Quality engineering professional with ${yearsOfExperience}+ years of experience in software testing and test leadership. I specialize in test management, quality engineering practices, and building testing processes for regulated environments such as pharmaceutical and GxP systems.`,
+  metrics: [
+    { value: `${yearsOfExperience}+`, label: "Years Experience" },
+    { value: "500+", label: "Testers Trained" },
+    { value: "300+", label: "Technical Assessments Conducted" },
+    { value: "10+", label: "GxP Projects Delivered" },
+  ],
+  tags: [
+    "Test Management",
+    "Quality Engineering",
+    "GxP / Computerised System Validation",
+    "Technical Assessment",
+    "AI",
+    "ISTQB",
+    "Mentoring",
+  ],
+};
+
+export const aboutData: AboutData = {
+  paragraphs: [
+    "My journey in IT started over a decade ago. Today, my focus lies at the intersection of quality engineering, strategic risk management, and organizational transformation. I specialize in building robust testing processes that ensure the highest quality of software delivery for high-risk and regulated systems.",
+    "I am deeply passionate about process optimization and cultivating a culture of quality within engineering teams. I believe that effective testing is not just a phase to find defects, but a continuous practice of building confidence in the product and the critical systems people depend on daily.",
+    "Beyond technical strategy, my core focus is on people. I am dedicated to mentoring engineers, shaping QA talent, and elevating the standards of the testing community. Whether through designing comprehensive training programs or guiding organizations through digital transformations, my goal is to empower teams to deliver excellence.",
+    "When I'm not evaluating test processes or managing projects, I am a happy father, a runner, and a kettlebell training enthusiast practicing the Hardstyle Kettlebell method developed by Pavel Tsatsouline.",
+  ],
+  imageUrl:
+    "https://remigiuszbednarczyk.com/img/Remi_original.webp",
+};
+
+export const thinkingQuote: string = "AI-first engineering shifts value from writing code to making decisions.";
+
+export const achievementsData: string[] = [
+  "Delivered digitalised testing and documentation process for regulated IRT workflows",
+  "Led testing across multiple concurrent GxP pharmaceutical projects",
+  "Trained over 500 software testers in QA practices and ISTQB preparation",
+  "Led a technical assessment program evaluating testers from Junior to Test Manager level",
+  "Contributed to the development of testing offerings within the Sii Testing Competency Center",
+];
+
+export const recognitionData: AwardRecord[] = [
+  {
+    title: "League of Honor – The Star",
+    company: "Sii Poland",
+    issued: "2023",
+    desc: "Highest distinction awarded to top contributors shaping company growth and strategic direction.",
+    tone: "gold",
+  },
+  {
+    title: "Top Gun – Leadership Award",
+    company: "Sii Poland",
+    issued: "2022",
+    desc: "Recognized as a role model and impactful leader in the organization.",
+    tone: "cyan",
+  },
+  {
+    title: "Sii Star – Employee of the Year",
+    company: "Sii Poland",
+    issued: "2022",
+    desc: "Awarded for outstanding performance and measurable impact",
+    tone: "purple",
+  },
+  {
+    title: "Sii Star – Employee of the Year",
+    company: "Sii Poland",
+    issued: "2018",
+    desc: "Awarded for outstanding performance and measurable impact",
+    tone: "purple",
+  },
+];
+
+export const experienceData: Job[] = [
+  {
+    role: "Test Manager",
+    company: "Sii Poland",
+    period: "2021 - Present",
+    desc: "Leading quality engineering and testing strategy across regulated pharmaceutical projects while also contributing to internal consulting, discovery phases, and QA offerings within the Sii Testing Competency Center.",
+    bullets: [
+      "Contributed to discovery phases for new projects by assessing testing maturity, risks, and delivery models.",
+      "Supported pre-sales activities, including solution design, testing strategy proposals, and estimation.",
+      "Participated in the creation and evolution of testing offerings within the Sii Testing Competency Center.",
+      "Took part in focus groups and internal initiatives shaping quality engineering practices across the organization.",
+    ],
+    tags: [
+      "Consulting",
+      "Pre-Sales",
+      "Discovery",
+      "Quality Engineering",
+      "Test Strategy",
+    ],
+    projects: [
+      {
+        role: "Test Manager / GxP Projects",
+        period: "2021 - Present",
+        bullets: [
+          "Managed testing teams across multiple concurrent GxP-regulated projects within a distributed international environment, collaborating daily with global cross-functional stakeholders (USA, Switzerland, UK, Malaysia).",
+          "Ensured predictable delivery by owning end-to-end test management, including defining and approving Test Strategies and Test Plans aligned with business goals, regulatory requirements, and project constraints.",
+          "Ensured testing compliance within a validated GxP/CSV environment, taking full accountability for testing activities, validation alignment, and formal documentation (RTMs, Release Test Plans, Test Reports).",
+          "Established QA processes from scratch by conducting discovery phases, assessing existing workflows, and implementing governance, entry/exit criteria, and best practices.",
+          "Successfully delivered and rolled out a digitalized testing and documentation process used across regulated IRT workflows, transitioning from paper-based to digital test documentation (Jira with Xray).",
+          "Enabled regulatory compliance of the pharmaceutical supply chain by leading the implementation of the EU Module in TraceLink.",
+          "Acted as Validation Lead, with decision authority over validation approach, documentation scope, and lifecycle coverage.",
+          "Implemented time-optimizing solutions, such as Unscripted Testing and alternative automation approaches, to increase team efficiency under tight timelines.",
+          "Resolved conflicts between delivery timelines, quality expectations, and compliance requirements by aligning multiple stakeholders across business, QA, and project management.",
+        ],
+        tags: [
+          "Test Management",
+          "Risk Analysis",
+          "Process Implementation",
+          "Digital Transformation",
+          "Jira",
+          "Xray",
+          "Agile/Scrum",
+          "SAFe",
+          "GxP",
+          "CSV",
+        ],
+      },
+    ],
+  },
+  {
+    role: "Senior Test & Analysis Engineer / Acxiom",
+    company: "Sii Poland",
+    period: "2018 - 2021",
+    bullets: [
+      "Conducted comprehensive API, GUI, and web services testing to ensure robust application functionality and seamless integration.",
+      "Led cloud testing initiatives across AWS, HDFS, Hue, Kafka, Spark, Qubole, and S3, ensuring data integrity within Data Warehouses and Data Lakes.",
+      "Analyzed business requirements to prepare detailed test documentation, including comprehensive test plans and test cases.",
+      "Implemented and executed both manual and automated tests, continuously improving the test framework and introducing innovative testing strategies.",
+      "Enhanced the regression test suite and integrated it into the Continuous Integration (CI) pipeline to accelerate delivery cycles.",
+      "Validated complex data structures and performed extensive database testing using relational (Oracle, MSSQL, MySQL) and non-relational (NoSQL, MongoDB, Hadoop) databases.",
+      "Collaborated within cross-functional, international teams (USA, UK, Poland) using UNIX/Linux environments and Git/SVN version control systems.",
+    ],
+    tags: [
+      "API Testing",
+      "Cloud Testing",
+      "Big Data",
+      "Test Automation",
+      "CI/CD",
+      "SQL / NoSQL",
+      "AWS",
+      "Agile/Scrum",
+    ],
+  },
+  {
+    role: "Test & Analysis Engineer / Acxiom",
+    company: "Sii Poland",
+    period: "2017 - 2018",
+    bullets: [
+      "Performed manual and automated testing for Data Warehouses and web services, ensuring data accuracy and system reliability.",
+      "Created and maintained comprehensive test documentation, including test plans and test cases based on business requirements.",
+      "Contributed to the continuous improvement of the test framework and integrated regression test suites into the CI pipeline.",
+      "Executed database testing across relational (Oracle, MSSQL, MySQL) and non-relational (NoSQL, MongoDB, Hadoop) environments.",
+      "Worked effectively within international, cross-functional teams utilizing UNIX/Linux systems and Git/SVN version control.",
+    ],
+    tags: [
+      "Data Warehouse",
+      "Web Services",
+      "Test Automation",
+      "SQL / NoSQL",
+      "UNIX/Linux",
+      "Agile/Scrum",
+    ],
+  },
+  {
+    role: "Application Tester / Simple S.A. (Bazus)",
+    company: "Simple S.A.",
+    period: "2014 - 2017",
+    bullets: [
+      "Tested the Bazus ERP application dedicated to higher education institutions, ensuring system reliability across various modules and customer production environments.",
+      "Actively participated in an Agile (Scrum) development team, contributing to release planning, test estimation, and SLA-driven backlog management.",
+      "Performed end-to-end system, module, and operational testing, applying techniques like equivalence partitioning and boundary value analysis.",
+      "Conducted build verification tests (BVT) and managed build releases via internal deployment systems to Git repositories within a Continuous Integration (CI) pipeline.",
+      "Created and maintained manual test cases and automated testware using Selenium IDE, while comprehensively analyzing functional requirements.",
+      "Developed and administered technical documentation using single-source publishing tools, and conducted internal training sessions for team members.",
+    ],
+    tags: [
+      "Agile/Scrum",
+      "Selenium",
+      "Jenkins",
+      "Git",
+      "Requirements Analysis",
+      "GUI Testing",
+      "Technical Documentation",
+    ],
+  },
+];
+
+
+export const cvData: CvData = {
+  header: {
+    name: "Remigiusz Bednarczyk",
+    title: "Test Manager",
+    phone: {
+      display: ["+", "48", " ", "530", " ", "333", " ", "243"],
+      href: ["+", "48", "530", "333", "243"].join(""),
+    },
+    email: {
+      display: ["hello", "@", "remigiuszbednarczyk", ".", "com"],
+      href: ["hello", "@", "remigiuszbednarczyk", ".", "com"].join(""),
+    },
+    linkedin: "linkedin.com/in/rembednarczyk",
+    website: "remigiuszbednarczyk.com",
+    location: "Poland",
+  },
+  summary:
+    "Quality Engineering Lead and Test Manager with extensive experience in regulated environments, particularly in the pharmaceutical sector (GxP). Specialized in designing testing strategies, managing cross-functional QA teams, and driving digital transformation in testing processes. Proven track record of combining technical rigor with a deep understanding of business and compliance requirements to deliver predictable, high-quality software solutions.",
+  skills: [
+    {
+      category: "Test Management",
+      items: "Test Strategy & Planning, Risk-Based Testing, Defect Management, QA Process Design, GxP / CSV Compliance, Audit Preparation.",
+    },
+    {
+      category: "Delivery & Leadership",
+      items: "Test Leadership, Stakeholder Management, SAFe / Agile Delivery, ITIL, AgilePM, Quality Governance at Scale.",
+    },
+    {
+      category: "Technical & Data Background",
+      items: "API Testing, SQL / Data Validation, ETL & Data Pipelines, Frontend Testing, CI/CD Awareness, AI-assisted Testing.",
+    },
+    {
+      category: "Methodologies",
+      items: "Agile / Scrum, Waterfall, V-Model, Shift-Left Testing.",
+    },
+    {
+      category: "Tools & Technologies",
+      items: "Jira & Xray, HP ALM / Micro Focus, TraceLink, Postman, noSQL / MongoDB.",
+    },
+  ],
+  passions: [
+    "Strength and endurance training",
+    "Street Workout & Calisthenics",
+    "Hardstyle Kettlebell training by Pavel Tsatsouline",
+    "Investing in Stocks, ETFs as an Individual Investor",
+    "Running – Participation in competitions",
+    "Board Games",
+  ],
+  community: [
+    { title: "Vice President", desc: "of the Polish Testing Board (SJSI)." },
+    { title: "Conference Host & Speaker", desc: "at major IT events including TestWarez and Na Podbój IT." },
+    { title: "Trainer & Mentor", desc: "for 500+ software testers, specializing in QA practices and ISTQB preparation." },
+    { title: "Lead Technical Assessor", desc: "responsible for evaluating testing professionals from Junior to Test Manager level." },
+    { title: "Author", desc: "of technical articles on software testing and quality assurance practices." },
+  ],
+  recognition: [
+    { title: "League of Honor – The Star (Sii Poland, 2023):", desc: "Highest distinction awarded to top contributors shaping company growth and strategic direction." },
+    { title: "Top Gun – Leadership Award (Sii Poland, 2022):", desc: "Recognized as a role model and impactful leader in the organization." },
+    { title: "Sii Star – Employee of the Year (Sii Poland, 2022 & 2018):", desc: "Awarded for outstanding performance and measurable impact." },
+    { title: "Brand Ambassador & Representative:", desc: "Featured in nationwide campaigns, city murals (#UnstoppableSii), Great Place to Work 2018, and Sii Calendar (2019-2020)." },
+  ],
+};
+
+export const fullCertificationsList: CredentialGroup[] = [
+  {
+    category: "Core certifications",
+    items: [
+      {
+        name: "ISTQB Accredited Trainer - CTFL 4.0 + Agile Tester Accreditation Extension",
+        issuer: "SJSI (Polish Testing Board)",
+        date: "Nov 2023",
+        id: "ISTQB/ATP/61/2023/40",
+      },
+      {
+        name: "ISTQB Certified Tester Foundation Level Agile Tester",
+        issuer: "SJSI (Polish Testing Board)",
+        date: "Nov 2023",
+        id: "FLAT-2023-00628-SJSI",
+      },
+      {
+        name: "ISTQB Certified Tester Advanced Level Test Manager",
+        issuer: "GASQ",
+        date: "Mar 2021",
+        id: "10960-1",
+      },
+      {
+        name: "ISTQB Certified Tester Advanced Level Technical Test Analyst",
+        issuer: "GASQ",
+        date: "Aug 2018",
+        id: "10960-3",
+      },
+      {
+        name: "ISTQB Certified Tester Foundation Level",
+        issuer: "SJSI (Polish Testing Board)",
+        date: "Aug 2018",
+        id: "10262/FLCT/2018",
+      },
+      {
+        name: "Certified SAFe® 6 Agilist",
+        issuer: "SAFe by Scaled Agile, Inc.",
+        date: "Jun 2023",
+      },  
+      {
+        name: "AgilePM® Foundation",
+        issuer: "APMG International",
+        date: "Oct 2019",
+        id: "2000913818 / 04303830-01-FEDM"
+      }
+    ]
+  },
+  {
+    category: "AI & Emerging Tech Certifications",
+    items: [
+      {
+        name: "AI_devs 3 Agents",
+        issuer: "AI_devs",
+        date: "Dec 2024",
+        id: "88fd734b-0390-4c14-81ae-a69e400f1dd1",
+      },
+      {
+        name: "Fundamentals of Artificial Intelligence and Machine Learning for IT Specialists and Managers",
+        issuer: "FUTURE SKILLS INSTITUTE",
+        date: "Nov 2025"
+      }
+    ]
+  },
+  {
+    category: "Additional Training",
+    items: [
+      {
+        name: "Reasoning About Asynchronous JavaScript",
+        issuer: "Pluralsight",
+        date: "Aug 2019",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Javascript: Getting Started",
+        issuer: "Pluralsight",
+        date: "Jul 2019",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Szkolenie Trenerskie",
+        issuer: "Barbara Smoczyńska Usługi Rozwojowe",
+        date: "Jun 2019",
+      },
+      {
+        name: "How Git Works",
+        issuer: "Pluralsight",
+        date: "May 2019",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Continuous Integration and Continuous Delivery: The Big Picture",
+        issuer: "Pluralsight",
+        date: "May 2019",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Applying the Lambda Architecture with Spark, Kafka, and Cassandra",
+        issuer: "Pluralsight",
+        date: "Jan 2019",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Introduction to MongoDB",
+        issuer: "Pluralsight",
+        date: "Dec 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Take Control of Your Big Data with HUE in Cloudera CDH",
+        issuer: "Pluralsight",
+        date: "Dec 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Beginning Data Exploration and Analysis with Apache Spark",
+        issuer: "Pluralsight",
+        date: "Dec 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "The Successful Technical Interview for Interviewers",
+        issuer: "Pluralsight",
+        date: "Nov 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Getting Started with Apache Kafka",
+        issuer: "Pluralsight",
+        date: "Nov 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "The Building Blocks of Hadoop - HDFS, MapReduce, and YARN",
+        issuer: "Pluralsight",
+        date: "Nov 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Getting Started with HDFS",
+        issuer: "Pluralsight",
+        date: "Nov 2018",
+        id: "REP ID 4127",
+      },
+      {
+        name: "Rest API Automation With Rest Assured - Novice To Ninja",
+        issuer: "Udemy",
+        date: "Nov 2018",
+        id: "UC-Q65D6ON9",
+      },
+      {
+        name: "Complete Step By Step Java For Testers",
+        issuer: "Udemy",
+        date: "Oct 2018",
+        id: "UC-PQ9O07Q1",
+      },
+      {
+        name: "TestNG Complete Bootcamp For Beginners - Novice To Ninja",
+        issuer: "Udemy",
+        date: "Oct 2018",
+        id: "UC-F1ZWOJAP",
+      },
+      {
+        name: "Testy automatyczne [Automated Testing]",
+        issuer: "Altkom Akademia",
+        date: "Jan 2018",
+      },
+      {
+        name: "Microsoft SQL Server 2012",
+        issuer: "Wyższa Szkoła Przedsiębiorczości i Administracji w Lublinie",
+        date: "Apr 2014",
+      },
+      {
+        name: "Bazy danych - podstawy projektowania relacyjnych baz danych",
+        issuer: "Polsko-Japońska Akademia Technik Komputerowych w Warszawie",
+        date: "Mar 2014",
+      },
+      {
+        name: "Programista stron z obsługą bazy danych",
+        issuer: "Centrum Szkoleń i Innowacji",
+        date: "Aug 2013",
+        id: "40/CSI/MEN/2013",
+      }
+    ]
+  }
+];

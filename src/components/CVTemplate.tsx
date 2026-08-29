@@ -1,6 +1,6 @@
 import { Mail, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm, BadgeCheck, BrainCircuit, BookOpen } from "lucide-react";
 import { LinkedinIcon } from "./ui/BrandIcon";
-import { fullCertificationsList, cvData, experienceData } from "../data/portfolioData";
+import { fullCertificationsList, cvData, experienceData } from "../data/portfolioFacts";
 import { LINKEDIN_QR } from "../data/linkedinQr";
 
 export const CVTemplate = () => {

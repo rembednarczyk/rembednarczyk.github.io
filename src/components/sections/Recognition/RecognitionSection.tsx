@@ -1,6 +1,6 @@
 import { m } from "motion/react";
 import { SectionHeading } from "../../ui/SectionHeading";
-import { recognitionData } from "../../../data/portfolioData";
+import { recognitionData } from "../../../data/portfolioFacts";
 import { AwardCard } from "./AwardCard";
 
 export function RecognitionSection() {

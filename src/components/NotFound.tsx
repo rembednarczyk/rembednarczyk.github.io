@@ -2,7 +2,7 @@ import { m, useReducedMotion } from "motion/react";
 import { Terminal } from "lucide-react";
 import { ParticleBackground } from "./ParticleBackground";
 import { useEffect, useState } from "react";
-import { cvData } from "../data/portfolioData";
+import { cvData } from "../data/portfolioFacts";
 
 /**
  * The tab, the history entry and the bookmark all read this, and a screen

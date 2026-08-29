@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "path";
 import { defineConfig, type Plugin } from "vite";
 import { countLastmod, stampSitemap } from "./scripts/sitemap";
+import { injectPersonSchema } from "./scripts/structuredData";
 
 /** Dates the sitemap from the build, so it cannot fall behind the content. */
 function stampSitemapPlugin(): Plugin {
@@ -25,9 +26,42 @@ function stampSitemapPlugin(): Plugin {
   };
 }
 
+
+/**
+ * Writes the schema.org Person from the data the page renders.
+ *
+ * It was typed out by hand beside the same facts in the data module, with
+ * nothing holding the two together, and structured data is the one surface
+ * whose drift nobody would notice: it is written for crawlers and read by
+ * no one who could report it.
+ */
+const APP_INDEX = path.resolve(__dirname, "index.html");
+
+function structuredDataPlugin(): Plugin {
+  return {
+    name: "structured-data",
+    transformIndexHtml: {
+      order: "pre",
+      handler(html, ctx) {
+        // Storybook builds through this same config and its own HTML entry
+        // has no such tag, so the transform is scoped to the site's page.
+        // Anything else is left alone rather than rejected.
+        if (path.resolve(ctx.filename) !== APP_INDEX) return html;
+
+        return injectPersonSchema(html);
+      },
+    },
+  };
+}
+
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss(), stampSitemapPlugin()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      structuredDataPlugin(),
+      stampSitemapPlugin(),
+    ],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "."),

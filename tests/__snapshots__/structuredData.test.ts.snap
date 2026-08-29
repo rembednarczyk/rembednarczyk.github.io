@@ -1,0 +1,62 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`the generated Person schema > says what the hand-written block said 1`] = `
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "Poland",
+  },
+  "alumniOf": [
+    {
+      "@type": "Organization",
+      "name": "Acxiom",
+    },
+    {
+      "@type": "Organization",
+      "name": "Simple S.A.",
+    },
+  ],
+  "award": [
+    "League of Honor – The Star (Sii Poland, 2023)",
+    "Top Gun – Leadership Award (Sii Poland, 2022)",
+    "Sii Star – Employee of the Year (Sii Poland, 2022)",
+    "Sii Star – Employee of the Year (Sii Poland, 2018)",
+    "Brand Ambassador & Representative (Sii Poland)",
+  ],
+  "jobTitle": "Quality Engineering Lead / Test Manager",
+  "knowsAbout": [
+    "Quality Engineering",
+    "Test Management",
+    "GxP",
+    "CSV Compliance",
+    "Software Testing",
+    "ISTQB",
+    "Agile",
+    "Scrum",
+    "Test Leadership",
+    "Stakeholder Management",
+    "SAFe / Agile Delivery",
+    "ITIL",
+    "AgilePM",
+    "Quality Governance at Scale",
+    "API Testing",
+    "SQL / Data Validation",
+    "ETL & Data Pipelines",
+    "Frontend Testing",
+    "CI/CD Awareness",
+    "AI-assisted Testing",
+  ],
+  "name": "Remigiusz Bednarczyk",
+  "sameAs": [
+    "https://linkedin.com/in/rembednarczyk",
+    "https://github.com/rembednarczyk",
+  ],
+  "url": "https://remigiuszbednarczyk.com",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Sii Poland",
+  },
+}
+`;

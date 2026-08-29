@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import QRCode from "react-qr-code";
 import { qrDrawing, qrMatrix, qrModuleSource, qrPath } from "../scripts/qrCode";
 import { LINKEDIN_QR } from "../src/data/linkedinQr";
-import { cvData } from "../src/data/portfolioData";
+import { cvData } from "../src/data/portfolioFacts";
 
 /**
  * The printed CV's QR encodes a constant, so the drawing is committed as

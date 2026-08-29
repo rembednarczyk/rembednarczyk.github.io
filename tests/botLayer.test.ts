@@ -1,102 +1,22 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import {
-  CAREER_START,
-  cvData,
-  experienceData,
-  fullCertificationsList,
-  recognitionData,
-} from "../src/data/portfolioData";
+import { CAREER_START, cvData, experienceData, fullCertificationsList, recognitionData } from "../src/data/portfolioFacts";
 
 /**
- * Two surfaces exist for machines rather than people: the JSON-LD in
- * index.html, which search engines read, and public/llm.txt, which language
- * models fetch. Both restate facts that live in portfolioData, and neither
- * could import it: one is static HTML that has to be in the document before
- * any script runs, the other is a plain text file.
+ * public/llm.txt is written for language models rather than people, and it
+ * restates facts that live in portfolioFacts. It is a plain text file, so
+ * unlike the JSON-LD beside it, nothing generates it: these hold it to the
+ * data instead.
  *
- * That makes them the same shape as the consent key, and worse in one
- * respect. A person notices when the page is wrong. Nobody reads their own
- * JSON-LD, so a stale employer or a dropped award is told to Google and to
- * every model that crawls the site, for as long as it takes somebody to
- * think of checking.
- *
- * They agreed with the data when this was written. These hold them to it.
+ * The asymmetry is the point. A person notices when the page is wrong.
+ * Nobody reads their own machine-readable profile, so a stale employer or a
+ * dropped credential is what every crawling model is told, for as long as
+ * it takes somebody to think of checking.
  */
 
 const root = resolve(__dirname, "..");
 const llm = readFileSync(resolve(root, "public/llm.txt"), "utf8");
-const html = readFileSync(resolve(root, "index.html"), "utf8");
-
-interface Organization {
-  name: string;
-}
-
-interface PersonSchema {
-  name: string;
-  url: string;
-  sameAs: string[];
-  worksFor: Organization;
-  alumniOf: Organization[];
-  award: string[];
-  knowsAbout: string[];
-  address: { addressCountry: string };
-}
-
-const jsonLd = JSON.parse(
-  /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html)![1],
-) as PersonSchema;
-
-/** Every company named anywhere in the career, including inside a role. */
-const companiesInCareer = experienceData.flatMap((job) => [job.company, job.role]);
-
-const namedInCareer = (name: string) =>
-  companiesInCareer.some((text) => text.includes(name));
-
-describe("the structured data search engines read", () => {
-  it("names the same person the page does", () => {
-    expect(jsonLd.name).toBe(cvData.header.name);
-  });
-
-  it("points at the same site and the same profile", () => {
-    expect(jsonLd.url).toBe(`https://${cvData.header.website}`);
-    expect(jsonLd.sameAs).toContain(`https://${cvData.header.linkedin}`);
-  });
-
-  it("states the country the CV states", () => {
-    expect(jsonLd.address.addressCountry).toBe(cvData.header.location);
-  });
-
-  it("names the current employer as the current employer", () => {
-    // experienceData is newest first, so the first entry is the job held now.
-    expect(jsonLd.worksFor.name).toBe(experienceData[0].company);
-  });
-
-  it("claims no past employer the career does not mention", () => {
-    // Acxiom is a client and lives inside the role text rather than in
-    // `company`, which is why this looks at both.
-    const unknown = jsonLd.alumniOf
-      .map((org) => org.name)
-      .filter((name) => !namedInCareer(name));
-
-    expect(jsonLd.alumniOf.length).toBeGreaterThan(0);
-    expect(
-      unknown,
-      `these are listed as past employers and appear nowhere in experienceData:\n  ${unknown.join("\n  ")}`,
-    ).toEqual([]);
-  });
-
-  it("lists every award the page shows, with its year", () => {
-    // Formatted as "title (company, year)" by hand. Rebuilt here instead.
-    const expected = recognitionData.map(
-      (award) => `${award.title} (${award.company}, ${award.issued})`,
-    );
-
-    expect(expected.length).toBeGreaterThan(3);
-    expected.forEach((award) => expect(jsonLd.award).toContain(award));
-  });
-});
 
 describe("the profile language models fetch", () => {
   it("gives the same links as the page", () => {
