@@ -177,3 +177,72 @@ describe("useContactForm", () => {
     expect(current).toHaveBeenCalledTimes(1);
   });
 });
+
+/**
+ * The dialog can be closed while a submission is still in flight. Before
+ * this the state outlived the visit: the spinner was still running when the
+ * dialog reopened, the send button still disabled, and the only way out was
+ * a page reload.
+ */
+describe("ending the attempt", () => {
+  it("offers a usable form again after a submission that never answered", async () => {
+    // A request that never comes back, which is what stranded it.
+    vi.stubGlobal("fetch", () => new Promise(() => undefined));
+
+    const { result } = renderHook(() => useContactForm({ onSent: vi.fn() }));
+
+    act(() => result.current.submit(submitEvent()));
+    await waitFor(() => expect(result.current.status).toBe("loading"));
+
+    act(() => result.current.reset());
+
+    expect(result.current.status).toBe("idle");
+  });
+
+  it("clears a failure the visitor has already walked away from", async () => {
+    respondWith("{}", 500);
+    const { result } = renderHook(() => useContactForm({ onSent: vi.fn() }));
+
+    act(() => result.current.submit(submitEvent()));
+    await waitFor(() => expect(result.current.status).toBe("error"));
+
+    act(() => result.current.reset());
+
+    expect(result.current.status).toBe("idle");
+    expect(result.current.failure).toBeNull();
+  });
+
+  it("ignores an answer that arrives after the attempt was ended", async () => {
+    // The request is left to finish — it may still deliver the message —
+    // but its outcome must not reopen a screen the visitor has left.
+    let settle: (value: Response) => void = () => undefined;
+    vi.stubGlobal(
+      "fetch",
+      () => new Promise<Response>((resolve) => { settle = resolve; }),
+    );
+
+    const onSent = vi.fn();
+    const { result } = renderHook(() => useContactForm({ onSent }));
+
+    act(() => result.current.submit(submitEvent()));
+    await waitFor(() => expect(result.current.status).toBe("loading"));
+
+    act(() => result.current.reset());
+    await act(async () => {
+      settle(new Response(JSON.stringify({ success: true }), { status: 200 }));
+      await Promise.resolve();
+    });
+
+    expect(result.current.status).toBe("idle");
+    expect(onSent).not.toHaveBeenCalled();
+  });
+
+  it("keeps reset stable across renders", () => {
+    const { result, rerender } = renderHook(() => useContactForm({ onSent: vi.fn() }));
+    const first = result.current.reset;
+
+    rerender();
+
+    expect(result.current.reset).toBe(first);
+  });
+});

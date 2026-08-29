@@ -37,6 +37,25 @@ export type ContactResult =
   | { ok: false; reason: ContactFailureReason };
 
 /**
+ * How long a submission is given before it is called unreachable.
+ *
+ * fetch has no timeout of its own. A socket that opens and then goes quiet
+ * — a captive portal, a service that accepts the connection and stops
+ * answering — leaves the promise pending for as long as the page is open,
+ * and the dialog spinning with it. The visitor's message is then neither
+ * sent nor recoverable.
+ *
+ * Fifteen seconds is longer than this request has ever taken and short
+ * enough that somebody is still watching the screen when it gives up.
+ */
+export const REQUEST_TIMEOUT = 15000;
+
+export interface SubmitOptions {
+  /** Overridden in tests, which cannot wait fifteen seconds. */
+  timeout?: number;
+}
+
+/**
  * Reads the four fields out of a submitted form.
  *
  * FormData entries are `string | File`, so each field is read and coerced
@@ -78,43 +97,60 @@ export function buildSubmission(fields: ContactFields): ContactSubmission {
  */
 export async function submitContactForm(
   fields: ContactFields,
+  { timeout = REQUEST_TIMEOUT }: SubmitOptions = {},
 ): Promise<ContactResult> {
-  let response: Response;
+  const controller = new AbortController();
+  const expiry = setTimeout(() => controller.abort(), timeout);
 
+  // Covers reading the body as well as the request. A service that sends
+  // headers and then stops mid-body hangs exactly like one that never
+  // answers, and the visitor cannot tell the difference either.
   try {
-    response = await fetch(ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(buildSubmission(fields)),
-    });
-  } catch {
-    // fetch rejects only when the request never completed.
-    return { ok: false, reason: "unreachable" };
+    let response: Response;
+
+    try {
+      response = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(buildSubmission(fields)),
+        signal: controller.signal,
+      });
+    } catch {
+      // fetch rejects only when the request never completed, which now
+      // includes having run out of time.
+      return { ok: false, reason: "unreachable" };
+    }
+
+    // An error response carries no result to read, so it is not parsed for
+    // one. The outcome matches what the checks below would reach anyway;
+    // what this guard buys is that the body is left alone.
+    if (!response.ok) return { ok: false, reason: "rejected" };
+
+    // The body is untrusted input, so it is narrowed rather than assumed to
+    // match a declared shape.
+    let parsed: unknown;
+
+    try {
+      parsed = await response.json();
+    } catch {
+      // A body that never finished arriving is the same failure as a
+      // request that never did, and is worth retrying for the same reason.
+      return controller.signal.aborted
+        ? { ok: false, reason: "unreachable" }
+        : { ok: false, reason: "rejected" };
+    }
+
+    const accepted =
+      typeof parsed === "object" &&
+      parsed !== null &&
+      "success" in parsed &&
+      parsed.success === true;
+
+    return accepted ? { ok: true } : { ok: false, reason: "rejected" };
+  } finally {
+    clearTimeout(expiry);
   }
-
-  // An error response carries no result to read, so it is not parsed for
-  // one. The outcome matches what the checks below would reach anyway; what
-  // this guard buys is that the body is left alone.
-  if (!response.ok) return { ok: false, reason: "rejected" };
-
-  // The body is untrusted input, so it is narrowed rather than assumed to
-  // match a declared shape.
-  let parsed: unknown;
-
-  try {
-    parsed = await response.json();
-  } catch {
-    return { ok: false, reason: "rejected" };
-  }
-
-  const accepted =
-    typeof parsed === "object" &&
-    parsed !== null &&
-    "success" in parsed &&
-    parsed.success === true;
-
-  return accepted ? { ok: true } : { ok: false, reason: "rejected" };
 }

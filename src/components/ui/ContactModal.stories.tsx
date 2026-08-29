@@ -248,3 +248,73 @@ export const SendsTheExpectedPayload: Story = {
     }
   },
 };
+
+/**
+ * A submission that never comes back used to strand the dialog for good:
+ * the spinner kept running, the send button stayed disabled, and closing
+ * and reopening showed the same spinner, because nothing reset the state.
+ * Only a page reload cleared it, and the message was gone either way.
+ *
+ * This is a story rather than a hook test because what broke was the
+ * wiring. The hook takes `isOpen` and resets on close; if the dialog stops
+ * passing it, every hook test still passes and the visitor is stranded
+ * again.
+ */
+const ReopenableWrapper = (args: ContactModalProps) => {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)}>Open the form</button>
+      <ContactModal {...args} isOpen={isOpen} onClose={() => setIsOpen(false)} />
+    </>
+  );
+};
+
+export const ReopeningAfterAHungSubmission: Story = {
+  args: { isOpen: true, onClose: () => {} },
+  render: (args) => <ReopenableWrapper {...args} />,
+  play: async ({ canvasElement }) => {
+    const original = window.fetch;
+    // A request that opens and never answers, which is the case fetch has
+    // no timeout for.
+    window.fetch = (() => new Promise(() => undefined)) as typeof window.fetch;
+
+    try {
+      const dialogNode = async () =>
+        waitFor(() => {
+          const el = document.querySelector<HTMLElement>('[role="dialog"]');
+          if (!el) throw new Error('dialog not mounted');
+          return el;
+        });
+
+      const dialog = await dialogNode();
+      const form = within(dialog);
+
+      await userEvent.type(form.getByLabelText('Name'), 'Ada');
+      await userEvent.type(form.getByLabelText('Email'), 'ada@example.com');
+      await userEvent.type(form.getByLabelText('Message'), 'Hello');
+      await userEvent.click(form.getByRole('button', { name: /send message/i }));
+
+      const submit = (root: HTMLElement) =>
+        root.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      await waitFor(() => expect(submit(dialog)).toBeDisabled());
+
+      // Close it, which is all a stranded visitor can do, and open again.
+      await userEvent.keyboard('{Escape}');
+      await waitFor(() =>
+        expect(document.querySelector('[role="dialog"]')).toBeNull(),
+      );
+
+      await userEvent.click(
+        within(canvasElement).getByRole('button', { name: 'Open the form' }),
+      );
+
+      const reopened = await dialogNode();
+      // The whole point: a form that can be sent, not the old spinner.
+      await waitFor(() => expect(submit(reopened)).toBeEnabled());
+      expect(within(reopened).getByLabelText('Name')).toHaveValue('');
+    } finally {
+      window.fetch = original;
+    }
+  },
+};
