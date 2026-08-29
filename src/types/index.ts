@@ -103,6 +103,8 @@ export interface HeroData {
 export interface AboutData {
   paragraphs: string[];
   imageUrl: string;
+  imageWidth: number;
+  imageHeight: number;
 }
 
 /** A credential in the print CV, where the full record is listed. */
