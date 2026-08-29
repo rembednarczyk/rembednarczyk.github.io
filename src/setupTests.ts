@@ -11,6 +11,7 @@ import { vi } from "vitest";
 class MockIntersectionObserver implements IntersectionObserver {
   readonly root = null;
   readonly rootMargin = "";
+  readonly scrollMargin = "";
   readonly thresholds: ReadonlyArray<number> = [];
 
   constructor(private readonly callback: IntersectionObserverCallback) {}
