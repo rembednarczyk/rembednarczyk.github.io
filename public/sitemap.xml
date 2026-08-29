@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
+  <!-- lastmod is rewritten with the build date by the stamp-sitemap plugin
+       in vite.config.ts. The values below are only served in dev. -->
+
   <url>
     <loc>https://remigiuszbednarczyk.com/</loc>
-    <lastmod>2026-03-24</lastmod>
+    <lastmod>2026-08-29</lastmod>
   </url>
 
   <url>
     <loc>https://remigiuszbednarczyk.com/llm.txt</loc>
-    <lastmod>2026-03-24</lastmod>
+    <lastmod>2026-08-29</lastmod>
   </url>
 
 </urlset>
