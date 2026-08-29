@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ParticleField } from "../lib/particleField";
+import { reportError } from "../lib/reportError";
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
@@ -66,24 +67,67 @@ export const ParticleBackground: React.FC = () => {
       field.resize(width, height);
     };
 
+    /**
+     * A throw inside a frame or a listener is outside React's reach: an
+     * error boundary catches render and lifecycle, and nothing else. So a
+     * bad frame here would keep firing sixty times a second, uncaught,
+     * with the boundary none the wiser and the page left broken.
+     *
+     * The backdrop is decoration. When it fails the honest thing is to
+     * stop it and leave the gradient the canvas already carries, which is
+     * exactly what a visitor who prefers reduced motion sees anyway.
+     */
+    let stopped = false;
+
+    const stop = (error: unknown, where: string) => {
+      stopped = true;
+      cancelAnimationFrame(animationFrameId);
+      reportError(error, where);
+
+      // A half-painted frame is worse than none: clear it and let the
+      // element's own background show through.
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
+
+    /** Runs a step of the simulation, or takes the backdrop down for good. */
+    const guarded =
+      <A extends unknown[]>(step: (...args: A) => void, where: string) =>
+      (...args: A) => {
+        if (stopped) return;
+        try {
+          step(...args);
+        } catch (error) {
+          stop(error, where);
+        }
+      };
+
     const animate = () => {
-      field.drawFrame();
+      if (stopped) return;
+      try {
+        field.drawFrame();
+      } catch (error) {
+        return stop(error, "particle-frame");
+      }
       animationFrameId = requestAnimationFrame(animate);
     };
 
     const handleResize = () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(resize, RESIZE_DEBOUNCE);
+      resizeTimer = setTimeout(guarded(resize, "particle-resize"), RESIZE_DEBOUNCE);
     };
 
-    const handleMouseMove = (e: MouseEvent) => field.setPointer(e.clientX, e.clientY);
-    const handleMouseOut = () => field.clearPointer();
+    const handleMouseMove = guarded(
+      (e: MouseEvent) => field.setPointer(e.clientX, e.clientY),
+      "particle-pointer",
+    );
+    const handleMouseOut = guarded(() => field.clearPointer(), "particle-pointer");
 
     window.addEventListener("resize", handleResize, { passive: true });
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     window.addEventListener("mouseout", handleMouseOut, { passive: true });
 
-    resize();
+    guarded(resize, "particle-resize")();
     animate();
 
     return () => {

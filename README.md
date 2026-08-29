@@ -123,6 +123,7 @@ Rules that can be automated are automated, following the principle that a ratche
 - `tests/module-reachability.test.ts` walks the import graph from the entry point and the stories, and fails on any module nothing imports. The repository previously carried ten duplicated section components that had drifted from the live ones while every check stayed green.
 - `tests/dependencies.test.ts` fails when an installed package refuses the installed Storybook core, when the source imports a package it does not declare, or when the CI install step reaches for `--legacy-peer-deps`. That flag had been hiding a conflict which made `npm install` impossible for a whole major version.
 - `tests/animationFeatures.test.ts` fails if the motion feature set widens back to `domMax`, which renders identically and costs the saving, so nothing at runtime would report it.
+- `src/components/ErrorBoundary.test.tsx` reads `src/main.tsx` and fails if the error boundary is not mounted around the app. The component keeps passing its own tests and its own story while wired to nothing, so removing it from the root was previously invisible.
 
 ---
 
