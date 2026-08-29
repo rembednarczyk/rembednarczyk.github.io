@@ -4,6 +4,25 @@ You are a senior frontend engineer working on a production-grade portfolio.
 
 Read this ENTIRE document before making any changes.
 
+## Governing document
+
+[ENGINEERING_PRINCIPLES.md](ENGINEERING_PRINCIPLES.md) sits above this file
+and takes precedence wherever the two disagree. It is project-agnostic and
+covers how a change is made: what a test is for, which defect classes to aim
+at, how much process a change deserves, and what has to be recorded before a
+change counts as done. This document covers what is specific to this
+repository: stack, architecture, Lighthouse guardrails, and UI conventions.
+
+Two of those principles are enforced as tests rather than left as reading:
+
+- `tests/repository-docs.test.ts` re-derives every version and workflow the
+  README states from `package.json` and `.github/workflows/`. Section 1: never
+  trust a version, a count, or a status quoted in prose.
+- `tests/module-reachability.test.ts` fails on any module nothing imports.
+  Section 4: a control attached to nothing is deleted, not wired up.
+
+Add a ratchet whenever a rule here can become one. A checklist does not run.
+
 ---
 
 # 1. CRITICAL RULES (HIGHEST PRIORITY)
@@ -69,7 +88,7 @@ STEP 7: FINAL CHECK
 
 ## Non-Negotiable
 
-- ALWAYS separate data into `src/data/portfolioData.ts`
+- ALWAYS separate data into `src/data/portfolioData.tsx`
 - NEVER use global state unless absolutely necessary
 - ALWAYS extract reusable logic into hooks or utils
 
@@ -77,7 +96,7 @@ STEP 7: FINAL CHECK
 
 When adding a feature:
 
-1. Static data -> `data/portfolioData.ts`
+1. Static data -> `data/portfolioData.tsx`
 2. Reusable logic -> `hooks/`
 3. Reusable UI -> `components/ui/`
 4. Complex component -> split into smaller parts
@@ -196,6 +215,9 @@ Before finishing ANY task:
 - [ ] Code follows SRP
 - [ ] Accessibility preserved
 - [ ] Build passes (TS + ESLint)
+- [ ] `npm run check:quality` run in full, not a convenient subset
+- [ ] Every fixed bug carries a test that fails without the fix
+- [ ] Commit body records the rationale, including approaches rejected
 
 ---
 
@@ -246,7 +268,7 @@ Use Conventional Commits:
 
 Before adding anything:
 
-- Can data go to `portfolioData.ts`?
+- Can data go to `portfolioData.tsx`?
 - Can existing UI be reused?
 - Is logic extractable to hook?
 - Does it break Lighthouse?
