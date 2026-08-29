@@ -4,6 +4,7 @@ import { m, AnimatePresence } from "motion/react";
 import { X, Shield } from "lucide-react";
 import { cvData } from "../../data/portfolioData";
 import { useModalA11y } from "../../hooks/useModalA11y";
+import { CONSENT_STORAGE_KEY } from "../../hooks/useCookieConsent";
 
 export interface PrivacyPolicyModalProps {
   isOpen: boolean;
@@ -137,7 +138,7 @@ export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: Privacy
                   Analytics runs on <strong className="text-slate-200">Google Consent Mode v2</strong> with every storage type denied by default. No analytics cookies are written and no measurement data is collected until you explicitly accept via the consent banner. Declining is a fully working state &ndash; the site behaves identically either way. Google Analytics 4 does not log full IP addresses, and no personally identifiable information is collected through it.
                 </p>
                 <p>
-                  Your choice is stored locally in your own browser under the key <code className="text-cyan-400 font-mono text-xs">cookie-consent</code>. It never leaves your device.
+                  Your choice is stored locally in your own browser under the key <code className="text-cyan-400 font-mono text-xs">{CONSENT_STORAGE_KEY}</code>. It never leaves your device.
                 </p>
                 {onChangeConsent && (
                   <p>
