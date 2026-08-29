@@ -34,6 +34,11 @@ const originalTitle = document.title;
 beforeEach(() => {
   visit("/");
   document.title = originalTitle;
+
+  // jsdom does not implement it, and the page scrolls to a section when the
+  // address names one. Supplied rather than guarded against in the hook:
+  // every browser has this, so a check there would exist for jsdom alone.
+  Element.prototype.scrollIntoView = vi.fn();
 });
 
 afterEach(() => {

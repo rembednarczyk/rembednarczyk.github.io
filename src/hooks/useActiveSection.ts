@@ -63,9 +63,13 @@ export function useActiveSection(
         if (lastSection) currentActive = lastSection.id;
       }
 
-      if (currentActive) {
-        setActiveSection(mappingRef.current[currentActive] ?? currentActive);
-      }
+      // Cleared rather than left alone when nothing qualifies. Above the
+      // first section the reader is in the hero, which has no nav entry, and
+      // holding the previous value there told them they were somewhere they
+      // had scrolled away from.
+      setActiveSection(
+        currentActive ? (mappingRef.current[currentActive] ?? currentActive) : "",
+      );
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
