@@ -88,7 +88,7 @@ STEP 7: FINAL CHECK
 
 ## Non-Negotiable
 
-- ALWAYS separate data into `src/data/portfolioData.tsx`
+- ALWAYS separate data from components: facts into `src/data/portfolioFacts.ts`, the JSX that presents them into `src/data/portfolioData.tsx`
 - NEVER use global state unless absolutely necessary
 - ALWAYS extract reusable logic into hooks or utils
 
@@ -96,7 +96,7 @@ STEP 7: FINAL CHECK
 
 When adding a feature:
 
-1. Static data -> `data/portfolioData.tsx`
+1. Static facts -> `src/data/portfolioFacts.ts`, which carries no JSX so the build can read it (`llm.txt`, the JSON-LD and the sitemap are generated from it)
 2. Reusable logic -> `hooks/`
 3. Reusable UI -> `components/ui/`
 4. Complex component -> split into smaller parts
@@ -259,8 +259,8 @@ Use Conventional Commits:
 # 13. ASSET RULES
 
 - Images -> optimized (WebP preferred)
-- Store in `public/` or `src/assets/`
-- QR Codes -> generated via `react-qr-code` (SVG)
+- Store in `public/`
+- QR Codes -> drawn once by `scripts/qrCode.ts` and committed as a path in `src/data/linkedinQr.ts`. Nothing generates a QR in the browser: the only one the site has encodes a constant, so shipping a generator to redraw it on every visit was 10 kB for nothing. `react-qr-code` stays a devDependency purely as the oracle `tests/linkedinQr.test.ts` compares the committed path against
 
 ---
 
@@ -268,9 +268,9 @@ Use Conventional Commits:
 
 Before adding anything:
 
-- Can data go to `portfolioData.tsx`?
+- Can the facts go to `portfolioFacts.ts` and the presentation to `portfolioData.tsx`?
 - Can existing UI be reused?
 - Is logic extractable to hook?
-- Does it break Lighthouse?
+- Does it break Lighthouse? `npm run check:lighthouse` answers that against the built site rather than by opinion, and CI runs it
 
 If unsure -> choose simpler solution.

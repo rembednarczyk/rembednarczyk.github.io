@@ -121,9 +121,14 @@ function listEntries(dir: string): string[] {
   });
 }
 
-const SEARCHED_ROOTS = ["src", "scripts", "tests", "docs", ".github"];
+const SEARCHED_ROOTS = ["src", "scripts", "tests", "docs", ".github", "public"];
 
-const allEntries = SEARCHED_ROOTS.flatMap((dir) => listEntries(resolve(root, dir)))
+const allEntries = SEARCHED_ROOTS.flatMap((dir) => [
+  // The root itself as well as its contents: listEntries only reports
+  // directories it descends into, so `public/` on its own matched nothing.
+  resolve(root, dir),
+  ...listEntries(resolve(root, dir)),
+])
   .concat([resolve(root, "package.json"), resolve(root, "vite.config.ts")])
   .map((f) => f.replace(/\\/g, "/"));
 
@@ -133,13 +138,39 @@ const codeWithoutComments = allEntries
   .join("\n");
 
 /** Anything backticked that reads as a path or a filename. */
-const quotedPaths = [
-  ...new Set(
-    [...readme.matchAll(/`([\w@./-]*[\w-]\.(?:tsx?|jsx?|json|ya?ml|xml|md)|[\w./-]+\/)`/g)].map(
-      (m) => m[1],
+function pathsNamedIn(document: string): string[] {
+  return [
+    ...new Set(
+      [...document.matchAll(/`([\w@./-]*[\w-]\.(?:tsx?|jsx?|json|ya?ml|xml|md)|[\w./-]+\/)`/g)].map(
+        (m) => m[1],
+      ),
     ),
-  ),
-];
+  ];
+}
+
+/**
+ * Which of those the repository has nothing matching.
+ *
+ * Matched as a suffix, since the documents abbreviate some paths
+ * ("utils/domain.ts") and generalise others (".stories.tsx").
+ */
+function pathsThatDoNotExist(named: string[]): string[] {
+  return named.filter((quoted) => {
+    const trimmed = quoted.replace(/\/$/, "");
+
+    // A leading dot with no separator is an extension pattern rather than
+    // a path: the README says "every `.stories.tsx` file".
+    if (trimmed.startsWith(".") && !trimmed.includes("/")) {
+      return !allEntries.some((entry) => entry.endsWith(trimmed));
+    }
+
+    return !allEntries.some(
+      (entry) => entry === trimmed || entry.endsWith(`/${trimmed}`),
+    );
+  });
+}
+
+const quotedPaths = pathsNamedIn(readme);
 
 /** Backticked camelCase names: a lower-case start with a capital inside. */
 const quotedIdentifiers = [
@@ -189,21 +220,7 @@ export function getYearsOfExperience() {}`;
 
 describe("things the README names", () => {
   it("names only files that exist", () => {
-    // Matched as a suffix, since the README abbreviates some paths
-    // ("utils/domain.ts") and generalises others (".stories.tsx").
-    const missing = quotedPaths.filter((quoted) => {
-      const trimmed = quoted.replace(/\/$/, "");
-
-      // A leading dot with no separator is an extension pattern rather than
-      // a path: the README says "every `.stories.tsx` file".
-      if (trimmed.startsWith(".") && !trimmed.includes("/")) {
-        return !allEntries.some((entry) => entry.endsWith(trimmed));
-      }
-
-      return !allEntries.some(
-        (entry) => entry === trimmed || entry.endsWith(`/${trimmed}`),
-      );
-    });
+    const missing = pathsThatDoNotExist(quotedPaths);
 
     expect(quotedPaths.length).toBeGreaterThan(5);
     expect(
@@ -231,12 +248,41 @@ describe("things the README names", () => {
   });
 });
 
+const GUIDELINE_DOCUMENTS = ["ENGINEERING_PRINCIPLES.md", "AI_INSTRUCTIONS.md"];
+
 describe("guideline documents", () => {
   it("keeps both guideline documents present and non-empty", () => {
-    ["ENGINEERING_PRINCIPLES.md", "AI_INSTRUCTIONS.md"].forEach((file) => {
+    GUIDELINE_DOCUMENTS.forEach((file) => {
       const path = resolve(root, "docs/guidelines", file);
       expect(existsSync(path), `${file} is missing`).toBe(true);
       expect(readFileSync(path, "utf8").trim().length).toBeGreaterThan(0);
     });
+  });
+
+  /**
+   * The same check the README gets, and for a stronger reason: this is the
+   * document that tells the next contributor where things live, so a path
+   * it names that no longer exists sends them to write in the wrong file.
+   *
+   * Until now these two were only checked for existing and being non-empty.
+   * That let AI_INSTRUCTIONS point at `src/assets/`, a directory this
+   * repository has never had.
+   */
+  it("names only files that exist", () => {
+    const named = GUIDELINE_DOCUMENTS.flatMap((file) =>
+      pathsNamedIn(readFileSync(resolve(root, "docs/guidelines", file), "utf8")).map(
+        (path) => ({ file, path }),
+      ),
+    );
+
+    const missing = named.filter(({ path }) => pathsThatDoNotExist([path]).length > 0);
+
+    // Guards against the extraction quietly finding nothing, which would
+    // make the check pass on any document at all.
+    expect(named.length).toBeGreaterThan(5);
+    expect(
+      missing.map(({ file, path }) => `${file}: ${path}`),
+      "these are named in the guidelines, and nothing in the repository matches",
+    ).toEqual([]);
   });
 });
