@@ -125,10 +125,17 @@ describe("static assets", () => {
       .map((f) => readFileSync(f, "utf8"))
       .join("\n");
 
+    // Matched on the path rather than the bare filename, so a name that
+    // merely appears in some unrelated string does not read as a reference.
+    //
+    // This does not catch an asset named through an absolute URL to another
+    // origin: that string still contains the path. The portrait was written
+    // that way, and what reports it is tests/portrait.test.ts, which
+    // requires the address to be site-relative.
     const unreferenced = assets
       .map((f) => relative(publicDir, f).replace(/\\/g, "/"))
       .filter((name) => !ROOT_SERVED.has(name))
-      .filter((name) => !haystack.includes(name.split("/").pop()!));
+      .filter((name) => !haystack.includes(`/${name}`));
 
     expect(
       unreferenced,

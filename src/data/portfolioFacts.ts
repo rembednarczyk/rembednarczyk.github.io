@@ -71,8 +71,21 @@ export const aboutData: AboutData = {
     "Beyond technical strategy, my core focus is on people. I am dedicated to mentoring engineers, shaping QA talent, and elevating the standards of the testing community. Whether through designing comprehensive training programs or guiding organizations through digital transformations, my goal is to empower teams to deliver excellence.",
     "When I'm not evaluating test processes or managing projects, I am a happy father, a runner, and a kettlebell training enthusiast practicing the Hardstyle Kettlebell method developed by Pavel Tsatsouline.",
   ],
-  imageUrl:
-    "https://remigiuszbednarczyk.com/img/Remi_original.webp",
+  /**
+   * Served from this deploy, so a replaced photo is visible in dev and in a
+   * preview build. It used to be an absolute URL to the live site, which
+   * meant every environment showed whatever production happened to hold.
+   */
+  imageUrl: "/img/remi-portrait.webp",
+
+  /**
+   * The file's own dimensions, so the browser reserves the right shape
+   * before it arrives. The component used to declare 600x600 against a
+   * portrait, and the box grew by 106px when the image loaded.
+   * tests/portrait.test.ts reads these back out of the file.
+   */
+  imageWidth: 773,
+  imageHeight: 1200,
 };
 
 export const thinkingQuote: string = "AI-first engineering shifts value from writing code to making decisions.";

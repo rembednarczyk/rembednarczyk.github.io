@@ -20,7 +20,11 @@ export function AboutSection() {
               <p key={idx}>{paragraph}</p>
             ))}
           </div>
-          <AboutImage imageUrl={aboutData.imageUrl} />
+          <AboutImage
+            imageUrl={aboutData.imageUrl}
+            width={aboutData.imageWidth}
+            height={aboutData.imageHeight}
+          />
         </div>
       </m.div>
     </section>
