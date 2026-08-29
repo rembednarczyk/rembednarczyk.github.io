@@ -1,5 +1,6 @@
 import QRCode from "react-qr-code";
-import { Mail, Linkedin, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm, BadgeCheck, BrainCircuit, BookOpen } from "lucide-react";
+import { Mail, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm, BadgeCheck, BrainCircuit, BookOpen } from "lucide-react";
+import { LinkedinIcon } from "./ui/BrandIcon";
 import { fullCertificationsList, cvData, experienceData } from "../data/portfolioData";
 
 export const CVTemplate = () => {
@@ -56,7 +57,7 @@ export const CVTemplate = () => {
             </button>
           </div>
           <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
-            <Linkedin size={14} className="text-slate-400" aria-hidden="true" />
+            <LinkedinIcon size={14} className="text-slate-400" aria-hidden="true" />
             <a href={`https://${cvData.header.linkedin}`} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400">
               {cvData.header.linkedin}
             </a>

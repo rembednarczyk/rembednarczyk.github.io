@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Mail, Download, Linkedin, Github } from "lucide-react";
+import { Mail, Download } from "lucide-react";
+import { LinkedinIcon, GithubIcon } from "../ui/BrandIcon";
 import { ContactModal } from "../ui/ContactModal";
 
 export function ContactSection() {
@@ -58,7 +59,7 @@ export function ContactSection() {
             aria-label="LinkedIn profile"
             className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 active:bg-white/5 transition-all p-2 hover:bg-white/5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
           >
-            <Linkedin aria-hidden="true" size={28} />
+            <LinkedinIcon aria-hidden="true" size={28} />
           </a>
           <a
             href="https://github.com/rembednarczyk"
@@ -67,7 +68,7 @@ export function ContactSection() {
             aria-label="GitHub profile"
             className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 active:bg-white/5 transition-all p-2 hover:bg-white/5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
           >
-            <Github aria-hidden="true" size={28} />
+            <GithubIcon aria-hidden="true" size={28} />
           </a>
         </div>
       </motion.div>
