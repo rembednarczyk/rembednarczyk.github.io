@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { Mail, Download } from "lucide-react";
 import { LinkedinIcon, GithubIcon } from "../ui/BrandIcon";
 import { ContactModal } from "../ui/ContactModal";
@@ -12,7 +12,7 @@ export function ContactSection() {
       id="contact"
       className="pt-32 pb-16 text-center max-w-2xl mx-auto flex flex-col items-center"
     >
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -71,7 +71,7 @@ export function ContactSection() {
             <GithubIcon aria-hidden="true" size={28} />
           </a>
         </div>
-      </motion.div>
+      </m.div>
       
       <ContactModal 
         isOpen={isModalOpen} 

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { LazyMotion, domAnimation } from "motion/react";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { HeroSection } from "./components/sections/HeroSection";
@@ -19,7 +20,27 @@ import { BrandPresenceSection } from "./components/sections/BrandPresence/BrandP
 import { ProjectsSection } from "./components/sections/Projects/ProjectsSection";
 import { ContactSection } from "./components/sections/ContactSection";
 
+/**
+ * Loads the animation feature set once, for the whole tree.
+ *
+ * `m` carries no features of its own, so nothing renders without this
+ * wrapper. `strict` makes that a loud failure rather than a silent one: a
+ * `motion.div` left behind anywhere inside throws instead of quietly
+ * pulling the full bundle back in, which is the whole saving.
+ *
+ * domAnimation rather than domMax: the page uses initial, animate, exit,
+ * transition, whileInView and viewport, and no drag, layout or gesture
+ * props at all. domMax exists for those.
+ */
 export default function App() {
+  return (
+    <LazyMotion features={domAnimation} strict>
+      <Page />
+    </LazyMotion>
+  );
+}
+
+function Page() {
   // Basic SPA routing for 404
   // If the path is not the root path, show the 404 page
   // We also ignore hash changes since those are used for section navigation

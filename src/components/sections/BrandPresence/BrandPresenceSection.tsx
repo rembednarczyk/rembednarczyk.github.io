@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { SectionHeading } from "../../ui/SectionHeading";
 import { brandPresenceData } from "../../../data/portfolioData";
 import { BrandCard } from "./BrandCard";
@@ -6,7 +6,7 @@ import { BrandCard } from "./BrandCard";
 export function BrandPresenceSection() {
   return (
     <section id="brand" className="py-24">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -19,7 +19,7 @@ export function BrandPresenceSection() {
             <BrandCard key={idx} item={item} />
           ))}
         </div>
-      </motion.div>
+      </m.div>
     </section>
   );
 }

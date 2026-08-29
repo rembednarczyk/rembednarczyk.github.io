@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { SectionHeading } from "../../ui/SectionHeading";
 import { certificationsData } from "../../../data/portfolioData";
 import { CertificationCard } from "./CertificationCard";
@@ -6,7 +6,7 @@ import { CertificationCard } from "./CertificationCard";
 export function CertificationsSection() {
   return (
     <section id="certifications" className="py-24">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -19,7 +19,7 @@ export function CertificationsSection() {
             <CertificationCard key={idx} item={item} />
           ))}
         </div>
-      </motion.div>
+      </m.div>
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "motion/react";
+import { m, AnimatePresence } from "motion/react";
 import { Cookie } from "lucide-react";
 import { Button } from "./Button";
 
@@ -24,7 +24,7 @@ export function CookieConsent({
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
+        <m.div
           // Transform only, never opacity: a partially faded banner spends
           // its entrance below the contrast threshold, which is both an
           // accessibility problem and a source of flaky a11y assertions.
@@ -62,7 +62,7 @@ export function CookieConsent({
               </Button>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

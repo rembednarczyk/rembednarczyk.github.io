@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { Terminal } from "lucide-react";
 import { heroData } from "../../data/portfolioData";
 import { useScrollToSection } from "../../hooks/useScrollToSection";
@@ -8,7 +8,7 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-[80vh] flex flex-col justify-center items-start">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
@@ -78,7 +78,7 @@ export function HeroSection() {
             Get in Touch
           </button>
         </div>
-      </motion.div>
+      </m.div>
     </section>
   );
 }

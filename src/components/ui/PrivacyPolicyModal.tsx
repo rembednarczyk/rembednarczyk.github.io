@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "motion/react";
+import { m, AnimatePresence } from "motion/react";
 import { X, Shield } from "lucide-react";
 import { cvData } from "../../data/portfolioData";
 import { useModalA11y } from "../../hooks/useModalA11y";
@@ -32,7 +32,7 @@ export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: Privacy
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
           {/* Backdrop */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -42,7 +42,7 @@ export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: Privacy
           />
 
           {/* Modal Content */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -169,7 +169,7 @@ export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: Privacy
                 </p>
               </section>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>,

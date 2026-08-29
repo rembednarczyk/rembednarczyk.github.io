@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { SectionHeading } from "../../ui/SectionHeading";
 import { achievementsData } from "../../../data/portfolioData";
 import { AchievementItem } from "./AchievementItem";
@@ -6,7 +6,7 @@ import { AchievementItem } from "./AchievementItem";
 export function AchievementsSection() {
   return (
     <section id="achievements" className="py-24">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -19,7 +19,7 @@ export function AchievementsSection() {
             <AchievementItem key={idx} achievement={achievement} />
           ))}
         </ul>
-      </motion.div>
+      </m.div>
     </section>
   );
 }

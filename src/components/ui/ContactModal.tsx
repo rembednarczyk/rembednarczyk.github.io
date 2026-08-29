@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "motion/react";
+import { m, AnimatePresence } from "motion/react";
 import { X, Mail, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "./Button";
 import { useModalA11y } from "../../hooks/useModalA11y";
@@ -38,7 +38,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
           {/* Backdrop */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -48,7 +48,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
           />
 
           {/* Modal Content */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -75,7 +75,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
             {/* Body */}
             <div className="p-6 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
               {status === "success" ? (
-                <motion.div 
+                <m.div 
                   initial={{ opacity: 0 }} 
                   animate={{ opacity: 1 }}
                   className="flex flex-col items-center justify-center py-8 text-center"
@@ -83,7 +83,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   <CheckCircle2 className="w-16 h-16 text-emerald-400 mb-4" aria-hidden="true" />
                   <h3 className="text-xl font-bold text-white mb-2">Message Sent!</h3>
                   <p className="text-slate-400">Thank you for reaching out. I&apos;ll get back to you soon.</p>
-                </motion.div>
+                </m.div>
               ) : (
                 <form onSubmit={submit} className="space-y-4">
                   {/* Honeypot for bot protection */}
@@ -151,7 +151,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 </form>
               )}
             </div>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>,
