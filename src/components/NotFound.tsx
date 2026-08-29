@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { Terminal } from "lucide-react";
 import { ParticleBackground } from "./ParticleBackground";
 import { useEffect, useState } from "react";
