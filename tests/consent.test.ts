@@ -54,17 +54,23 @@ describe("Consent Mode defaults in index.html", () => {
   /**
    * The order is the whole point. gtag.js decides whether to write storage
    * when it loads, so the denial has to be queued before the tag arrives.
-   * Move the block below the script tag and analytics cookies are written
-   * for every visitor before anyone is asked, which no test of the React
-   * app could report.
+   *
+   * This used to check that the denial appeared above the script tag in
+   * this file. The tag is no longer in this file at all — it is fetched
+   * only after the visitor accepts, because the request itself disclosed
+   * the visit before anyone had been asked — so what has to hold now is
+   * that the denial is queued into dataLayer during the document, and the
+   * document reaches for nothing. tests/consentBeforeTag.test.ts holds the
+   * second half; this holds the first.
    */
-  it("denies storage before the tag that would use it loads", () => {
+  it("queues the denial into dataLayer while the document loads", () => {
+    const stub = html.indexOf("function gtag()");
     const denial = html.indexOf("gtag('consent', 'default'");
-    const tag = html.indexOf("googletagmanager.com/gtag/js");
+    const firstPageview = html.indexOf("gtag('config'");
 
-    expect(denial).toBeGreaterThan(-1);
-    expect(tag).toBeGreaterThan(-1);
-    expect(denial).toBeLessThan(tag);
+    expect(stub).toBeGreaterThan(-1);
+    expect(denial).toBeGreaterThan(stub);
+    expect(denial).toBeLessThan(firstPageview);
   });
 
   it.each(DENIED_BY_DEFAULT)("denies %s", (storage) => {
