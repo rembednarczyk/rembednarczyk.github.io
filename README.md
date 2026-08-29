@@ -48,12 +48,11 @@ Engineering discipline applied to a personal project:
 
 ## Architecture and Key Decisions
 
-### Data-Driven Design and Domain Logic
+### Data-Driven Design
 
-All content lives outside the UI in `portfolioData.tsx`, including dynamic sections such as Core Expertise, Experience, and Certifications.
-A domain logic layer (`src/utils/domain.ts`) holds pure functions independent of React, which keeps them directly testable.
+All content lives outside the UI in `portfolioData.tsx`, including dynamic sections such as Core Expertise, Experience, and Certifications. Sections read from it; nothing writes back. Content changes without touching a component, and the print template renders the same entries the page does.
 
-The result is content that changes without touching components, and logic that can be verified without rendering anything.
+`src/utils/domain.ts` holds pure helpers written to be callable without React. They are covered by unit tests and currently called by nothing else, so they are staged rather than wired.
 
 ---
 
