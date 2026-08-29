@@ -31,8 +31,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
+      # No --legacy-peer-deps. That flag is what let a package refusing the
+      # installed Storybook core sit here unnoticed: it told npm to install
+      # the tree anyway, so the one place that would have reported the
+      # conflict was told not to.
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       # The Storybook test-runner only ever launches Chromium.
       - name: Install Playwright browser

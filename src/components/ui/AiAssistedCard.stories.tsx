@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect } from '@storybook/test';
+import { expect } from 'storybook/test';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { Card } from './Card';
 import { Badge } from './Badge';

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, waitFor } from '@storybook/test';
+import { expect, waitFor } from 'storybook/test';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { PrivacyPolicyModal, PrivacyPolicyModalProps } from './PrivacyPolicyModal';
 import { useState } from 'react';
