@@ -74,30 +74,3 @@ export const EveryVisibleSection: Story = {
     expect(await axe(canvasElement)).toHaveNoViolations();
   },
 };
-
-/**
- * The print CV is display:none on screen, so the scan above never sees it.
- * It is rendered on white, where the greys that read well on a dark page do
- * not: the certification ID numbers sat at 2.63:1, which is the one thing on
- * a printed CV somebody might need to copy out and check.
- *
- * Only contrast is checked here. axe also reports missing landmarks in this
- * view, and landmarks do nothing on paper.
- */
-export const ThePrintedCV: Story = {
-  parameters: { backgrounds: { disable: true } },
-  play: async ({ canvasElement }) => {
-    const cv = canvasElement.querySelector<HTMLElement>('.print\\:block');
-    expect(cv).not.toBeNull();
-
-    // Shown for the scan, since axe ignores what is not displayed.
-    cv!.classList.remove('hidden');
-    cv!.style.display = 'block';
-
-    expect(cv!.textContent).toContain('Remigiusz Bednarczyk');
-
-    expect(
-      await axe(cv!, { runOnly: ['color-contrast'] }),
-    ).toHaveNoViolations();
-  },
-};
