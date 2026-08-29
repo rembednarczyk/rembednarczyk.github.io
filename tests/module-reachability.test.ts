@@ -82,6 +82,61 @@ function reachableFrom(entries: string[]): Set<string> {
   return seen;
 }
 
+/**
+ * Files served at the root by convention. Nothing in the site links to
+ * them; crawlers, the hosting platform and language models fetch them by
+ * their well-known names.
+ */
+const ROOT_SERVED = new Set([
+  "CNAME", // GitHub Pages reads the custom domain from it
+  "robots.txt",
+  "sitemap.xml",
+  "llm.txt",
+]);
+
+describe("static assets", () => {
+  /**
+   * The import graph cannot see public/. Everything in it is copied into
+   * the build whether or not anything asks for it, so an asset left behind
+   * after the thing that used it was rewritten keeps shipping to every
+   * visitor, and no check reports it.
+   *
+   * This repository had two: cv-qr-code.png and cv-qr-code.svg, drawn for a
+   * QR that the print template stopped rendering. They were 10.9 kB per
+   * deploy of a picture nothing pointed at.
+   */
+  it("has no file in public/ that nothing points at", () => {
+    const publicDir = resolve(root, "public");
+
+    const listAll = (dir: string): string[] =>
+      readdirSync(dir).flatMap((entry) => {
+        const full = join(dir, entry);
+        return statSync(full).isDirectory() ? listAll(full) : [full];
+      });
+
+    const assets = listAll(publicDir);
+    expect(assets.length).toBeGreaterThan(3);
+
+    const haystack = [
+      ...listSourceFiles(srcDir),
+      resolve(root, "index.html"),
+      ...assets.filter((f) => /\.(txt|xml|html)$/.test(f)),
+    ]
+      .map((f) => readFileSync(f, "utf8"))
+      .join("\n");
+
+    const unreferenced = assets
+      .map((f) => relative(publicDir, f).replace(/\\/g, "/"))
+      .filter((name) => !ROOT_SERVED.has(name))
+      .filter((name) => !haystack.includes(name.split("/").pop()!));
+
+    expect(
+      unreferenced,
+      `these ship on every deploy and nothing points at them:\n  ${unreferenced.join("\n  ")}`,
+    ).toEqual([]);
+  });
+});
+
 describe("module reachability", () => {
   it("has no module that nothing imports", () => {
     const all = listSourceFiles(srcDir);
