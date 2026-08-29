@@ -5,6 +5,7 @@ import {
   readStoredConsent,
   useCookieConsent,
 } from "./useCookieConsent";
+import { TAG_ELEMENT_ID } from "../lib/analyticsTag";
 
 /**
  * The one part of this site with a legal obligation behind it. Analytics
@@ -23,6 +24,9 @@ afterEach(() => {
   vi.clearAllMocks();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+  // Any test that accepts now puts the analytics tag in the document, and
+  // jsdom keeps it between tests.
+  document.getElementById(TAG_ELEMENT_ID)?.remove();
 });
 
 /** Makes every localStorage method throw, as a locked-down browser does. */
@@ -141,5 +145,58 @@ describe("useCookieConsent", () => {
     expect(result.current.accept).toBe(first.accept);
     expect(result.current.decline).toBe(first.decline);
     expect(result.current.reset).toBe(first.reset);
+  });
+});
+
+/**
+ * The request itself, not just the cookie.
+ *
+ * Consent Mode kept storage denied while index.html fetched the tag on
+ * every visit anyway, which told Google the visitor's address and referring
+ * page before the banner had been answered. The hook owns that request now,
+ * so the hook is where it is held.
+ */
+describe("when the analytics tag is fetched", () => {
+  const tagsInDocument = () =>
+    document.querySelectorAll('script[src*="googletagmanager.com"]').length;
+
+  it("asks for nothing while the visitor has not answered", () => {
+    renderHook(() => useCookieConsent());
+
+    expect(tagsInDocument()).toBe(0);
+  });
+
+  it("asks for nothing after a refusal", () => {
+    const { result } = renderHook(() => useCookieConsent());
+
+    act(() => result.current.decline());
+
+    expect(tagsInDocument()).toBe(0);
+  });
+
+  it("loads it once the visitor accepts", () => {
+    const { result } = renderHook(() => useCookieConsent());
+
+    act(() => result.current.accept());
+
+    expect(tagsInDocument()).toBe(1);
+  });
+
+  it("loads it for a visitor who accepted on an earlier visit", () => {
+    localStorage.setItem(CONSENT_STORAGE_KEY, "granted");
+
+    renderHook(() => useCookieConsent());
+
+    expect(tagsInDocument()).toBe(1);
+  });
+
+  it("does not load a second copy when the choice is re-made", () => {
+    const { result } = renderHook(() => useCookieConsent());
+
+    act(() => result.current.accept());
+    act(() => result.current.reset());
+    act(() => result.current.accept());
+
+    expect(tagsInDocument()).toBe(1);
   });
 });

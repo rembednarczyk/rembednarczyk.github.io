@@ -5,8 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="msvalidate.01" content="4073A84C94A6264F5270B59500AB18EA" />
 
-    <!-- Google tag (gtag.js) with Consent Mode v2 -->
-    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <!--
+      Google tag (gtag.js) with Consent Mode v2.
+
+      The tag itself is NOT loaded here. Nothing in this document reaches
+      googletagmanager.com: the script is added by src/lib/analyticsTag.ts
+      once the visitor has accepted, and never before.
+
+      It used to be an `async` script tag beside this block, with a
+      preconnect above it. Consent Mode kept the cookies unwritten, but the
+      request still went out before anyone had answered the banner, carrying
+      the visitor's address, user agent and referring page to Google. The
+      privacy policy this site serves says no measurement data is collected
+      until acceptance, and that could not both be true.
+
+      What stays here is the part that has to run first: the default denial
+      and any stored opt-in, queued into dataLayer so the tag reads them the
+      moment it does load.
+    -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -36,7 +52,6 @@
       gtag('js', new Date());
       gtag('config', 'G-ZJPCFFZWSB');
     </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJPCFFZWSB"></script>
 
     <!-- Primary Meta Tags -->
     <title>

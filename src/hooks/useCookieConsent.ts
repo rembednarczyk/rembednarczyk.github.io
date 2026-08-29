@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { loadAnalyticsTag } from "../lib/analyticsTag";
 
 export type ConsentChoice = "granted" | "denied";
 export type ConsentState = ConsentChoice | "unset";
@@ -26,6 +27,16 @@ export function readStoredConsent(): ConsentState {
  */
 export function useCookieConsent() {
   const [consent, setConsent] = useState<ConsentState>(readStoredConsent);
+
+  /**
+   * The tag is fetched here rather than from index.html, so that a visitor
+   * who has not accepted — or who declined — makes no request to Google at
+   * all. This covers both the returning visitor whose yes is already stored
+   * and the one who accepts during this visit.
+   */
+  useEffect(() => {
+    if (consent === "granted") loadAnalyticsTag();
+  }, [consent]);
 
   const choose = useCallback((choice: ConsentChoice) => {
     setConsent(choice);
