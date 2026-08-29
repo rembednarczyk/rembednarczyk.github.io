@@ -45,6 +45,12 @@ jobs:
       - name: Quality gate
         run: npm run check:quality
 
+      # After the gate, which is what builds dist/. Its own step rather than
+      # part of check:quality: it needs a browser and about a minute, and a
+      # unit-test loop that slow stops being run locally.
+      - name: Lighthouse
+        run: npm run check:lighthouse
+
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
