@@ -29,14 +29,25 @@ import {
   BrandItem,
   KeyProject,
 } from "../types";
+import { getYearsOfExperience } from "../utils/domain";
+
+/**
+ * First professional testing role, from the earliest entry in
+ * experienceData below. Kept as a real date rather than parsed out of the
+ * `period` display string, which is formatted for reading and would break
+ * the moment its wording changes.
+ */
+export const CAREER_START = new Date("2014-01-01T00:00:00Z");
+
+/** Recomputed on every page load, so it never goes stale. */
+export const yearsOfExperience = getYearsOfExperience(CAREER_START);
 
 export const heroData = {
   name: "Remigiusz Bednarczyk.",
   subtitle: "Quality engineering for high-risk systems.",
-  description:
-    "Quality engineering professional with 12+ years of experience in software testing and test leadership. I specialize in test management, quality engineering practices, and building testing processes for regulated environments such as pharmaceutical and GxP systems.",
+  description: `Quality engineering professional with ${yearsOfExperience}+ years of experience in software testing and test leadership. I specialize in test management, quality engineering practices, and building testing processes for regulated environments such as pharmaceutical and GxP systems.`,
   metrics: [
-    { value: "12+", label: "Years Experience" },
+    { value: `${yearsOfExperience}+`, label: "Years Experience" },
     { value: "500+", label: "Testers Trained" },
     { value: "300+", label: "Technical Assessments Conducted" },
     { value: "10+", label: "GxP Projects Delivered" },

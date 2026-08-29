@@ -7,6 +7,7 @@ import {
   experienceData,
   keyProjectsData,
   skillsData,
+  yearsOfExperience,
 } from "./data/portfolioData";
 
 // The canvas background needs APIs jsdom does not provide, and it renders
@@ -105,6 +106,16 @@ describe("content is rendered from the data module", () => {
     certificationsData.forEach((cert) => {
       expect(screen.getAllByText(cert.title).length).toBeGreaterThan(0);
     });
+  });
+
+  // Pins the wiring from the data module through to the screen. The value
+  // itself is covered in portfolioData.test.ts, which moves the clock.
+  it("renders the computed years of experience in the hero", () => {
+    render(<App />);
+    expect(screen.getByText(`${yearsOfExperience}+`)).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(`${yearsOfExperience}\\+ years of experience`)),
+    ).toBeInTheDocument();
   });
 
   it("renders every key project", () => {

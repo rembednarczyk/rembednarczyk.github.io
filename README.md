@@ -52,7 +52,7 @@ Engineering discipline applied to a personal project:
 
 All content lives outside the UI in `portfolioData.tsx`, including dynamic sections such as Core Expertise, Experience, and Certifications. Sections read from it; nothing writes back. Content changes without touching a component, and the print template renders the same entries the page does.
 
-`src/utils/domain.ts` holds pure helpers written to be callable without React. They are covered by unit tests and currently called by nothing else, so they are staged rather than wired.
+`src/utils/domain.ts` holds pure helpers that run without React. `getYearsOfExperience` feeds the hero: the years figure is computed from a career start date on every page load, in both the headline metric and the description sentence, so it rolls over on its own instead of sitting there as a number someone has to remember to bump. `formatProjectTags` is covered by tests and called by nothing yet.
 
 ---
 
