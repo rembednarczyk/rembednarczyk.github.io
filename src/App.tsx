@@ -1,5 +1,6 @@
 import { LazyMotion, domAnimation } from "motion/react";
 import { useAutoPrint } from "./hooks/useAutoPrint";
+import { useHashTarget } from "./hooks/useHashTarget";
 import { isKnownPath } from "./lib/routing";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
@@ -59,6 +60,10 @@ export default function App() {
 export function Portfolio() {
   // Only the page can be printed; there is nothing on a 404 worth paper.
   useAutoPrint();
+
+  // The sections do not exist when the browser looks for the anchor, so a
+  // shared link to one of them has to be honoured here instead.
+  useHashTarget();
 
   return (
     <div className="relative min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-cyan-500/30 overflow-x-hidden print:overflow-visible print:bg-white">

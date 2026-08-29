@@ -138,3 +138,48 @@ describe("content is rendered from the data module", () => {
     });
   });
 });
+
+/**
+ * A link somebody shared to one part of this site.
+ *
+ * The hook that handles it is tested on its own; what this holds is that
+ * the page still calls it. Removing the call left every other test green,
+ * because the hook stays correct and simply stops being reached — the same
+ * gap that let the error boundary sit unmounted.
+ */
+describe("opening the page at a section", () => {
+  const realLocation = window.location;
+
+  const openWith = (hash: string) => {
+    Object.defineProperty(window, "location", {
+      value: { ...realLocation, hash },
+      configurable: true,
+    });
+  };
+
+  afterEach(() => {
+    Object.defineProperty(window, "location", {
+      value: realLocation,
+      configurable: true,
+    });
+  });
+
+  it("scrolls to the section the address names", () => {
+    openWith("#experience");
+
+    render(<App />);
+
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(scrollIntoView.mock.instances[0]).toBe(
+      document.getElementById("experience"),
+    );
+  });
+
+  it("stays at the top when no section was asked for", () => {
+    openWith("");
+
+    render(<App />);
+
+    expect(scrollIntoView).not.toHaveBeenCalled();
+  });
+});

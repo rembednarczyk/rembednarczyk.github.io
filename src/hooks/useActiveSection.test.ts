@@ -85,3 +85,42 @@ describe("useActiveSection", () => {
     await waitFor(() => expect(result.current).toBe("contact"));
   });
 });
+
+/**
+ * Above the first section the reader is in the hero, which has no nav
+ * entry. The hook only assigned when a section qualified, so whatever was
+ * last active stayed lit: scrolling down to Experience and back to the top
+ * left the navbar claiming the reader was still in Experience.
+ */
+describe("above the first section", () => {
+  it("reports nothing while the reader is in the hero", async () => {
+    const { result } = renderSections([
+      { id: "about", top: 800 },
+      { id: "skills", top: 1600 },
+    ]);
+
+    await waitFor(() => expect(result.current).toBe(""));
+  });
+
+  it("clears the highlight on the way back up", async () => {
+    // The regression itself: down first, then back above everything.
+    const { result } = renderSections(
+      [
+        { id: "about", top: -1000 },
+        { id: "skills", top: -200 },
+      ],
+      2000,
+    );
+
+    await waitFor(() => expect(result.current).toBe("skills"));
+
+    document.getElementById("about")!.getBoundingClientRect = () =>
+      ({ top: 800 }) as DOMRect;
+    document.getElementById("skills")!.getBoundingClientRect = () =>
+      ({ top: 1600 }) as DOMRect;
+    Object.defineProperty(window, "scrollY", { value: 0, configurable: true });
+    window.dispatchEvent(new Event("scroll"));
+
+    await waitFor(() => expect(result.current).toBe(""));
+  });
+});
