@@ -117,6 +117,39 @@ describe("the Storybook packages", () => {
   });
 });
 
+describe("the uuid override", () => {
+  /**
+   * uuid below 11.1.1 misses a buffer bounds check (GHSA-w5hq-g745-h8pq).
+   * It reaches this tree four levels down from @storybook/test-runner,
+   * through jest-junit, nyc and istanbul-lib-processinfo, and npm's own
+   * suggested remedy is to downgrade the test-runner by a major version,
+   * which trades one problem for a worse one. An override lifts uuid
+   * instead and leaves the test-runner alone.
+   *
+   * Asserted against the installed tree rather than the declaration: an
+   * override that npm did not honour would still read correctly in
+   * package.json.
+   */
+  it("actually lifts the installed uuid past the advisory", () => {
+    const uuid = installed("uuid");
+    expect(uuid, "uuid is not installed").not.toBeNull();
+
+    const [major, minor, patch] = uuid!.version.split(".").map(Number);
+    expect(
+      major > 11 || (major === 11 && (minor > 1 || (minor === 1 && patch >= 1))),
+      `uuid ${uuid!.version} is below 11.1.1`,
+    ).toBe(true);
+  });
+
+  it("is declared, so the lift survives a fresh resolve", () => {
+    const overrides = (JSON.parse(
+      readFileSync(resolve(root, "package.json"), "utf8"),
+    ) as { overrides?: Record<string, string> }).overrides;
+
+    expect(overrides?.["uuid"]).toBeDefined();
+  });
+});
+
 describe("the CI install step", () => {
   /**
    * --legacy-peer-deps is why none of this surfaced for a whole major
