@@ -52,21 +52,23 @@ Engineering discipline applied to a personal project:
 
 All content lives outside the UI in `portfolioData.tsx`, including dynamic sections such as Core Expertise, Experience, and Certifications. Sections read from it; nothing writes back. Content changes without touching a component, and the print template renders the same entries the page does.
 
-`src/utils/domain.ts` holds pure helpers that run without React. `getYearsOfExperience` feeds the hero: the years figure is computed from a career start date on every page load, in both the headline metric and the description sentence, so it rolls over on its own instead of sitting there as a number someone has to remember to bump. `formatProjectTags` is covered by tests and called by nothing yet.
+`src/utils/domain.ts` holds pure helpers that run without React. `getYearsOfExperience` feeds the hero: the years figure is computed from a career start date on every page load, in both the headline metric and the description sentence, so it rolls over on its own instead of sitting there as a number someone has to remember to bump.
+
+`src/lib/` holds logic that has no React in it at all. `particleField.ts` is the canvas simulation, handed a drawing context and a size; `contactForm.ts` is the contact form's transport, which reads the fields, builds the body and reports which of two things happened. Both used to live inside the components that render them, where the only way to reach them was to mount the component.
 
 ---
 
 ### Component Decomposition and Custom Hooks
 
 Large sections are decomposed into focused components such as `ExperienceItem`, `ProjectCard`, and `SkillCategoryCard`.
-Custom hooks (`useActiveSection`, `useScrollToSection`, `useModalA11y`, `useCookieConsent`) hold side effects and DOM work, which keeps the components declarative.
+Custom hooks (`useActiveSection`, `useScrollToSection`, `useModalA11y`, `useScrollLock`, `useContactForm`, `useCookieConsent`) hold side effects and DOM work, which keeps the components declarative.
 
 ---
 
 ### Software Engineering Practices
 
 - **Single Responsibility Principle:** `ExperienceSection` handles layout and iteration; `ExperienceItem` renders one job entry.
-- **Separation of Concerns:** data (`portfolioData.tsx`), domain logic (`utils/domain.ts`), side effects (`hooks/`), and UI (`components/`) stay isolated.
+- **Separation of Concerns:** data (`portfolioData.tsx`), pure helpers (`utils/domain.ts`), React-free logic (`lib/`), side effects (`hooks/`), and UI (`components/`) stay isolated.
 - **DRY:** shared UI elements such as `SectionHeading` and `Button` live in `ui/`.
 - **Strong typing:** TypeScript runs in `strict` mode with `@types/react` installed, so component props, hooks, and event handlers are all checked. Shared contracts live in `src/types/index.ts`.
 
@@ -98,7 +100,9 @@ Chosen for build speed, maintainability, and developer experience.
 
 ### Performance Optimization
 
-- Single bundle by design. `React.lazy` was tried and removed because the extra requests hurt LCP on HTTP/1.1 more than the smaller entry chunk helped.
+- Single bundle by design. `React.lazy` was tried and removed because the extra requests hurt LCP on HTTP/1.1 more than the smaller entry chunk helped. The work went into making that one bundle smaller instead.
+- Motion loads one feature set, `domAnimation`, once at the root through `LazyMotion`, and every animated element uses `m` rather than `motion`. The page animates with `initial`, `animate`, `exit`, `transition`, `whileInView` and `viewport`, and nothing else, so the drag, layout and gesture code never ships. `strict` mode makes a stray `motion` element throw rather than quietly restore the full bundle.
+- The printed CV's QR code is drawn from committed path data. It encodes a constant, and generating it in the browser meant shipping a QR library to every visitor for a picture that only appears on paper.
 - Passive scroll listeners so scrolling never waits on a handler
 - Canvas background using a spatial hash for particle linking and batched path strokes, with the backing store scaled to `devicePixelRatio`
 - Preconnect directives for the analytics origin
@@ -113,10 +117,12 @@ Development follows two documents, both of which apply to human and AI contribut
 - [Engineering Principles](docs/guidelines/ENGINEERING_PRINCIPLES.md) governs how changes are made: what a test is for, which defect classes to aim at, how much process a change deserves, and what has to be recorded before a change counts as done. It is project-agnostic and takes precedence.
 - [AI Instructions](docs/guidelines/AI_INSTRUCTIONS.md) covers this repository specifically: execution protocol, architecture rules, Lighthouse guardrails, and UI/UX conventions.
 
-Rules that can be automated are automated, following the principle that a ratchet beats a checklist. Two of them run as tests:
+Rules that can be automated are automated, following the principle that a ratchet beats a checklist. Several run as tests, each written after the repository had already broken the rule it now enforces:
 
-- `tests/repository-docs.test.ts` re-derives every version and workflow badge in this README from `package.json` and `.github/workflows/`, so a stale claim here fails the build.
+- `tests/repository-docs.test.ts` re-derives every version and workflow badge in this README from `package.json` and `.github/workflows/`, and checks that every file and symbol this README names still exists. A README once described a helper that had been deleted.
 - `tests/module-reachability.test.ts` walks the import graph from the entry point and the stories, and fails on any module nothing imports. The repository previously carried ten duplicated section components that had drifted from the live ones while every check stayed green.
+- `tests/dependencies.test.ts` fails when an installed package refuses the installed Storybook core, when the source imports a package it does not declare, or when the CI install step reaches for `--legacy-peer-deps`. That flag had been hiding a conflict which made `npm install` impossible for a whole major version.
+- `tests/animationFeatures.test.ts` fails if the motion feature set widens back to `domMax`, which renders identically and costs the saving, so nothing at runtime would report it.
 
 ---
 

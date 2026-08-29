@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -94,6 +94,140 @@ describe("files the README links to", () => {
         `README links to ${link}, which does not exist`,
       ).toBe(true),
     );
+  });
+});
+
+/**
+ * Comments are removed before the source is searched. A name that survives
+ * only in a note explaining its removal is exactly the case this exists for:
+ * the README described `formatProjectTags` as "covered by tests and called by
+ * nothing yet" for three merges after it had been deleted, while the only
+ * trace of it in the code was the comment recording that it was gone.
+ *
+ * The `//` rule ignores a slash preceded by a quote or a colon, so a URL
+ * inside a string is not mistaken for a comment.
+ */
+function withoutComments(source: string): string {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, " ")
+    .replace(/(^|[^:"'`])\/\/[^\n]*/g, "$1 ");
+}
+
+/** Every file and every directory below `dir`, so both forms can be matched. */
+function listEntries(dir: string): string[] {
+  return readdirSync(dir).flatMap((entry) => {
+    const full = join(dir, entry);
+    return statSync(full).isDirectory() ? [full, ...listEntries(full)] : [full];
+  });
+}
+
+const SEARCHED_ROOTS = ["src", "scripts", "tests", "docs", ".github"];
+
+const allEntries = SEARCHED_ROOTS.flatMap((dir) => listEntries(resolve(root, dir)))
+  .concat([resolve(root, "package.json"), resolve(root, "vite.config.ts")])
+  .map((f) => f.replace(/\\/g, "/"));
+
+const codeWithoutComments = allEntries
+  .filter((f) => /\.tsx?$/.test(f))
+  .map((f) => withoutComments(readFileSync(f, "utf8")))
+  .join("\n");
+
+/** Anything backticked that reads as a path or a filename. */
+const quotedPaths = [
+  ...new Set(
+    [...readme.matchAll(/`([\w@./-]*[\w-]\.(?:tsx?|jsx?|json|ya?ml|xml|md)|[\w./-]+\/)`/g)].map(
+      (m) => m[1],
+    ),
+  ),
+];
+
+/** Backticked camelCase names: a lower-case start with a capital inside. */
+const quotedIdentifiers = [
+  ...new Set(
+    [...readme.matchAll(/`([a-z][a-zA-Z0-9]*)`/g)]
+      .map((m) => m[1])
+      .filter((name) => /[A-Z]/.test(name)),
+  ),
+];
+
+describe("withoutComments", () => {
+  /**
+   * The rule the whole symbol check rests on. Tested directly, because
+   * proving it through the repository would need a name whose only
+   * occurrence anywhere is a comment, and contriving one proves less.
+   */
+  it("removes a block comment", () => {
+    expect(withoutComments("/* formatProjectTags */ const a = 1;")).not.toMatch(
+      /formatProjectTags/,
+    );
+  });
+
+  it("removes a line comment", () => {
+    expect(withoutComments("const a = 1; // formatProjectTags")).not.toMatch(
+      /formatProjectTags/,
+    );
+  });
+
+  it("removes the JSDoc a deletion leaves behind", () => {
+    const source = `/**
+ * \`formatProjectTags\` used to live here, joining tags with a separator.
+ */
+export function getYearsOfExperience() {}`;
+
+    const stripped = withoutComments(source);
+    expect(stripped).not.toMatch(/formatProjectTags/);
+    expect(stripped).toMatch(/getYearsOfExperience/);
+  });
+
+  it("keeps a URL, which is not a comment however much it looks like one", () => {
+    // Without the guard this eats the rest of the line, and a symbol
+    // declared next to a link would read as deleted.
+    const source = 'const endpoint = "https://api.example.com"; const useThing = 1;';
+    expect(withoutComments(source)).toMatch(/useThing/);
+  });
+});
+
+describe("things the README names", () => {
+  it("names only files that exist", () => {
+    // Matched as a suffix, since the README abbreviates some paths
+    // ("utils/domain.ts") and generalises others (".stories.tsx").
+    const missing = quotedPaths.filter((quoted) => {
+      const trimmed = quoted.replace(/\/$/, "");
+
+      // A leading dot with no separator is an extension pattern rather than
+      // a path: the README says "every `.stories.tsx` file".
+      if (trimmed.startsWith(".") && !trimmed.includes("/")) {
+        return !allEntries.some((entry) => entry.endsWith(trimmed));
+      }
+
+      return !allEntries.some(
+        (entry) => entry === trimmed || entry.endsWith(`/${trimmed}`),
+      );
+    });
+
+    expect(quotedPaths.length).toBeGreaterThan(5);
+    expect(
+      missing,
+      `the README names these, and nothing in the repository matches:\n  ${missing.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("names only symbols the code still contains", () => {
+    const missing = quotedIdentifiers.filter(
+      (name) => !new RegExp(`\\b${name}\\b`).test(codeWithoutComments),
+    );
+
+    expect(quotedIdentifiers.length).toBeGreaterThan(5);
+    expect(
+      missing,
+      `the README describes these, and the code no longer defines them:\n  ${missing.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("reads real source, so neither check above passes vacuously", () => {
+    // A broken root would leave both haystacks empty and let anything through.
+    expect(allEntries.length).toBeGreaterThan(50);
+    expect(codeWithoutComments).toContain("getYearsOfExperience");
   });
 });
 
