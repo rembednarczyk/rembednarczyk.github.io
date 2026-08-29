@@ -23,6 +23,11 @@ export interface ContactFormState {
   /** Which failure the error message should describe. Null unless status is "error". */
   failure: ContactFailureReason | null;
   submit: (event: FormEvent<HTMLFormElement>) => void;
+  /**
+   * Ends the attempt and returns the form to its opening state. The dialog
+   * calls this when it closes.
+   */
+  reset: () => void;
 }
 
 /**
@@ -39,6 +44,12 @@ export function useContactForm({ onSent }: UseContactFormOptions): ContactFormSt
   const [failure, setFailure] = useState<ContactFailureReason | null>(null);
 
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  /**
+   * Counts attempts, so an answer that arrives after its attempt was
+   * abandoned cannot put the dialog back into a state the visitor has left.
+   */
+  const attemptRef = useRef(0);
 
   // Callers usually pass an inline arrow, which would otherwise make submit a
   // fresh function on every parent render.
@@ -60,14 +71,38 @@ export function useContactForm({ onSent }: UseContactFormOptions): ContactFormSt
     };
   }, []);
 
+  /**
+   * Ends the attempt and returns to the opening state.
+   *
+   * Without this the state outlived the visit: a submission still in flight
+   * left the dialog spinning, and closing and reopening it showed the same
+   * spinner, because nothing had reset. The message was neither sent nor
+   * retryable, and only a page reload cleared it.
+   *
+   * The request itself is left to finish. It may well be delivered, and a
+   * duplicate message is a far smaller harm than a lost one.
+   */
+  const reset = useCallback(() => {
+    attemptRef.current += 1;
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
+    setStatus("idle");
+    setFailure(null);
+  }, []);
+
   const submit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       setStatus("loading");
 
       const fields = readContactFields(event.currentTarget);
+      const attempt = (attemptRef.current += 1);
 
       void submitContactForm(fields).then((result) => {
+        // Abandoned while it was in flight: the visitor has moved on and
+        // this answer is about a screen that is no longer there.
+        if (attemptRef.current !== attempt) return;
+
         if (!result.ok) {
           // Set together in one place so the reason can never disagree with
           // the status it explains.
@@ -88,5 +123,5 @@ export function useContactForm({ onSent }: UseContactFormOptions): ContactFormSt
     [schedule],
   );
 
-  return { status, failure, submit };
+  return { status, failure, submit, reset };
 }

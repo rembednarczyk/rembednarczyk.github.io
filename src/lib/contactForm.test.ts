@@ -165,3 +165,74 @@ describe("submitContactForm", () => {
     });
   });
 });
+
+/**
+ * fetch has no timeout of its own. A socket that opens and then goes quiet
+ * leaves the promise pending for as long as the page is open, and the
+ * dialog spinning with it: the visitor's message is neither sent nor
+ * recoverable, and only a reload clears it.
+ */
+describe("a request that never answers", () => {
+  it("gives up and reports the service as unreachable", async () => {
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) =>
+      new Promise((_resolve, reject) => {
+        // What fetch does on abort, rather than a promise that hangs and
+        // would hang this test too.
+        init.signal?.addEventListener("abort", () =>
+          reject(new DOMException("aborted", "AbortError")),
+        );
+      }),
+    );
+
+    const result = await submitContactForm(FIELDS, { timeout: 20 });
+
+    expect(result).toEqual({ ok: false, reason: "unreachable" });
+  });
+
+  it("passes a signal, so the request is actually cancelled", async () => {
+    // Reporting a timeout while leaving the request running would keep the
+    // connection open and could still deliver the message afterwards.
+    let signal: AbortSignal | undefined;
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+      signal = init.signal ?? undefined;
+      return Promise.resolve(
+        new Response(JSON.stringify({ success: true }), { status: 200 }),
+      );
+    });
+
+    await submitContactForm(FIELDS);
+
+    expect(signal).toBeInstanceOf(AbortSignal);
+    expect(signal?.aborted).toBe(false);
+  });
+
+  it("counts a body that stops arriving as unreachable too", async () => {
+    // Headers then silence hangs exactly like no answer at all, and the
+    // visitor cannot tell the two apart.
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          new Promise((_resolve, reject) => {
+            init.signal?.addEventListener("abort", () =>
+              reject(new DOMException("aborted", "AbortError")),
+            );
+          }),
+      } as unknown as Response),
+    );
+
+    const result = await submitContactForm(FIELDS, { timeout: 20 });
+
+    expect(result).toEqual({ ok: false, reason: "unreachable" });
+  });
+
+  it("still answers well inside the limit when the service is healthy", async () => {
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(
+        new Response(JSON.stringify({ success: true }), { status: 200 }),
+      ),
+    );
+
+    expect(await submitContactForm(FIELDS, { timeout: 20 })).toEqual({ ok: true });
+  });
+});

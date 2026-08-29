@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { m, AnimatePresence } from "motion/react";
 import { X, Mail, Loader2, CheckCircle2 } from "lucide-react";
@@ -24,14 +24,26 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const firstInputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  const { status, failure, submit, reset } = useContactForm({ onSent: onClose });
+
+  /**
+   * Closing ends the attempt.
+   *
+   * A submission still in flight used to leave the dialog spinning, and
+   * closing and reopening showed the same spinner because nothing reset.
+   * Every way out has to go through here: Escape, the backdrop, and the X.
+   */
+  const close = useCallback(() => {
+    reset();
+    onClose();
+  }, [reset, onClose]);
+
   useModalA11y({
     isOpen,
-    onClose,
+    onClose: close,
     containerRef: dialogRef,
     initialFocusRef: firstInputRef,
   });
-
-  const { status, failure, submit } = useContactForm({ onSent: onClose });
 
   return createPortal(
     <AnimatePresence>
@@ -42,7 +54,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={close}
             className="absolute inset-0 bg-[#020617]/80 backdrop-blur-sm"
             aria-hidden="true"
           />
@@ -64,7 +76,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 Send a Message
               </h2>
               <button
-                onClick={onClose}
+                onClick={close}
                 className="text-slate-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-md p-1"
                 aria-label="Close modal"
               >
