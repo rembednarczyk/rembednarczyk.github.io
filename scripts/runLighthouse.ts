@@ -1,10 +1,10 @@
-import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
-import { createServer } from "node:http";
-import { extname, join, resolve } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { launch } from "chrome-launcher";
 import lighthouse from "lighthouse";
 import desktopConfig from "lighthouse/core/config/desktop-config.js";
 import { chromium } from "playwright";
+import { serveDirectory } from "./staticServer.ts";
 import {
   CATEGORIES,
   median,
@@ -23,9 +23,9 @@ import {
  *
  * Desktop, deliberately and now stated in the README beside the badges.
  * The four badges never said which preset they came from, and the answer
- * turned out to matter: this page scores 100 on desktop and in the low
- * eighties on Lighthouse's mobile emulation, so an unlabelled 100 was
- * quietly the better of the two numbers.
+ * turned out to matter: this page scores 100 on desktop and 98 on
+ * Lighthouse's mobile emulation, so an unlabelled 100 was quietly the
+ * better of the two numbers.
  */
 
 const root = resolve(import.meta.dirname, "..");
@@ -33,55 +33,13 @@ const dist = join(root, "dist");
 const PORT = 5199;
 const RUNS = 3;
 
-const CONTENT_TYPES: Record<string, string> = {
-  ".html": "text/html",
-  ".js": "text/javascript",
-  ".css": "text/css",
-  ".map": "application/json",
-  ".webp": "image/webp",
-  ".svg": "image/svg+xml",
-  ".png": "image/png",
-  ".ico": "image/x-icon",
-  ".txt": "text/plain",
-  ".xml": "application/xml",
-  ".webmanifest": "application/manifest+json",
-};
-
-/**
- * Serves dist/ exactly as published: same files, same paths, nothing
- * injected. A dev server would measure Vite's development output, which is
- * not what anybody visits.
- */
-function serve(port: number) {
-  const server = createServer((req, res) => {
-    const path = decodeURIComponent((req.url ?? "/").split("?")[0]);
-    const file = join(dist, path === "/" ? "/index.html" : path);
-
-    if (!existsSync(file) || statSync(file).isDirectory()) {
-      res.statusCode = 404;
-      res.end("not found");
-      return;
-    }
-
-    res.setHeader(
-      "content-type",
-      CONTENT_TYPES[extname(file)] ?? "application/octet-stream",
-    );
-    createReadStream(file).pipe(res);
-  });
-
-  return new Promise<() => void>((ready) => {
-    server.listen(port, () => ready(() => server.close()));
-  });
-}
-
 async function main() {
   if (!existsSync(join(dist, "index.html"))) {
     throw new Error("dist/index.html is missing. Run `npm run build` first.");
   }
 
   const claimed = parseBadgeScores(readFileSync(join(root, "README.md"), "utf8"));
-  const stop = await serve(PORT);
+  const stop = await serveDirectory(dist, PORT);
 
   // The same Chromium the Storybook stage already installs, so CI has one
   // browser to provision rather than two that can disagree. CHROME_PATH is
