@@ -1,5 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from "react";
 import { cvData } from "../data/portfolioFacts";
+import { reportError } from "../lib/reportError";
 
 /**
  * The last thing between a render error and a blank page.
@@ -40,7 +41,8 @@ export class ErrorBoundary extends Component<
   override componentDidCatch(error: Error, info: ErrorInfo) {
     // Reported rather than swallowed. Without this the only trace of a
     // failure is the fallback itself, which says nothing about the cause.
-    console.error("The page failed to render", error, info.componentStack);
+    reportError(error, "render", { fatal: true });
+    console.error(info.componentStack);
     this.props.onError?.(error, info);
   }
 
