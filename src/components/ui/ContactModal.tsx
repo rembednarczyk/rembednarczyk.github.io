@@ -1,33 +1,28 @@
-import { useState, useEffect, useRef, FormEvent } from "react";
+import { useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Mail, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "./Button";
 import { useModalA11y } from "../../hooks/useModalA11y";
+import { useContactForm } from "../../hooks/useContactForm";
 
 export interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-/**
- * Why the failure is split in two: a request the service rejected and a
- * request that never arrived are different statements, and telling someone
- * "something went wrong" when their connection dropped sends them looking
- * in the wrong place. Only the second is worth retrying immediately.
- */
-type FailureReason = "rejected" | "unreachable";
-
 /** Shared by every field, so the three inputs cannot drift apart. */
 const FIELD_CLASSES =
   "w-full bg-slate-950/50 border border-slate-800 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all";
 
+/**
+ * The dialog. It renders the form and the outcome and owns nothing else:
+ * keyboard and focus behaviour is useModalA11y, the submission state machine
+ * is useContactForm, and the request itself is lib/contactForm.
+ */
 export function ContactModal({ isOpen, onClose }: ContactModalProps) {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [failure, setFailure] = useState<FailureReason | null>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
-  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useModalA11y({
     isOpen,
@@ -36,108 +31,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
     initialFocusRef: firstInputRef,
   });
 
-  /** Tracked so pending status transitions cannot fire after unmount. */
-  const schedule = (fn: () => void, delay: number) => {
-    timeoutsRef.current.push(setTimeout(fn, delay));
-  };
-
-  useEffect(() => {
-    const timeouts = timeoutsRef;
-    return () => {
-      timeouts.current.forEach(clearTimeout);
-      timeouts.current = [];
-    };
-  }, []);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setStatus("loading");
-
-    // FormData entries are string | File, so each field is read and coerced
-    // explicitly. Spreading the raw entries let a File reach the subject line,
-    // where it would have stringified to "[object File]".
-    const formData = new FormData(e.currentTarget);
-    const field = (key: string) => {
-      const value = formData.get(key);
-      // get() returns string | File | null. A File in a text field has no
-      // useful string form; String() would send "[object File]".
-      return typeof value === "string" ? value : "";
-    };
-
-    const payload = {
-      name: field("name"),
-      email: field("email"),
-      message: field("message"),
-      botcheck: field("botcheck"),
-      access_key: "e08b2649-ead0-4885-91a3-5c8809b38c29",
-      subject: `New message from ${field("name")} (Portfolio)`,
-      from_name: "Portfolio Contact Form",
-    };
-
-    // Set together in one place so the reason can never disagree with the
-    // status it explains.
-    const fail = (reason: FailureReason) => {
-      setFailure(reason);
-      setStatus("error");
-      schedule(() => setStatus("idle"), 3000);
-    };
-
-    let response: Response;
-
-    try {
-      response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-    } catch {
-      // fetch only rejects when the request never completed.
-      fail("unreachable");
-      return;
-    }
-
-    // An early exit so an error response is not parsed for a result it does
-    // not carry. The outcome matches what the checks below would reach
-    // anyway, so no test distinguishes this branch; it is here for clarity,
-    // not as a guard.
-    if (!response.ok) {
-      fail("rejected");
-      return;
-    }
-
-    // The body is untrusted input, so it is narrowed rather than assumed to
-    // match a declared shape.
-    let parsed: unknown;
-
-    try {
-      parsed = await response.json();
-    } catch {
-      fail("rejected");
-      return;
-    }
-
-    const accepted =
-      typeof parsed === "object" &&
-      parsed !== null &&
-      "success" in parsed &&
-      parsed.success === true;
-
-    if (!accepted) {
-      fail("rejected");
-      return;
-    }
-
-    setFailure(null);
-    setStatus("success");
-    schedule(() => {
-      onClose();
-      // Reset state after exit animation completes
-      schedule(() => setStatus("idle"), 300);
-    }, 3000);
-  };
+  const { status, failure, submit } = useContactForm({ onSent: onClose });
 
   return createPortal(
     <AnimatePresence>
@@ -191,7 +85,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   <p className="text-slate-400">Thank you for reaching out. I&apos;ll get back to you soon.</p>
                 </motion.div>
               ) : (
-                <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
+                <form onSubmit={submit} className="space-y-4">
                   {/* Honeypot for bot protection */}
                   <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
 
