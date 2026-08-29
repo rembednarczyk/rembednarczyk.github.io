@@ -50,6 +50,45 @@ Remigiusz Bednarczyk is a Quality Engineering Lead and Test Manager based in Pol
 
 ---
 
+### Credentials
+
+**Core certifications**
+* ISTQB Accredited Trainer - CTFL 4.0 + Agile Tester Accreditation Extension — SJSI (Polish Testing Board), Nov 2023, ID: ISTQB/ATP/61/2023/40
+* ISTQB Certified Tester Foundation Level Agile Tester — SJSI (Polish Testing Board), Nov 2023, ID: FLAT-2023-00628-SJSI
+* ISTQB Certified Tester Advanced Level Test Manager — GASQ, Mar 2021, ID: 10960-1
+* ISTQB Certified Tester Advanced Level Technical Test Analyst — GASQ, Aug 2018, ID: 10960-3
+* ISTQB Certified Tester Foundation Level — SJSI (Polish Testing Board), Aug 2018, ID: 10262/FLCT/2018
+* Certified SAFe® 6 Agilist — SAFe by Scaled Agile, Inc., Jun 2023
+* AgilePM® Foundation — APMG International, Oct 2019, ID: 2000913818 / 04303830-01-FEDM
+
+**AI & Emerging Tech Certifications**
+* AI_devs 3 Agents — AI_devs, Dec 2024, ID: 88fd734b-0390-4c14-81ae-a69e400f1dd1
+* Fundamentals of Artificial Intelligence and Machine Learning for IT Specialists and Managers — FUTURE SKILLS INSTITUTE, Nov 2025
+
+**Additional Training**
+* Reasoning About Asynchronous JavaScript — Pluralsight, Aug 2019, ID: REP ID 4127
+* Javascript: Getting Started — Pluralsight, Jul 2019, ID: REP ID 4127
+* Szkolenie Trenerskie — Barbara Smoczyńska Usługi Rozwojowe, Jun 2019
+* How Git Works — Pluralsight, May 2019, ID: REP ID 4127
+* Continuous Integration and Continuous Delivery: The Big Picture — Pluralsight, May 2019, ID: REP ID 4127
+* Applying the Lambda Architecture with Spark, Kafka, and Cassandra — Pluralsight, Jan 2019, ID: REP ID 4127
+* Introduction to MongoDB — Pluralsight, Dec 2018, ID: REP ID 4127
+* Take Control of Your Big Data with HUE in Cloudera CDH — Pluralsight, Dec 2018, ID: REP ID 4127
+* Beginning Data Exploration and Analysis with Apache Spark — Pluralsight, Dec 2018, ID: REP ID 4127
+* The Successful Technical Interview for Interviewers — Pluralsight, Nov 2018, ID: REP ID 4127
+* Getting Started with Apache Kafka — Pluralsight, Nov 2018, ID: REP ID 4127
+* The Building Blocks of Hadoop - HDFS, MapReduce, and YARN — Pluralsight, Nov 2018, ID: REP ID 4127
+* Getting Started with HDFS — Pluralsight, Nov 2018, ID: REP ID 4127
+* Rest API Automation With Rest Assured - Novice To Ninja — Udemy, Nov 2018, ID: UC-Q65D6ON9
+* Complete Step By Step Java For Testers — Udemy, Oct 2018, ID: UC-PQ9O07Q1
+* TestNG Complete Bootcamp For Beginners - Novice To Ninja — Udemy, Oct 2018, ID: UC-F1ZWOJAP
+* Testy automatyczne [Automated Testing] — Altkom Akademia, Jan 2018
+* Microsoft SQL Server 2012 — Wyższa Szkoła Przedsiębiorczości i Administracji w Lublinie, Apr 2014
+* Bazy danych - podstawy projektowania relacyjnych baz danych — Polsko-Japońska Akademia Technik Komputerowych w Warszawie, Mar 2014
+* Programista stron z obsługą bazy danych — Centrum Szkoleń i Innowacji, Aug 2013, ID: 40/CSI/MEN/2013
+
+---
+
 ### Community & Leadership
 * Vice President of the Polish Testing Board (SJSI).
 * Conference Host & Speaker at major IT events (TestWarez, Na Podbój IT).
