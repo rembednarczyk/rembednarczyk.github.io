@@ -24,12 +24,41 @@ import { readStoredConsent } from "../hooks/useCookieConsent";
 const MAX_DESCRIPTION = 150;
 
 /**
- * Name and message only.
+ * A bundle filename and position, and nothing longer. Long enough for
+ * `index-DeyIveWb.js:17:72594`, short enough that it can never crowd the
+ * message out of the description.
+ */
+const MAX_LOCATION = 48;
+
+/**
+ * The bundle file and position of the frame the error came from, without
+ * the origin: `index-DeyIveWb.js:17:72594`.
  *
- * The stack is deliberately left out: the deployed bundle is minified and
- * has no source map, so every frame reads `at bl (index-DeyIveWb.js:17)`.
- * That is noise in a report and a liability in a URL. What narrows it down
- * instead is `where`, which the call site names.
+ * Minified on its own, and that is the point — the build publishes source
+ * maps, so this resolves back to a file and a line. A whole stack would not
+ * fit in a report and would mostly repeat the framework; the innermost
+ * frame is the one that says where.
+ */
+export function firstFrame(error: unknown): string {
+  if (!(error instanceof Error) || typeof error.stack !== "string") return "";
+
+  for (const line of error.stack.split("\n")) {
+    // Deliberately anchored on the last path segment, so the match is the
+    // same shape whether the runtime writes `at fn (url)` or `fn@url`, and
+    // no origin ends up in the report.
+    const frame = /([^/\\()\s]+:\d+:\d+)/.exec(line);
+    if (frame) return frame[1].slice(0, MAX_LOCATION);
+  }
+
+  return "";
+}
+
+/**
+ * Name, message, and where in the bundle it came from.
+ *
+ * The location is appended last and never dropped: a long message is cut to
+ * make room for it, because a description without it says what broke and
+ * not where, which was the whole complaint about the first version of this.
  */
 export function describeError(error: unknown, where: string): string {
   const body =
@@ -37,10 +66,14 @@ export function describeError(error: unknown, where: string): string {
       ? `${error.name}: ${error.message}`
       : `non-error thrown: ${String(error)}`;
 
-  const full = `${where} — ${body}`;
-  return full.length <= MAX_DESCRIPTION
-    ? full
-    : `${full.slice(0, MAX_DESCRIPTION - 1)}…`;
+  const location = firstFrame(error);
+  const suffix = location ? ` @ ${location}` : "";
+  const room = MAX_DESCRIPTION - suffix.length;
+
+  const head = `${where} — ${body}`;
+  const trimmed = head.length <= room ? head : `${head.slice(0, room - 1)}…`;
+
+  return trimmed + suffix;
 }
 
 /**
