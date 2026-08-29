@@ -491,17 +491,30 @@ export const keyProjectsData: KeyProject[] = [
 export const certificationsData: Certification[] = [
   {
     title: "Professional Certifications",
-    desc: "ISTQB CTAL Test Manager\nISTQB CTAL Technical Test Analyst\nISTQB CTFL Agile Tester\nISTQB CTFL\nISTQB Accredited Trainer (all above)\nCertified SAFe® 6 Agilist\nAgilePM® Foundation",
+    items: [
+      "ISTQB CTAL Test Manager",
+      "ISTQB CTAL Technical Test Analyst",
+      "ISTQB CTFL Agile Tester",
+      "ISTQB CTFL",
+      "ISTQB Accredited Trainer (all above)",
+      "Certified SAFe® 6 Agilist",
+      "AgilePM® Foundation",
+    ],
     icon: <Award size={24} className="text-cyan-400" />,
   },
   {
     title: "AI & Emerging Tech",
-    desc: "AI_devs 3 Agents\nFundamentals of Artificial Intelligence and Machine Learning for IT Specialists and Managers",
+    items: [
+      "AI_devs 3 Agents",
+      "Fundamentals of Artificial Intelligence and Machine Learning for IT Specialists and Managers",
+    ],
     icon: <BrainCircuit size={24} className="text-purple-400" />,
   },
   {
     title: "Additional Training",
-    desc: "15+ technical courses (Pluralsight, Udemy) covering Java, CI/CD, Big Data, API testing",
+    items: [
+      "15+ technical courses (Pluralsight, Udemy) covering Java, CI/CD, Big Data, API testing",
+    ],
     icon: <BookOpen size={24} className="text-emerald-400" />,
   },
 ];

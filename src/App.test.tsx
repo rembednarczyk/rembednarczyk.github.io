@@ -101,10 +101,17 @@ describe("content is rendered from the data module", () => {
     });
   });
 
-  it("renders every certification", () => {
+  // Every credential, not just the card headings. This became possible when
+  // the list stopped being a newline-delimited string: a dropped entry inside
+  // one long string was indistinguishable from an edit to it.
+  it("renders every certification and every credential under it", () => {
     render(<App />);
+
     certificationsData.forEach((cert) => {
       expect(screen.getAllByText(cert.title).length).toBeGreaterThan(0);
+      cert.items.forEach((item) => {
+        expect(screen.getAllByText(item).length).toBeGreaterThan(0);
+      });
     });
   });
 

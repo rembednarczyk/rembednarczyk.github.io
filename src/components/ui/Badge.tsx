@@ -1,5 +1,9 @@
 import { HTMLAttributes, forwardRef, ReactNode } from "react";
 
+/**
+ * Imported only by stories, on purpose. See the note in Card.tsx: both are
+ * design system primitives kept for Storybook composition, not leftovers.
+ */
 export interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "outline" | "success" | "error";
   icon?: ReactNode;

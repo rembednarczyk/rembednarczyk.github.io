@@ -14,7 +14,7 @@ export const CertificationCard: React.FC<{ item: Certification }> = ({ item }) =
         {item.title}
       </h3>
       <ul className="space-y-2">
-        {item.desc.split("\n").map((line, i) => (
+        {item.items.map((line, i) => (
           <li
             key={i}
             className="text-slate-400 text-sm flex items-start gap-2"
