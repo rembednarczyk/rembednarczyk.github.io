@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { m, AnimatePresence } from "motion/react";
 import { ChevronUp } from "lucide-react";
 
 export function ScrollToTop() {
@@ -37,7 +37,7 @@ export function ScrollToTop() {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.button
+        <m.button
           initial={{ opacity: 0, scale: 0.5, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.5, y: 20 }}
@@ -47,7 +47,7 @@ export function ScrollToTop() {
           aria-label="Scroll to top"
         >
           <ChevronUp size={24} className="animate-bounce" />
-        </motion.button>
+        </m.button>
       )}
     </AnimatePresence>
   );

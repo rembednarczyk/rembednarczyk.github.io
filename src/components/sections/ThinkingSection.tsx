@@ -1,11 +1,11 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { Quote } from "lucide-react";
 import { thinkingQuote } from "../../data/portfolioData";
 
 export function ThinkingSection() {
   return (
     <section className="py-24 print:hidden relative overflow-hidden">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -23,7 +23,7 @@ export function ThinkingSection() {
           &quot;{thinkingQuote}&quot;
         </h2>
         <div className="mt-10 w-24 h-1 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent rounded-full" />
-      </motion.div>
+      </m.div>
     </section>
   );
 }

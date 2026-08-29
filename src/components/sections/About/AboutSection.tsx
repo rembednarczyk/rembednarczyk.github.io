@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { SectionHeading } from "../../ui/SectionHeading";
 import { aboutData } from "../../../data/portfolioData";
 import { AboutImage } from "./AboutImage";
@@ -6,7 +6,7 @@ import { AboutImage } from "./AboutImage";
 export function AboutSection() {
   return (
     <section id="about" className="py-24">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -22,7 +22,7 @@ export function AboutSection() {
           </div>
           <AboutImage imageUrl={aboutData.imageUrl} />
         </div>
-      </motion.div>
+      </m.div>
     </section>
   );
 }

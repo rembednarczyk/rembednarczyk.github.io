@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "motion/react";
+import { m, useReducedMotion } from "motion/react";
 import { Terminal } from "lucide-react";
 import { ParticleBackground } from "./ParticleBackground";
 import { useEffect, useState } from "react";
@@ -91,7 +91,7 @@ const TerminalWindow = () => {
                     <Terminal size={18} className="mt-0.5 shrink-0 opacity-70" />
                     <span>
                       {currentText}
-                      <motion.span
+                      <m.span
                         animate={{ opacity: [1, 0] }}
                         transition={{ repeat: Infinity, duration: 0.8 }}
                         className="inline-block w-2 h-4 bg-current ml-1 align-middle"
@@ -104,7 +104,7 @@ const TerminalWindow = () => {
                   <Terminal size={18} className="mt-0.5 shrink-0 opacity-70" />
                   <span>
                     {currentText}
-                    <motion.span
+                    <m.span
                       animate={{ opacity: [1, 0] }}
                       transition={{ repeat: Infinity, duration: 0.8 }}
                       className="inline-block w-2 h-4 bg-current ml-1 align-middle"
@@ -119,7 +119,7 @@ const TerminalWindow = () => {
           {visibleLines >= lines.length && (
             <div className="flex items-start gap-3 text-cyan-400 opacity-50">
               <Terminal size={18} className="mt-0.5 shrink-0 opacity-0" />
-              <motion.span
+              <m.span
                 animate={shouldReduceMotion ? { opacity: 1 } : { opacity: [1, 0] }}
                 transition={{ repeat: Infinity, duration: 0.8 }}
                 className="inline-block w-2 h-4 bg-current align-middle"
@@ -140,7 +140,7 @@ export function NotFound() {
       <ParticleBackground />
 
       <main className="relative z-10 w-full px-6 flex flex-col items-center">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -155,7 +155,7 @@ export function NotFound() {
 
           <TerminalWindow />
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: shouldReduceMotion ? 0 : 6.5, duration: 0.8 }}
@@ -171,8 +171,8 @@ export function NotFound() {
               </span>
               Go to Homepage
             </a>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </main>
     </div>
   );

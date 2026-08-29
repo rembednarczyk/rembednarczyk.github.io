@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { SectionHeading } from "../../ui/SectionHeading";
 import { experienceData } from "../../../data/portfolioData";
 import { ExperienceItem } from "./ExperienceItem";
@@ -6,7 +6,7 @@ import { ExperienceItem } from "./ExperienceItem";
 export function ExperienceSection() {
   return (
     <section id="experience" className="py-24">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -19,7 +19,7 @@ export function ExperienceSection() {
             <ExperienceItem key={idx} job={job} />
           ))}
         </div>
-      </motion.div>
+      </m.div>
     </section>
   );
 }
