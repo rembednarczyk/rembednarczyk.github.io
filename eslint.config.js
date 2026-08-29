@@ -84,6 +84,15 @@ export default tseslint.config(
     extends: [tseslint.configs.disableTypeChecked],
   },
   {
+    // The no-console rule exists to keep the shipped bundle clean. A build
+    // script that reports what it measured is a command-line tool: its
+    // output is the whole point, and none of it reaches a browser.
+    files: ['scripts/run*.ts'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
     files: ['src/components/ui/**/*.{ts,tsx}'],
     rules: {
       // 2. Architektura i Stack
