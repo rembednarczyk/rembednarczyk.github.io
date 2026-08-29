@@ -53,14 +53,24 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
     e.preventDefault();
     setStatus("loading");
 
+    // FormData entries are string | File, so each field is read and coerced
+    // explicitly. Spreading the raw entries let a File reach the subject line,
+    // where it would have stringified to "[object File]".
     const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData);
-    
-    // Add Web3Forms required fields
+    const field = (key: string) => {
+      const value = formData.get(key);
+      // get() returns string | File | null. A File in a text field has no
+      // useful string form; String() would send "[object File]".
+      return typeof value === "string" ? value : "";
+    };
+
     const payload = {
-      ...data,
+      name: field("name"),
+      email: field("email"),
+      message: field("message"),
+      botcheck: field("botcheck"),
       access_key: "e08b2649-ead0-4885-91a3-5c8809b38c29",
-      subject: `New message from ${data.name} (Portfolio)`,
+      subject: `New message from ${field("name")} (Portfolio)`,
       from_name: "Portfolio Contact Form",
     };
 
@@ -98,16 +108,24 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
       return;
     }
 
-    let result: { success?: boolean };
+    // The body is untrusted input, so it is narrowed rather than assumed to
+    // match a declared shape.
+    let parsed: unknown;
 
     try {
-      result = await response.json();
+      parsed = await response.json();
     } catch {
       fail("rejected");
       return;
     }
 
-    if (!result.success) {
+    const accepted =
+      typeof parsed === "object" &&
+      parsed !== null &&
+      "success" in parsed &&
+      parsed.success === true;
+
+    if (!accepted) {
       fail("rejected");
       return;
     }
@@ -173,7 +191,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   <p className="text-slate-400">Thank you for reaching out. I&apos;ll get back to you soon.</p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
                   {/* Honeypot for bot protection */}
                   <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
 
