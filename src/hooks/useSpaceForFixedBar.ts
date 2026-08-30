@@ -19,7 +19,8 @@ import { RefObject, useEffect } from "react";
  * there is nowhere to scroll it clear to.
  *
  * So the page also grows by the bar's height while the bar is up, which is
- * what gives the end of the document somewhere to go. The footer already
+ * what gives the end of the document somewhere to go. On screen only —
+ * see src/index.css. The footer already
  * tried this with `pb-24 sm:pb-12` — a guess, and backwards: the banner is
  * 181px tall on a phone and 88px on a desktop, so the fixed padding was
  * largest where the banner is smallest.
@@ -34,10 +35,7 @@ export function useSpaceForFixedBar(
   useEffect(() => {
     const root = document.documentElement;
 
-    const release = () => {
-      root.style.removeProperty("scroll-padding-bottom");
-      document.body.style.removeProperty("padding-bottom");
-    };
+    const release = () => root.style.removeProperty("--fixed-bar-space");
 
     if (!active) {
       release();
@@ -47,9 +45,25 @@ export function useSpaceForFixedBar(
     const apply = () => {
       const element = ref.current;
       if (!element) return;
-      const height = Math.ceil(element.getBoundingClientRect().height);
-      root.style.scrollPaddingBottom = `${height}px`;
-      document.body.style.paddingBottom = `${height}px`;
+
+      // The band's full height, not the card's. The card sits inside the
+      // band's padding, so reserving the card's height alone stops short of
+      // its top edge: a focused control was scrolled to exactly that line
+      // and stayed 47% behind the card. That passes SC 2.4.11, which fails
+      // only on entirely hidden, and fails SC 2.4.12, which fails on any of
+      // it hidden.
+      //
+      // A height rather than a position, because the band slides up on
+      // arrival: `top` is wrong for as long as that animation runs, and a
+      // height is not.
+      const clearance = Math.ceil(element.getBoundingClientRect().height);
+
+      // A custom property rather than the two declarations directly: the
+      // page has to grow on screen and not on paper, and src/index.css is
+      // where that distinction can be made. Setting `padding-bottom` on the
+      // body inline applied it to the printed CV too, which gained a
+      // seventh, entirely blank sheet.
+      root.style.setProperty("--fixed-bar-space", `${clearance}px`);
     };
 
     apply();

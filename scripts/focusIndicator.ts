@@ -143,27 +143,49 @@ export interface Overlaid {
   partOfTheBanner?: boolean;
   /** Where across the control the click stopped reaching it, 0 to 1. */
   failedAt?: number;
+  /**
+   * Whether the control, not the banner, is what a click lands on *inside
+   * the part they share*. This is what tells "behind it" from "in front of
+   * it", and neither geometry nor a hit test at the centre can: the
+   * scroll-to-top button is entirely inside the band's box and paints over
+   * it, while a control whose centre clears the card can still have its
+   * lower half behind it.
+   */
+  inFrontWhereCovered?: boolean | undefined;
 }
 
 /**
- * SC 2.4.11 is failed by "entirely hidden", not by "partly". A control the
- * banner half covers still shows where the keyboard is; one it covers
- * completely does not.
+ * SC 2.4.11 (AA) is failed by "entirely hidden". SC 2.4.12 (AAA) is failed
+ * by any of it hidden, and that is what this page holds itself to, so the
+ * threshold below is what counts as "any" rather than what counts as "all".
+ *
+ * It is not zero. A control resting a fraction of a pixel inside the band
+ * is a rounding artefact of two rects, not something a visitor can see; the
+ * real failures measured here were 7%, 47% and 100%.
  */
 export const ENTIRELY = 0.999;
+
+/** Anything above this counts as part of the control being hidden. */
+export const ANY_OF_IT = 0.01;
 
 export function judgeNotObscured(controls: Overlaid[]): Verdict[] {
   return controls.map((control) => {
     const base = { name: control.name, painted: 0 };
 
-    // Geometry alone is not enough: a control can sit behind the card and
-    // still paint over it, which is how the scroll-to-top button did.
-    if (control.coveredByCard >= ENTIRELY && !control.clickReaches) {
+    // Overlapping the banner is only a problem when the banner is the one
+    // in front. Asked inside the part they share, because that is the only
+    // place the question means anything.
+    const hidden =
+      control.coveredByCard > ANY_OF_IT && control.inFrontWhereCovered === false;
+
+    if (hidden) {
       return {
         ...base,
         ok: false,
         problem:
-          "it is entirely behind the consent banner when it takes focus, so a visitor tabbing to it cannot see where they are (WCAG 2.2 SC 2.4.11)",
+          control.coveredByCard >= ENTIRELY
+            ? "it is entirely behind the consent banner when it takes focus, so a visitor tabbing to it cannot see where they are (WCAG 2.2 SC 2.4.11)"
+            : `${Math.round(control.coveredByCard * 100)}% of it is behind the consent banner when it takes focus (WCAG 2.2 SC 2.4.12)`,
       };
     }
 

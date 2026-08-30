@@ -41,6 +41,24 @@
   }
 }
 
+/**
+ * How much of the foot of the viewport a fixed bar has spoken for.
+ *
+ * `useSpaceForFixedBar` measures the consent banner and sets this; the two
+ * rules below spend it. Screen only: the banner is `print:hidden`, and an
+ * inline `padding-bottom` on the body applies to paper as well, which added
+ * a seventh, entirely blank sheet to the printed CV.
+ */
+@media screen {
+  body {
+    padding-bottom: var(--fixed-bar-space, 0);
+  }
+}
+
+html {
+  scroll-padding-bottom: var(--fixed-bar-space, 0);
+}
+
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;

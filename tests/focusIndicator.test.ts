@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  ANY_OF_IT,
   ENOUGH_IN_PAGE_COLOUR,
   ENTIRELY,
   PAINTS_ITS_OWN_COLOUR,
@@ -134,18 +135,38 @@ describe("what the consent banner does to the controls behind it", () => {
     // Measured before the fix: the contact button and the footer's privacy
     // link, at 1280x900.
     const [verdict] = judgeNotObscured([
-      clear({ name: "Get in Touch", coveredByCard: 1, clickReaches: false, blockedBy: "the consent banner" }),
+      clear({
+        name: "Get in Touch",
+        coveredByCard: 1,
+        clickReaches: false,
+        blockedBy: "the consent banner",
+        inFrontWhereCovered: false,
+      }),
     ]);
 
     expect(verdict.ok).toBe(false);
     expect(verdict.problem).toContain("SC 2.4.11");
   });
 
-  it("passes one the banner only half covers", () => {
-    // SC 2.4.11 is failed by "entirely hidden", not by "partly": a control
-    // half covered still shows where the keyboard is.
+  it("fails one the banner only half covers, because this page holds to AAA", () => {
+    // SC 2.4.11 would allow this: it fails on entirely hidden. SC 2.4.12
+    // fails on any of it hidden, and 47% was what was left after the first
+    // round of fixes — the reservation stopped at the card's top edge
+    // instead of the band's.
+    const [verdict] = judgeNotObscured([
+      clear({ coveredByCard: 0.47, inFrontWhereCovered: false }),
+    ]);
+
+    expect(verdict.ok).toBe(false);
+    expect(verdict.problem).toContain("SC 2.4.12");
+    expect(verdict.problem).toContain("47%");
+  });
+
+  it("passes a rounding artefact, which is not something anyone can see", () => {
+    // Two rects meeting exactly produce a sliver. The real failures were
+    // 7%, 47% and 100%.
     expect(
-      failures(judgeNotObscured([clear({ coveredByCard: 0.47 })])),
+      failures(judgeNotObscured([clear({ coveredByCard: 0.004, inFrontWhereCovered: false })])),
     ).toEqual([]);
   });
 
@@ -182,12 +203,27 @@ describe("what the consent banner does to the controls behind it", () => {
     // Geometry said the scroll-to-top button was entirely behind the card.
     // It was painting over it. Only the hit test tells them apart.
     expect(
-      failures(judgeNotObscured([clear({ name: "Scroll to top", coveredByCard: 1, clickReaches: true })])),
+      failures(
+        judgeNotObscured([
+          clear({
+            name: "Scroll to top",
+            coveredByCard: 1,
+            clickReaches: true,
+            inFrontWhereCovered: true,
+          }),
+        ]),
+      ),
     ).toEqual([]);
   });
 
   it("treats anything short of complete as not entirely hidden", () => {
     expect(ENTIRELY).toBeLessThan(1);
     expect(ENTIRELY).toBeGreaterThan(0.99);
+  });
+
+  it("sets the AAA threshold well below the smallest real overlap", () => {
+    // The smallest that mattered was 7%.
+    expect(ANY_OF_IT).toBeLessThan(0.07);
+    expect(ANY_OF_IT).toBeGreaterThan(0);
   });
 });

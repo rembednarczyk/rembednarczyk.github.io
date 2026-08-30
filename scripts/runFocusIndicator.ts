@@ -207,6 +207,21 @@ async function underTheBanner(page: Page): Promise<Overlaid[]> {
       const top = onScreen ? document.elementFromPoint(cx, cy) : null;
       const reaches = !onScreen || !!(top && (el === top || el.contains(top)));
 
+      // Inside the part the two share, which is the only place the question
+      // "is it behind the banner" has an answer. The centre is no use: a
+      // control whose middle clears the card can still have its lower half
+      // behind it, and the scroll-to-top button lies entirely inside the
+      // band's box while painting over it.
+      let inFrontWhereCovered: boolean | undefined;
+      if (w > 0 && h > 0) {
+        const ox = Math.max(a.left, b.left) + w / 2;
+        const oy = Math.max(a.top, b.top) + h / 2;
+        const overThere = document.elementFromPoint(ox, oy);
+        inFrontWhereCovered = !!(
+          overThere && (el === overThere || el.contains(overThere))
+        );
+      }
+
       return {
         name,
         coveredByCard: (w * h) / (a.width * a.height),
@@ -216,6 +231,7 @@ async function underTheBanner(page: Page): Promise<Overlaid[]> {
           : region.contains(top)
             ? "the consent banner"
             : top.tagName.toLowerCase(),
+        inFrontWhereCovered,
       };
     }, probe);
 

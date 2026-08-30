@@ -21,12 +21,18 @@ const barOfHeight = (height: number) => {
   return ref;
 };
 
-const reserved = () => document.documentElement.style.scrollPaddingBottom;
-const grown = () => document.body.style.paddingBottom;
+/**
+ * One custom property drives both `scroll-padding-bottom` and the body's
+ * `padding-bottom`, and src/index.css spends it — on screen only, because
+ * the printed CV gained a blank seventh sheet when the body was padded
+ * inline.
+ */
+const reserved = () =>
+  document.documentElement.style.getPropertyValue("--fixed-bar-space");
+const grown = reserved;
 
 afterEach(() => {
-  document.documentElement.style.removeProperty("scroll-padding-bottom");
-  document.body.style.removeProperty("padding-bottom");
+  document.documentElement.style.removeProperty("--fixed-bar-space");
 });
 
 describe("reserving the space a fixed bar covers", () => {
