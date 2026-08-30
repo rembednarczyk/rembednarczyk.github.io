@@ -32,8 +32,21 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={classes}
         disabled={disabled || isLoading}
+        // Says the control is working rather than broken. A disabled button
+        // with a spinner in it reads as unavailable; aria-busy is what makes
+        // it read as busy. Set before the spread so a caller can still
+        // override it.
+        aria-busy={isLoading}
         {...props}
       >
+        {/*
+          Beside the children, never instead of them. The contact form wrote
+          out its own loading state and swapped its label for a bare spinner,
+          which left the button with no accessible name for as long as the
+          request was in flight — axe reports button-name, and a screen
+          reader announces "button, dimmed" and nothing else. This prop
+          existed for that and had no caller.
+        */}
         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
         {children}
       </button>

@@ -140,6 +140,52 @@ const openDialog = async () =>
     }),
   );
 
+/**
+ * While the request is in flight.
+ *
+ * Every other story here scans the dialog at rest, so the seconds a visitor
+ * spends waiting were the one state nothing looked at — and the button they
+ * had just pressed lost its accessible name for all of them. It rendered a
+ * bare spinner in place of its children, so a screen reader announced
+ * "button, dimmed" and nothing else, with no announcement that anything had
+ * changed.
+ *
+ * The shell's own `isLoading` was written for exactly this and renders the
+ * spinner beside the children rather than instead of them. No production
+ * caller passed it.
+ */
+export const Sending: Story = {
+  args: { isOpen: true, onClose: () => {} },
+  render: (args) => <ModalWrapper {...args} />,
+  play: async () => {
+    const original = window.fetch;
+    // Never resolves, which is the state being scanned rather than a
+    // failure mode: this is what the visitor sees while waiting.
+    window.fetch = () => new Promise(() => undefined);
+
+    try {
+      const dialog = await openDialog();
+      await fillAndSubmit(dialog);
+
+      const submit = await waitFor(() => {
+        const button = dialog.getByRole('button', { name: /sending/i });
+        expect(button).toBeDisabled();
+        return button;
+      });
+
+      expect(submit).toHaveAttribute('aria-busy', 'true');
+
+      // openDialog returns a scope inside the dialog, so the node itself has
+      // to be looked up again to hand axe something to scan.
+      const node = document.querySelector<HTMLElement>('[role="dialog"]');
+      expect(node).not.toBeNull();
+      expect(await axe(node as HTMLElement)).toHaveNoViolations();
+    } finally {
+      window.fetch = original;
+    }
+  },
+};
+
 /** The request never completes: the network is the problem, not the message. */
 export const UnreachableService: Story = {
   args: { isOpen: true, onClose: () => {} },
