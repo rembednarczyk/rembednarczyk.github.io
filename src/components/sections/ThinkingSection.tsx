@@ -1,15 +1,14 @@
-import { m } from "motion/react";
 import { Quote } from "lucide-react";
 import { thinkingQuote } from "../../data/portfolioFacts";
+import { Reveal } from "../ui/Reveal";
 
 export function ThinkingSection() {
   return (
     <section className="py-24 print:hidden relative overflow-hidden">
-      <m.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+      <Reveal
+        distance={30}
+        duration={0.8}
+        ease="easeOut"
         className="relative max-w-3xl mx-auto flex flex-col items-center text-center px-6"
       >
         <div className="relative mb-8">
@@ -23,7 +22,7 @@ export function ThinkingSection() {
           &quot;{thinkingQuote}&quot;
         </h2>
         <div className="mt-10 w-24 h-1 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent rounded-full" />
-      </m.div>
+      </Reveal>
     </section>
   );
 }

@@ -13,21 +13,25 @@ import { isTestLike, listSourceFiles } from "../scripts/importGraph";
  * new section that copies its neighbour instead of using it puts the drift
  * back on the board. Copying is how it happened the first time.
  *
- * Two sections legitimately stand outside: they are named here with the
- * reason, because an unexplained exemption is how a rule stops meaning
- * anything.
+ * The exemption list started at four and is now one, which is the component
+ * the others are meant to use. What the copies disagreed about was taste —
+ * a distance, a duration — but what they agreed on was a contract: `once`,
+ * so a section does not replay on the way back up, and the viewport margin.
+ * Those are the ones a copy gets wrong silently.
  */
 
 const root = resolve(__dirname, "..");
 const relativeToRoot = (file: string) => relative(root, file).replace(/\\/g, "/");
 
+/**
+ * The JSX prop, not the word. Prose mentioning `whileInView` in a comment is
+ * not a hand-rolled reveal, and matching it made this rule fire on a file
+ * that only described one.
+ */
+const DECLARES_A_REVEAL = /whileInView=/;
+
 const HAND_ROLLED_REVEAL: Record<string, string> = {
-  "src/components/sections/ThinkingSection.tsx":
-    "a pull quote, not a numbered section: it slides further and slower on purpose",
-  "src/components/sections/ContactSection.tsx":
-    "centres its own closing heading rather than using the numbered one",
-  "src/components/ui/PageSection.tsx": "the one the others are meant to use",
-  "src/App.tsx": "the page frame, not a section",
+  "src/components/ui/Reveal.tsx": "the one the others are meant to use",
 };
 
 const production = [...listSourceFiles(resolve(root, "src"))].filter(
@@ -42,12 +46,12 @@ describe("the numbered sections share one wrapper", () => {
     expect(production.length).toBeGreaterThan(20);
   });
 
-  it("leaves the reveal to PageSection", () => {
+  it("leaves the reveal to Reveal", () => {
     const rolled = production
       .map(relativeToRoot)
       .filter(
         (file) =>
-          readFileSync(resolve(root, file), "utf8").includes("whileInView") &&
+          DECLARES_A_REVEAL.test(readFileSync(resolve(root, file), "utf8")) &&
           !(file in HAND_ROLLED_REVEAL),
       );
 
@@ -67,9 +71,9 @@ describe("the numbered sections share one wrapper", () => {
     expect(heads).toEqual([]);
   });
 
-  it("names a reason for every section standing outside the wrapper", () => {
+  it("names a reason for anything standing outside the wrapper", () => {
     for (const [file, reason] of Object.entries(HAND_ROLLED_REVEAL)) {
-      expect(readFileSync(resolve(root, file), "utf8")).toContain("whileInView");
+      expect(readFileSync(resolve(root, file), "utf8")).toMatch(DECLARES_A_REVEAL);
       expect(reason.length).toBeGreaterThan(20);
     }
   });

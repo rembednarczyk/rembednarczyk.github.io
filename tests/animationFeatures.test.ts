@@ -11,6 +11,13 @@ import { describe, expect, it } from "vitest";
  * mode and throws, which turns the whole App suite red. Switching the
  * feature set is not caught that way. `domMax` renders everything perfectly
  * and quietly puts the bundle back, so it needs a rule of its own.
+ *
+ * The setup used to be written out three times — the app, the Storybook
+ * preview, and the 404 tests each built their own LazyMotion. Three copies
+ * of a wrapper is three answers to any question asked of it, and one such
+ * question had no answer at all in any of them: `prefers-reduced-motion`.
+ * So there is now one wrapper, and the rule below is that nothing builds
+ * a second.
  */
 
 const root = resolve(__dirname, "..");
@@ -35,12 +42,17 @@ interface SourceFile {
 const files: SourceFile[] = SOURCE_ROOTS.flatMap((dir) =>
   listSourceFiles(resolve(root, dir)).map((path) => {
     const text = readFileSync(path, "utf8");
-    const match = /import\s+\{([^}]*)\}\s+from\s+["']motion\/react["']/.exec(text);
+    // Every import from motion/react, not the first: a second statement in
+    // the same file used to slip past this, and a mutation adding one to
+    // ScrollToTop left the whole suite green.
+    const named = [
+      ...text.matchAll(/import\s+(?:type\s+)?\{([^}]*)\}\s+from\s+["']motion\/react["']/g),
+    ];
 
     return {
       path: relative(root, path).replace(/\\/g, "/"),
       text,
-      imports: match ? match[1].split(",").map((n) => n.trim()) : [],
+      imports: named.flatMap((m) => m[1].split(",").map((n) => n.trim())),
     };
   }),
 );
@@ -48,23 +60,51 @@ const files: SourceFile[] = SOURCE_ROOTS.flatMap((dir) =>
 const importingMotion = files.filter((f) => f.imports.length > 0);
 
 describe("the animation feature set", () => {
-  it("is loaded once, at the root of the app", () => {
-    const app = files.find((f) => f.path === "src/App.tsx");
-    expect(app).toBeDefined();
-    expect(app!.imports).toContain("LazyMotion");
-    expect(app!.imports).toContain("domAnimation");
-    expect(app!.text).toMatch(/<LazyMotion features=\{domAnimation\} strict>/);
+  it("is loaded once, by the one provider", () => {
+    const provider = files.find(
+      (f) => f.path === "src/components/MotionProvider.tsx",
+    );
+    expect(provider).toBeDefined();
+    expect(provider!.imports).toContain("LazyMotion");
+    expect(provider!.imports).toContain("domAnimation");
+    expect(provider!.text).toMatch(/<LazyMotion features=\{domAnimation\} strict>/);
   });
 
-  it("is also supplied to stories, which mount components on their own", () => {
+  it("answers prefers-reduced-motion there too, so one wrapper is one answer", () => {
+    // Twelve entrance animations ignored the setting while the particle
+    // canvas and the 404 view honoured it. Deleting this line puts the page
+    // back to disagreeing with itself, and every other check stays green:
+    // src/components/ui/Reveal.stories.tsx measures the slide in a browser,
+    // which is the only place the difference is visible.
+    const provider = files.find(
+      (f) => f.path === "src/components/MotionProvider.tsx",
+    );
+    expect(provider!.imports).toContain("MotionConfig");
+    expect(provider!.text).toMatch(/<MotionConfig reducedMotion="user">/);
+  });
+
+  it("is nowhere built a second time", () => {
     // Without this every animated story throws while the page is fine, and
     // the a11y suite reports it as a rendering failure rather than a missing
-    // provider.
+    // provider — which is why a second copy is so tempting to write.
+    const rival = files
+      .filter(
+        (f) =>
+          f.path !== "src/components/MotionProvider.tsx" &&
+          f.imports.includes("LazyMotion"),
+      )
+      .map((f) => f.path);
+
+    expect(
+      rival,
+      `these set motion up themselves instead of using MotionProvider:\n  ${rival.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("is supplied to stories, which mount components on their own", () => {
     const preview = files.find((f) => f.path === ".storybook/preview.ts");
     expect(preview).toBeDefined();
-    expect(preview!.imports).toContain("LazyMotion");
-    expect(preview!.imports).toContain("domAnimation");
-    expect(preview!.text).toContain("strict: true");
+    expect(preview!.text).toContain("MotionProvider");
   });
 
   it("is never domMax, which renders the same and costs the saving", () => {
@@ -88,7 +128,7 @@ describe("the animation feature set", () => {
   });
 
   it("finds the files it is checking, so none of the above passes vacuously", () => {
-    expect(importingMotion.length).toBeGreaterThan(10);
+    expect(importingMotion.length).toBeGreaterThan(5);
     expect(importingMotion.some((f) => f.imports.includes("m"))).toBe(true);
   });
 });
