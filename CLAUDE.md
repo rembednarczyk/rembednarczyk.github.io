@@ -59,7 +59,7 @@ that rewrites a file leaves no reviewable diff of intent and has twice in this
 repository's history clobbered work that `Edit` would have refused.
 
 `git checkout <path>` discards uncommitted work and silently does nothing for
-an untracked file. Both have cost real edits here.
+an untracked file. Both have cost real edits here. Copy the file aside first.
 
 Reading is a different question, and this rule does not touch it: `cat`,
 `grep`, `sed -n` and `find` are the right tools for finding things and always
@@ -73,7 +73,7 @@ tools — at the top of every turn, while this file is read once when a session
 starts. Repetition beats recall. Anything here that depends on someone
 remembering it across a hundred turns against a per-turn instruction is not a
 rule yet; it is a wish. The hook is the same answer the authorship problem
-got, for the same reason. Copy the file aside first.
+got, for the same reason.
 
 ### Parallel read-only passes
 

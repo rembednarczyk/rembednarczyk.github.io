@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 import { listSourceFiles, reachableFrom } from "../scripts/importGraph";
 
 /**
- * Engineering Principles, section 4: a control attached to nothing is
- * deleted, not wired up.
+ * Ways of Working, Part 6: a control attached to nothing is deleted, not
+ * wired up.
  *
  * This repository has already paid for the absence of this check. Ten
  * section components existed in two copies, a flat one and a nested one,

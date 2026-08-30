@@ -3,8 +3,8 @@
  *
  * Four badges have claimed 100 since before any of this work started, and
  * nothing anywhere re-derived them. They were a screenshot of a number
- * somebody once saw. Engineering Principles, section 1: never trust a
- * status quoted in prose.
+ * somebody once saw. Ways of Working, Part 2: never quote a version, a
+ * count, or a status from prose.
  *
  * The badges are not duplicated here as thresholds. They are read out of
  * the README and used as the thresholds, so lowering a badge to make a
