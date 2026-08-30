@@ -1,4 +1,5 @@
 import React from "react";
+import { Tag } from "../../ui/Tag";
 import { Job, Project } from "../../../types";
 
 export const ExperienceItem: React.FC<{ job: Job }> = ({ job }) => {
@@ -37,12 +38,7 @@ export const ExperienceItem: React.FC<{ job: Job }> = ({ job }) => {
       )}
       <div className="flex flex-wrap gap-3">
         {job.tags.map((tag, tIdx) => (
-          <span
-            key={tIdx}
-            className="text-xs font-mono text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20"
-          >
-            {tag}
-          </span>
+          <Tag key={tIdx}>{tag}</Tag>
         ))}
       </div>
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { KeyProject } from "../../../types";
+import { Tag } from "../../ui/Tag";
 
 export const ProjectCard: React.FC<{ project: KeyProject }> = ({ project }) => {
   return (
@@ -33,22 +34,7 @@ export const ProjectCard: React.FC<{ project: KeyProject }> = ({ project }) => {
 
       <div className="flex flex-wrap gap-2 mt-auto">
         {project.tags.map((tag, tIdx) => (
-          <span
-            key={tIdx}
-            // A tag is a word the data supplies, and a long one with
-            // nothing to break on ran straight past the card's edge on a
-            // narrow screen. break-words is not enough here: this is a flex
-            // item, and its minimum width is the widest thing it contains,
-            // so the word still refuses to shrink. overflow-wrap:anywhere
-            // is the one that changes that minimum.
-            //
-            // The longest tag today is 15 characters, so nothing is broken
-            // right now. The story that found this hands the card the tag
-            // nobody has written yet.
-            className="text-xs font-mono text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20 min-w-0 [overflow-wrap:anywhere]"
-          >
-            {tag}
-          </span>
+          <Tag key={tIdx}>{tag}</Tag>
         ))}
       </div>
     </article>
