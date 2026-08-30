@@ -98,7 +98,7 @@ export const CVTemplate = () => {
       </header>
 
       {/* Summary */}
-      <section className="mb-8 print:mb-6">
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
           <IdCard size={20} className="text-slate-400" aria-hidden="true" />
           Summary
@@ -109,7 +109,7 @@ export const CVTemplate = () => {
       </section>
 
       {/* Skills */}
-      <section className="mb-8 print:mb-6">
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
           <BrainCog size={20} className="text-slate-400" aria-hidden="true" />
           Core Competencies & Skills
@@ -125,7 +125,7 @@ export const CVTemplate = () => {
       </section>
 
       {/* Experience */}
-      <section className="mb-8 print:mb-6">
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
           <MonitorCog size={20} className="text-slate-400" aria-hidden="true" />
           Professional Experience
@@ -133,7 +133,7 @@ export const CVTemplate = () => {
 
         <div className="border-l-2 border-slate-200 ml-2">
           {experienceData.map((job, idx) => (
-            <div key={idx} className="relative pl-5 mb-5">
+            <div key={idx} className="relative pl-5 mb-5 print:break-inside-avoid">
               <div className="absolute w-3 h-3 bg-slate-400 border-2 border-white rounded-full -left-[7px] top-1.5"></div>
               <div className="flex justify-between items-baseline mb-1">
                 <h4 className="text-[17px] font-bold text-slate-900">
@@ -158,7 +158,7 @@ export const CVTemplate = () => {
               )}
 
               {job.projects && job.projects.map((project, projectIdx) => (
-                <div key={projectIdx} className="ml-4 mt-3">
+                <div key={projectIdx} className="ml-4 print:break-inside-avoid mt-3">
                   <div className="flex justify-between items-baseline mb-1">
                     <h5 className="text-sm font-bold text-slate-800">
                       {project.role}
@@ -180,7 +180,7 @@ export const CVTemplate = () => {
       </section>
 
       {/* Community & Leadership */}
-      <section className="mb-8 print:mb-6">
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
           <UsersRound size={20} className="text-slate-400" aria-hidden="true" />
           Community & Leadership
@@ -195,7 +195,7 @@ export const CVTemplate = () => {
       </section>
 
       {/* Recognition & Brand Presence */}
-      <section className="mb-8 print:mb-6">
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
           <Award size={20} className="text-slate-400" aria-hidden="true" />
           Recognition & Brand Presence
@@ -211,7 +211,7 @@ export const CVTemplate = () => {
       </section>
       
       {/* Certifications & Credentials */}
-      <section className="mb-8 print:mb-6">
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
           <ShieldCheck size={20} className="text-slate-400" aria-hidden="true" />
           Certifications & Credentials
@@ -247,7 +247,7 @@ export const CVTemplate = () => {
       </section>
 
       {/* Passions & Hobbies */}
-      <section className="mb-8 print:mb-6">
+      <section className="mb-8 print:mb-6 print:break-inside-avoid">
         <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
           <TreePalm size={20} className="text-slate-400" aria-hidden="true" />
           Passions & Hobbies

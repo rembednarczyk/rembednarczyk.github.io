@@ -1,97 +1,127 @@
 import { describe, expect, it } from "vitest";
 import {
-  MAX_BLANK_SHARE,
+  DRIFT_TOLERANCE,
+  EXPECTED_LAYOUT,
   blankShareOf,
-  paginationFaults,
+  layoutDrift,
   readsAsACv,
   type PrintedPage,
 } from "../scripts/printedCv";
 
 /**
  * The printing itself needs a browser and runs as its own CI step. What is
- * held here is the part that decides whether a sheet is acceptable, which
- * is where a wrong answer would let the gap back in.
+ * held here is the part that decides whether the printed layout still
+ * matches the one that was chosen.
+ *
+ * This check used to fail any sheet more than a fifth blank, which had the
+ * argument backwards: the gaps are the price of keeping a job entry off two
+ * sheets, and that price was chosen deliberately. It records the shape
+ * instead, and reports when it moves.
  */
 
-const sheet = (number: number, lowestText: number, text = ["something"]): PrintedPage => ({
+const sheet = (number: number, blankShare: number, text = ["Bednarczyk"]): PrintedPage => ({
   number,
   height: 842,
-  lowestText,
+  lowestText: blankShare * 842,
   text,
 });
 
+/** The recorded layout, reproduced exactly. */
+const asRecorded = () => EXPECTED_LAYOUT.map((share, i) => sheet(i + 1, share));
+
 describe("how full a sheet is", () => {
   it("measures the blank strip below the last line", () => {
-    // 842pt of A4, text down to 84pt from the foot: a tenth left blank.
-    expect(blankShareOf(sheet(1, 84.2))).toBeCloseTo(0.1, 2);
+    expect(blankShareOf({ ...sheet(1, 0), lowestText: 84.2 })).toBeCloseTo(0.1, 2);
   });
 
   it("calls a page with text at the very bottom full", () => {
-    expect(blankShareOf(sheet(1, 0))).toBe(0);
+    expect(blankShareOf({ ...sheet(1, 0), lowestText: 0 })).toBe(0);
   });
 
   it("does not divide by a height it was not given", () => {
-    expect(blankShareOf({ ...sheet(1, 100), height: 0 })).toBe(0);
+    expect(blankShareOf({ ...sheet(1, 0.5), height: 0 })).toBe(0);
   });
 });
 
-describe("which sheets count as faulty", () => {
-  it("says nothing about a document whose pages are full", () => {
-    const pages = [sheet(1, 40), sheet(2, 60), sheet(3, 300)];
+describe("comparing a printed document to the recorded layout", () => {
+  it("says nothing about the layout it recorded", () => {
+    const drift = layoutDrift(asRecorded());
 
-    expect(paginationFaults(pages)).toEqual([]);
+    expect(drift.lengthChanged).toBe(false);
+    expect(drift.sheets).toEqual([]);
   });
 
-  it("reports the gap that started this, at the size it was", () => {
-    // 58% of sheet 4 was blank, because a block that would not break moved
-    // to the next page whole.
-    const pages = [sheet(1, 40), sheet(2, 40), sheet(3, 40), sheet(4, 489), sheet(5, 100)];
-    const faults = paginationFaults(pages);
+  it("ignores a sheet that moved by less than the tolerance", () => {
+    // A Chrome release nudging line breaking must not fail a build.
+    const pages = asRecorded();
+    pages[2] = sheet(3, EXPECTED_LAYOUT[2] + DRIFT_TOLERANCE / 2);
 
-    expect(faults).toHaveLength(1);
-    expect(faults[0].page).toBe(4);
-    expect(faults[0].reason).toContain("58%");
+    expect(layoutDrift(pages).sheets).toEqual([]);
   });
 
-  it("leaves the last sheet alone, because a document ends where it ends", () => {
-    // Demanding a full final page would be demanding padding.
-    expect(paginationFaults([sheet(1, 40), sheet(2, 700)])).toEqual([]);
+  it("reports a sheet that moved by more, in both directions", () => {
+    const fuller = asRecorded();
+    fuller[0] = sheet(1, EXPECTED_LAYOUT[0] - DRIFT_TOLERANCE - 0.01);
+    expect(layoutDrift(fuller).sheets.map((s) => s.sheet)).toEqual([1]);
+
+    const emptier = asRecorded();
+    emptier[0] = sheet(1, EXPECTED_LAYOUT[0] + DRIFT_TOLERANCE + 0.01);
+    expect(layoutDrift(emptier).sheets.map((s) => s.sheet)).toEqual([1]);
   });
 
-  it("reports every faulty sheet, not just the first", () => {
-    const pages = [sheet(1, 320), sheet(2, 40), sheet(3, 489), sheet(4, 50)];
+  it("notices the document changing length", () => {
+    // Taking break-inside-avoid off the sections drops it to five sheets,
+    // which is the change this exists to report.
+    const shorter = asRecorded().slice(0, 5);
 
-    expect(paginationFaults(pages).map((f) => f.page)).toEqual([1, 3]);
+    expect(layoutDrift(shorter).lengthChanged).toBe(true);
   });
 
-  it("takes the threshold it is given", () => {
-    const pages = [sheet(1, 200), sheet(2, 40)];
+  it("reports a sheet nothing was recorded for", () => {
+    const longer = [...asRecorded(), sheet(7, 0.4)];
+    const drift = layoutDrift(longer);
 
-    expect(paginationFaults(pages, 0.1)).toHaveLength(1);
-    expect(paginationFaults(pages, 0.5)).toHaveLength(0);
+    expect(drift.lengthChanged).toBe(true);
+    expect(drift.sheets.map((s) => s.sheet)).toEqual([7]);
   });
 
-  it("holds a threshold that would have caught the gap and not the good pages", () => {
-    // 38% and 58% were the faults; 8% is the worst page of the CV as it
-    // stands now. The line has to fall between them.
-    expect(MAX_BLANK_SHARE).toBeGreaterThan(0.09);
-    expect(MAX_BLANK_SHARE).toBeLessThan(0.38);
+  it("reports every sheet that moved, not just the first", () => {
+    const pages = asRecorded();
+    pages[0] = sheet(1, 0.1);
+    pages[3] = sheet(4, 0.1);
+
+    expect(layoutDrift(pages).sheets.map((s) => s.sheet)).toEqual([1, 4]);
+  });
+
+  it("carries both numbers, so a failure says what changed and to what", () => {
+    const pages = asRecorded();
+    pages[0] = sheet(1, 0.1);
+    const [change] = layoutDrift(pages).sheets;
+
+    expect(change.expected).toBe(EXPECTED_LAYOUT[0]);
+    expect(change.measured).toBeCloseTo(0.1, 2);
+  });
+
+  it("keeps a tolerance smaller than the change it exists to catch", () => {
+    // Removing break-inside-avoid moved sheets by 9 to 52 points. A
+    // tolerance at or above that would admit the very change it watches for.
+    expect(DRIFT_TOLERANCE).toBeLessThan(0.09);
+    expect(DRIFT_TOLERANCE).toBeGreaterThan(0.02);
   });
 });
 
 describe("whether the extraction found anything at all", () => {
   it("accepts a document that carries the name", () => {
-    expect(readsAsACv([sheet(1, 40, ["Remigiusz", "Bednarczyk"])], "Bednarczyk")).toBe(true);
+    expect(readsAsACv([sheet(1, 0.1, ["Remigiusz", "Bednarczyk"])], "Bednarczyk")).toBe(true);
   });
 
   it("refuses an empty document", () => {
-    // Without this, a PDF that came back with no text passes every check
-    // above by having no sheet that falls short.
+    // Without this, a PDF that came back with no text has no sheets to
+    // disagree about and passes everything above.
     expect(readsAsACv([], "Bednarczyk")).toBe(false);
-    expect(paginationFaults([])).toEqual([]);
   });
 
   it("refuses a document that is somebody else's", () => {
-    expect(readsAsACv([sheet(1, 40, ["Lorem ipsum"])], "Bednarczyk")).toBe(false);
+    expect(readsAsACv([sheet(1, 0.1, ["Lorem ipsum"])], "Bednarczyk")).toBe(false);
   });
 });
