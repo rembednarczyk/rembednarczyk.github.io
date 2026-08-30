@@ -121,7 +121,20 @@ function listEntries(dir: string): string[] {
   });
 }
 
-const SEARCHED_ROOTS = ["src", "scripts", "tests", "docs", ".github", "public"];
+/**
+ * `.storybook` was missing, so nothing the README said about the Storybook
+ * configuration was checked at all — a reference to `.storybook/preview.ts`
+ * read as a file that does not exist.
+ */
+const SEARCHED_ROOTS = [
+  "src",
+  "scripts",
+  "tests",
+  "docs",
+  ".github",
+  ".storybook",
+  "public",
+];
 
 const allEntries = SEARCHED_ROOTS.flatMap((dir) => [
   // The root itself as well as its contents: listEntries only reports
@@ -179,6 +192,18 @@ const quotedIdentifiers = [
       .map((m) => m[1])
       .filter((name) => /[A-Z]/.test(name)),
   ),
+];
+
+/**
+ * Backticked PascalCase names: components, types and story exports.
+ *
+ * This half was missing, and two names rotted behind it. The README claimed
+ * stories called `ErrorState` and `EmptyState` that no story has ever
+ * exported, and the check above could not see them because it only matched
+ * names beginning with a lower-case letter.
+ */
+const quotedComponents = [
+  ...new Set([...readme.matchAll(/`([A-Z][a-zA-Z0-9]*)`/g)].map((m) => m[1])),
 ];
 
 describe("withoutComments", () => {
@@ -241,10 +266,23 @@ describe("things the README names", () => {
     ).toEqual([]);
   });
 
-  it("reads real source, so neither check above passes vacuously", () => {
+  it("names only components, types and stories the code still exports", () => {
+    const missing = quotedComponents.filter(
+      (name) => !new RegExp(`\\b${name}\\b`).test(codeWithoutComments),
+    );
+
+    expect(quotedComponents.length).toBeGreaterThan(5);
+    expect(
+      missing,
+      `the README describes these, and nothing in the code is called that:\n  ${missing.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("reads real source, so none of the checks above pass vacuously", () => {
     // A broken root would leave both haystacks empty and let anything through.
     expect(allEntries.length).toBeGreaterThan(50);
     expect(codeWithoutComments).toContain("getYearsOfExperience");
+    expect(codeWithoutComments).toContain("PageSection");
   });
 });
 
