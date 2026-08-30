@@ -48,7 +48,7 @@ export function CookieConsent({
               <button
                 type="button"
                 onClick={onOpenPolicy}
-                className="text-cyan-400 underline underline-offset-2 hover:text-cyan-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-sm"
+                className="text-cyan-400 underline underline-offset-2 hover:text-cyan-300 transition-colors focus-ring rounded-sm"
               >
                 Read the privacy policy
               </button>

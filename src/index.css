@@ -1,5 +1,46 @@
 @import "tailwindcss";
 
+/**
+ * The one focus indicator.
+ *
+ * Twenty controls spelled this out themselves in two variants: eleven with
+ * the ring flush against the element, nine with a two-pixel gap filled in
+ * the page colour. The gap needs to know what is behind it, which is why the
+ * variants existed — `ring-offset` paints `#020617` before the cyan, so any
+ * control on a panel had to leave it out or draw a slab of the wrong colour.
+ * An outline offset does not paint anything in the gap, so one rule covers
+ * both cases and nothing hard-codes a background.
+ *
+ * Eight more controls — the links on the project and certification cards —
+ * declared nothing at all and fell back to the browser's own ring, which is
+ * visible but is not this page's.
+ *
+ * The skip link is deliberately not this: it turns cyan when focused, and a
+ * cyan ring on a cyan button is no indicator. It keeps its white one.
+ */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-cyan-400);
+    outline-offset: 2px;
+  }
+}
+
+/**
+ * The same indicator, shown however the control was reached.
+ *
+ * `:focus-visible` deliberately stays quiet when a control is clicked, which
+ * is right for a button and wrong for a text field: someone who clicks into
+ * an input is about to type into it and should see which one has the caret.
+ * The contact form already made that distinction with `focus:`; this keeps
+ * the distinction and takes away the second copy of the look.
+ */
+@utility focus-ring-always {
+  &:focus {
+    outline: 2px solid var(--color-cyan-400);
+    outline-offset: 2px;
+  }
+}
+
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;

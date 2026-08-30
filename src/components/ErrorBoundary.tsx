@@ -26,7 +26,7 @@ interface ErrorBoundaryState {
 }
 
 const LINK_CLASS =
-  "text-cyan-400 underline underline-offset-4 hover:text-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617] rounded-sm";
+  "text-cyan-400 underline underline-offset-4 hover:text-cyan-300 focus-ring rounded-sm";
 
 export class ErrorBoundary extends Component<
   ErrorBoundaryProps,
@@ -89,7 +89,7 @@ export class ErrorBoundary extends Component<
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="px-5 py-2.5 rounded-lg border border-white/15 text-slate-200 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617] transition-colors"
+              className="px-5 py-2.5 rounded-lg border border-white/15 text-slate-200 hover:bg-white/5 focus-ring transition-colors"
             >
               Try loading the page again
             </button>

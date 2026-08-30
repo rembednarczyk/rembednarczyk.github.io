@@ -16,7 +16,8 @@
     "build-storybook": "storybook build",
     "test-storybook": "test-storybook",
     "check:print": "node --experimental-strip-types scripts/runPrintCheck.ts",
-    "check:motion": "node --experimental-strip-types scripts/runRevealMotion.ts"
+    "check:motion": "node --experimental-strip-types scripts/runRevealMotion.ts",
+    "check:focus": "node --experimental-strip-types scripts/runFocusIndicator.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -40,6 +41,7 @@
     "@testing-library/user-event": "^14.6.6",
     "@types/jest-axe": "^3.5.9",
     "@types/node": "^26.4.0",
+    "@types/pngjs": "^6.0.5",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
     "@typescript-eslint/eslint-plugin": "^8.68.0",
@@ -64,6 +66,7 @@
     "lighthouse": "^13.4.1",
     "pdfjs-dist": "^6.3.289",
     "playwright": "^1.62.1",
+    "pngjs": "^7.0.0",
     "qrcode-generator": "^2.0.4",
     "react-qr-code": "^2.2.0",
     "storybook": "^10.5.10",

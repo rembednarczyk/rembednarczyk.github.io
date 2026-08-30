@@ -17,7 +17,7 @@ export const ProjectCard: React.FC<{ project: KeyProject }> = ({ project }) => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Link to ${project.title}`}
-              className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 transition-all p-1"
+              className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 transition-all p-1 rounded focus-ring"
             >
               {link.icon}
             </a>

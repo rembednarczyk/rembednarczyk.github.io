@@ -27,7 +27,7 @@ export function ContactSection() {
         <div className="flex flex-col items-center justify-center gap-8 mb-16">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 active:from-cyan-400 active:to-purple-400 active:scale-95 text-white font-bold rounded-lg transition-all shadow-lg shadow-cyan-500/20 w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 active:from-cyan-400 active:to-purple-400 active:scale-95 text-white font-bold rounded-lg transition-all shadow-lg shadow-cyan-500/20 w-full sm:w-auto focus-ring"
           >
             <Mail aria-hidden="true" size={20} />
             Say Hello
@@ -37,7 +37,7 @@ export function ContactSection() {
             <p className="text-sm text-slate-400 font-medium">Prefer to keep a copy of my experience?</p>
             <button
               onClick={() => window.print()}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-transparent border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white active:scale-95 font-semibold rounded-lg transition-all w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-transparent border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white active:scale-95 font-semibold rounded-lg transition-all w-full sm:w-auto focus-ring"
             >
               <Download aria-hidden="true" size={18} />
               Save as PDF
@@ -51,7 +51,7 @@ export function ContactSection() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn profile"
-            className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 active:bg-white/5 transition-all p-2 hover:bg-white/5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
+            className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 active:bg-white/5 transition-all p-2 hover:bg-white/5 rounded-full focus-ring"
           >
             <LinkedinIcon aria-hidden="true" size={28} />
           </a>
@@ -60,7 +60,7 @@ export function ContactSection() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub profile"
-            className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 active:bg-white/5 transition-all p-2 hover:bg-white/5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
+            className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 active:bg-white/5 transition-all p-2 hover:bg-white/5 rounded-full focus-ring"
           >
             <GithubIcon aria-hidden="true" size={28} />
           </a>

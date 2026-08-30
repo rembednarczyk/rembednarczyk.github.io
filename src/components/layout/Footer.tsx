@@ -19,7 +19,7 @@ export function Footer() {
             <span className="text-slate-600 hidden sm:inline" aria-hidden="true">•</span>
             <button 
               onClick={() => setIsPrivacyOpen(true)}
-              className="font-mono text-xs hover:text-cyan-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-sm"
+              className="font-mono text-xs hover:text-cyan-400 transition-colors focus-ring rounded-sm"
             >
               Privacy Policy
             </button>

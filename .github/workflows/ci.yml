@@ -63,6 +63,13 @@ jobs:
       - name: Reduced motion
         run: npm run check:motion
 
+      # Whether a control shows keyboard focus is only visible in a browser
+      # too, and only in pixels: a computed style reports a colour Chrome
+      # does not paint, and a control mid-transition reports a ring it is
+      # still fading in.
+      - name: Focus indicator
+        run: npm run check:focus
+
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
