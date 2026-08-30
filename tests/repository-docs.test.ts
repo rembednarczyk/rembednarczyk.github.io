@@ -343,3 +343,45 @@ describe("guideline documents", () => {
     ).toEqual([]);
   });
 });
+
+/**
+ * The backlog gets the same treatment, and needs it more than most.
+ *
+ * Its whole value is that picking an item up costs nothing, and that rests
+ * entirely on the file and component names in it still meaning something. An
+ * item pointing at a path that has since been renamed is worse than no item:
+ * it reads as understood work right up until someone tries to start it.
+ */
+const backlog = readFileSync(resolve(root, "docs/BACKLOG.md"), "utf8");
+
+describe("the backlog", () => {
+  it("names only files that exist", () => {
+    const named = pathsNamedIn(backlog);
+    const missing = pathsThatDoNotExist(named);
+
+    expect(named.length).toBeGreaterThan(2);
+    expect(
+      missing,
+      `the backlog points at these, and nothing in the repository matches:\n  ${missing.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("names only components and hooks the code still has", () => {
+    const named = [
+      ...new Set(
+        [...backlog.matchAll(/`([a-zA-Z][a-zA-Z0-9]*)`/g)]
+          .map((m) => m[1])
+          .filter((name) => /[A-Z]/.test(name)),
+      ),
+    ];
+    const missing = named.filter(
+      (name) => !new RegExp(`\\b${name}\\b`).test(codeWithoutComments),
+    );
+
+    expect(named.length).toBeGreaterThan(3);
+    expect(
+      missing,
+      `the backlog describes these, and nothing in the code is called that:\n  ${missing.join("\n  ")}`,
+    ).toEqual([]);
+  });
+});
