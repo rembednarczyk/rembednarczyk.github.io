@@ -1,18 +1,19 @@
 /**
- * What a printed sheet is allowed to look like.
+ * What the printed CV is supposed to look like.
  *
  * The CV is the one thing this site produces that nobody sees on a screen,
- * and nothing checked it. It ran to six sheets with 38% of the first and
- * 58% of the fourth left blank, because every section and every job entry
- * carried break-inside-avoid: a block taller than the space left on a page
- * does not shrink to fit, it moves to the next page whole and leaves the
- * gap behind. Removing those rules brought it to five sheets with nothing
- * worse than the end of the document.
+ * so nothing but this looks at it.
  *
- * Measured from the PDF the browser actually produces. An earlier attempt
- * measured heading positions in continuous layout and reported three
- * defects that pagination does not have — continuous layout has no pages
- * in it to be wrong about.
+ * It does not judge the layout. It was written to, and had the argument
+ * backwards: it failed any sheet more than a fifth blank at the foot, on
+ * the reasoning that a gap means a block too tall to fit moved to the next
+ * page whole. That is exactly what happens here, and it is deliberate —
+ * sections and job entries carry break-inside-avoid so that an entry is
+ * never cut across two sheets, and the owner would rather have the gaps and
+ * the sixth sheet than have entries split.
+ *
+ * So this records the shape that choice produces and reports when it
+ * changes. A gap is not a fault; a gap nobody decided on is.
  */
 
 export interface PrintedPage {
@@ -26,21 +27,23 @@ export interface PrintedPage {
   text: string[];
 }
 
-export interface PrintFault {
-  page: number;
-  blankShare: number;
-  reason: string;
-}
+/**
+ * The blank share of each sheet, in order, as the chosen layout produces
+ * it. Measured from the PDF, not decided: sections kept whole leave these
+ * gaps, and this is what they are.
+ */
+export const EXPECTED_LAYOUT = [0.38, 0.22, 0.14, 0.58, 0.05, 0.18];
 
 /**
- * How much of a sheet may be blank at the foot before it reads as a gap
- * rather than as the end of a paragraph.
+ * How far a sheet may drift before it is worth a look.
  *
- * At the measured 8% the page looks full; at 38% it looks like something
- * went wrong. A fifth of a sheet is the line between the two, and it is
- * generous: every page of the current CV except the last sits under 9%.
+ * Wide enough that a Chrome release nudging line breaking by a point or two
+ * does not fail a build, narrow enough that a section moving across a page
+ * boundary — which shifts a sheet by tens of points — does. Removing
+ * break-inside-avoid moves every sheet by 9 to 52 points, and one sheet
+ * disappears entirely.
  */
-export const MAX_BLANK_SHARE = 0.2;
+export const DRIFT_TOLERANCE = 0.08;
 
 /** The share of a sheet left empty below the last line of text on it. */
 export function blankShareOf(page: PrintedPage): number {
@@ -48,33 +51,41 @@ export function blankShareOf(page: PrintedPage): number {
   return page.lowestText / page.height;
 }
 
+export interface LayoutChange {
+  sheet: number;
+  expected: number;
+  measured: number;
+}
+
 /**
- * Pages that stop well short of the foot.
- *
- * The last page is exempt: a document ends where it ends, and demanding a
- * full final sheet would be demanding padding.
+ * Sheets whose fill no longer matches the recorded layout, and a note if
+ * the document changed length.
  */
-export function paginationFaults(
+export function layoutDrift(
   pages: PrintedPage[],
-  maxBlankShare = MAX_BLANK_SHARE,
-): PrintFault[] {
-  return pages
-    .filter((page) => page.number < pages.length)
-    .map((page) => ({ page: page.number, blankShare: blankShareOf(page) }))
-    .filter(({ blankShare }) => blankShare > maxBlankShare)
-    .map(({ page, blankShare }) => ({
-      page,
-      blankShare,
-      reason: `${Math.round(blankShare * 100)}% of sheet ${page} is blank below the last line`,
-    }));
+  expected: number[] = EXPECTED_LAYOUT,
+  tolerance = DRIFT_TOLERANCE,
+): { lengthChanged: boolean; sheets: LayoutChange[] } {
+  const sheets = pages
+    .map((page) => ({
+      sheet: page.number,
+      expected: expected[page.number - 1] ?? Number.NaN,
+      measured: blankShareOf(page),
+    }))
+    .filter(
+      ({ expected: want, measured }) =>
+        Number.isNaN(want) || Math.abs(measured - want) > tolerance,
+    );
+
+  return { lengthChanged: pages.length !== expected.length, sheets };
 }
 
 /**
  * Whether the extraction found a document at all.
  *
  * Without this, a PDF that came out empty — a failed render, a font the
- * reader cannot decode — passes every check above by having no pages that
- * fall short.
+ * reader cannot decode — passes everything above by having no sheets to
+ * disagree about.
  */
 export function readsAsACv(pages: PrintedPage[], expectedName: string): boolean {
   const all = pages.flatMap((page) => page.text).join(" ");

@@ -5,9 +5,10 @@ import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import type { TextItem } from "pdfjs-dist/types/src/display/api.js";
 import { serveDirectory } from "./staticServer.ts";
 import {
-  MAX_BLANK_SHARE,
+  DRIFT_TOLERANCE,
+  EXPECTED_LAYOUT,
   blankShareOf,
-  paginationFaults,
+  layoutDrift,
   readsAsACv,
   type PrintedPage,
 } from "./printedCv.ts";
@@ -23,9 +24,6 @@ import {
 const root = resolve(import.meta.dirname, "..");
 const dist = join(root, "dist");
 const PORT = 5187;
-
-/** The longest the CV may run before it stops being a CV. */
-const MAX_SHEETS = 5;
 
 /**
  * Whose CV it should be, read from the structured data the same build
@@ -94,33 +92,44 @@ async function main() {
 
   console.log(`the printed CV runs to ${pages.length} sheets`);
   for (const page of pages) {
-    console.log(
-      `  sheet ${page.number}: ${Math.round(blankShareOf(page) * 100)}% blank at the foot`,
-    );
+    const share = blankShareOf(page);
+    const want = EXPECTED_LAYOUT[page.number - 1];
+    const note = want === undefined ? " (no recorded value)" : ` (recorded ${Math.round(want * 100)}%)`;
+    console.log(`  sheet ${page.number}: ${Math.round(share * 100)}% blank at the foot${note}`);
   }
 
   const problems: string[] = [];
-
   const name = nameTheBuildDeclares();
 
   if (!readsAsACv(pages, name)) {
     problems.push(
-      `no text came back from the PDF, or it does not carry "${name}" — the checks below would pass on an empty document`,
+      `no text came back from the PDF, or it does not carry "${name}" — everything below would pass on an empty document`,
     );
   }
 
-  if (pages.length > MAX_SHEETS) {
-    problems.push(`it runs to ${pages.length} sheets, and ${MAX_SHEETS} is the limit`);
+  const drift = layoutDrift(pages);
+
+  if (drift.lengthChanged) {
+    problems.push(
+      `it runs to ${pages.length} sheets, and the recorded layout has ${EXPECTED_LAYOUT.length}`,
+    );
   }
 
-  for (const fault of paginationFaults(pages)) problems.push(fault.reason);
+  for (const sheet of drift.sheets) {
+    problems.push(
+      Number.isNaN(sheet.expected)
+        ? `sheet ${sheet.sheet} is new, and nothing is recorded for it`
+        : `sheet ${sheet.sheet} is ${Math.round(sheet.measured * 100)}% blank at the foot, and ${Math.round(sheet.expected * 100)}% was recorded`,
+    );
+  }
 
   if (problems.length > 0) {
     throw new Error(
-      `The printed CV has problems no screen would show:\n  ${problems.join("\n  ")}\n\n` +
-        `A sheet more than ${Math.round(MAX_BLANK_SHARE * 100)}% blank usually means a block ` +
-        `carries break-inside-avoid and is taller than the space left on the page, so it moved ` +
-        `whole and left the gap behind.`,
+      `The printed CV no longer lays out the way it was recorded:\n  ${problems.join("\n  ")}\n\n` +
+        `Sections and job entries carry break-inside-avoid so that an entry is never split across two ` +
+        `sheets, and the gaps are what that costs. If this change is wanted, update EXPECTED_LAYOUT in ` +
+        `scripts/printedCv.ts; the tolerance is ${Math.round(DRIFT_TOLERANCE * 100)} points, which a ` +
+        `section crossing a page boundary comfortably exceeds.`,
     );
   }
 }
