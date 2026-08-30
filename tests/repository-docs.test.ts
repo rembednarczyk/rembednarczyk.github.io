@@ -159,8 +159,25 @@ const allEntries = SEARCHED_ROOTS.flatMap((dir) => [
  * Only that one file: package.json is a list of other people's package
  * names, and admitting it would satisfy the check for almost any word.
  */
+/**
+ * This file is not part of what it searches.
+ *
+ * It has to contain names the repository no longer has: the fixtures that
+ * prove `withoutComments` strips a deleted symbol out of a doc comment are
+ * written around `formatProjectTags`, the very name this check was created
+ * for after the README described it for three merges past its deletion.
+ * Two of those fixtures are regex literals — `/formatProjectTags/` — which
+ * are neither comment nor string, so no amount of stripping reaches them.
+ *
+ * The result was a guard defeated by its own fixture, for the one symbol it
+ * was built around: put that name back in the README and the check stayed
+ * green. A guard's fixtures are not evidence about the repository.
+ */
+const OWN_FIXTURES = "tests/repository-docs.test.ts";
+
 const codeWithoutComments = allEntries
   .filter((f) => /\.tsx?$/.test(f) || f.endsWith(".claude/settings.json"))
+  .filter((f) => !f.endsWith(OWN_FIXTURES))
   .map((f) => withoutComments(readFileSync(f, "utf8")))
   .join("\n");
 
@@ -304,6 +321,15 @@ describe("things the README names", () => {
     expect(allEntries.length).toBeGreaterThan(50);
     expect(codeWithoutComments).toContain("getYearsOfExperience");
     expect(codeWithoutComments).toContain("PageSection");
+  });
+
+  it("does not read its own fixtures as evidence about the repository", () => {
+    // formatProjectTags was deleted, and this file names it four times to
+    // prove the comment stripper reaches it — twice inside regex literals,
+    // which no stripper touches. While those counted, the check written
+    // after the README described that symbol for three merges past its
+    // deletion would have passed on the README describing it again.
+    expect(codeWithoutComments).not.toContain("formatProjectTags");
   });
 });
 

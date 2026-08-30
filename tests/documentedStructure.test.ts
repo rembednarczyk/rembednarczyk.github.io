@@ -34,8 +34,49 @@ const directoriesUnder = (dir: string) =>
 /** The fenced block that draws the tree. */
 const tree = /```text\s*\nsrc\/\n([\s\S]*?)```/.exec(instructions)?.[1] ?? "";
 
-/** Every `name/` the tree draws, at any depth. */
-const drawn = [...tree.matchAll(/([a-zA-Z][\w-]*)\//g)].map((m) => m[1]);
+/**
+ * Every directory the tree draws, as a path rather than as a name.
+ *
+ * A bare name is not unique across levels, and keying on one made the check
+ * answer a different question than the one it was written for. Measured: it
+ * drew `components, layout, sections, ui, data, hooks, lib, test, types,
+ * utils` as one flat set, so creating `src/ui/`, `src/sections/` or
+ * `src/layout/` — top-level directories the tree does not show — reported
+ * nothing undrawn, because the names already appeared one level down. The
+ * inverse held too: the tree could draw `components/data/`, which does not
+ * exist, and "draws nothing that is not there" passed on the top-level
+ * `data/`.
+ *
+ * Depth comes from the box-drawing prefix: each level of nesting adds four
+ * columns before the branch.
+ */
+const drawn = (() => {
+  const paths: string[] = [];
+  let parent = "";
+
+  for (const line of tree.split("\n")) {
+    const branch = /^((?:[│|]\s{3}|\s{4})*)[├└]──\s+([a-zA-Z][\w-]*)\//.exec(line);
+    if (!branch) continue;
+
+    const depth = branch[1].length / 4;
+    const name = branch[2];
+
+    if (depth === 0) {
+      parent = name;
+      paths.push(`src/${name}`);
+    } else {
+      paths.push(`src/${parent}/${name}`);
+    }
+  }
+
+  return paths;
+})();
+
+/** The same two levels of the real tree, as paths. */
+const real = [
+  ...directoriesUnder("src").map((name) => `src/${name}`),
+  ...directoriesUnder("src/components").map((name) => `src/components/${name}`),
+];
 
 describe("the documented project structure", () => {
   it("finds the tree it is checking", () => {
@@ -43,33 +84,30 @@ describe("the documented project structure", () => {
     expect(drawn.length).toBeGreaterThan(5);
   });
 
-  it("draws every directory src/ has", () => {
-    const undrawn = directoriesUnder("src").filter((name) => !drawn.includes(name));
+  it("reads the nesting, not just the names", () => {
+    // Guards the parser: if the depth were lost, every path would collapse
+    // to the top level and the two checks below would be back to comparing
+    // bare names.
+    expect(drawn).toContain("src/components/ui");
+    expect(drawn).toContain("src/hooks");
+    expect(drawn).not.toContain("src/ui");
+  });
+
+  it("draws every directory src/ and src/components/ have", () => {
+    const undrawn = real.filter((path) => !drawn.includes(path));
 
     expect(
       undrawn,
-      `these exist under src/ and the tree does not show them:\n  ${undrawn.join("\n  ")}`,
+      `these exist and the tree does not show them:\n  ${undrawn.join("\n  ")}`,
     ).toEqual([]);
   });
 
-  it("draws every directory src/components/ has", () => {
-    const undrawn = directoriesUnder("src/components").filter(
-      (name) => !drawn.includes(name),
-    );
-
-    expect(undrawn).toEqual([]);
-  });
-
   it("draws nothing that is not there", () => {
-    const real = new Set([
-      ...directoriesUnder("src"),
-      ...directoriesUnder("src/components"),
-    ]);
-    const imaginary = drawn.filter((name) => !real.has(name));
+    const imaginary = drawn.filter((path) => !real.includes(path));
 
     expect(
       imaginary,
-      `the tree shows these and src/ has no such directory:\n  ${imaginary.join("\n  ")}`,
+      `the tree shows these and there is no such directory:\n  ${imaginary.join("\n  ")}`,
     ).toEqual([]);
   });
 });

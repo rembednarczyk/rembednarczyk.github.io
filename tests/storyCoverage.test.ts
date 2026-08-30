@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { listSourceFiles } from "../scripts/importGraph";
@@ -39,6 +39,31 @@ describe("every reusable component has a story", () => {
     expect(
       without,
       `these have no story, so the accessibility addon never scans them on their own:\n  ${without.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  /**
+   * And each of those files exports a story.
+   *
+   * The check above asked whether a file exists, which is a proxy for the
+   * property rather than the property: a `.stories.tsx` with a `meta`
+   * default export and no named story satisfies it, indexes zero stories,
+   * and gives the addon nothing to scan. The rule is the axe run, not the
+   * filename.
+   */
+  it("exports at least one story from each", () => {
+    const empty = components
+      .map((file) => file.replace(/\.tsx$/, ".stories.tsx"))
+      .filter(existsSync)
+      .filter((file) => {
+        const source = readFileSync(file, "utf8");
+        return !/export\s+const\s+[A-Z][A-Za-z0-9]*\s*[:=]/.test(source);
+      })
+      .map((file) => basename(file));
+
+    expect(
+      empty,
+      `these are story files that export no story, so Storybook indexes nothing and the accessibility addon scans nothing:\n  ${empty.join("\n  ")}`,
     ).toEqual([]);
   });
 });
