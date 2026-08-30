@@ -2,6 +2,7 @@ import { m } from "motion/react";
 import { Terminal } from "lucide-react";
 import { heroData } from "../../data/portfolioFacts";
 import { useScrollToSection } from "../../hooks/useScrollToSection";
+import { Tag } from "../ui/Tag";
 
 export function HeroSection() {
   const scrollToSection = useScrollToSection();
@@ -55,12 +56,9 @@ export function HeroSection() {
 
         <div className="flex flex-wrap gap-2 mb-10">
           {heroData.tags.map((tech, i) => (
-            <span
-              key={i}
-              className="px-3 py-1 text-sm font-mono text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 rounded-full"
-            >
+            <Tag key={i} size="sm">
               {tech}
-            </span>
+            </Tag>
           ))}
         </div>
 
