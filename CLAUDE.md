@@ -7,15 +7,22 @@ How to work in this repository. Read it before the first change of a session.
 This file does not restate them. Two documents govern the work, and a second
 copy of a rule is a second thing to go stale:
 
-- [Engineering Principles](docs/guidelines/ENGINEERING_PRINCIPLES.md) — how a
-  change is made. Section 1 is the point of this file: *the repository is the
-  memory, and clearing all working context should cost nothing.*
+- [Ways of Working](docs/guidelines/WAYS_OF_WORKING.md) — how a change is made.
+  Part 0 is the point of this file: *the repository is the memory, and clearing
+  all working context should cost nothing*, and *a rule you cannot enforce
+  automatically is a wish.*
 - [AI Instructions](docs/guidelines/AI_INSTRUCTIONS.md) — this repository
   specifically: architecture, Lighthouse guardrails, UI conventions, and the
   commit format.
 
 The README lists every ratchet, under *Development Guidelines and Guardrails*.
 That list is the current one.
+
+It is also this repository's decisions log, in the sense *Ways of Working*
+Part 2 means: every entry says what broke, why the guard exists and what was
+rejected, indexed by subject instead of by date. Part 2 asks for the role to
+be filled, not for a file of a particular name — so extend that list rather
+than starting a second document, which would only drift from it.
 
 ## What is only written here
 
@@ -53,6 +60,20 @@ repository's history clobbered work that `Edit` would have refused.
 
 `git checkout <path>` discards uncommitted work and silently does nothing for
 an untracked file. Both have cost real edits here. Copy the file aside first.
+
+### Parallel read-only passes
+
+The adversarial bughunt in *Ways of Working* Part 5 is available here: several
+independent read-only agents over separate slices, each trying to prove the
+code wrong, each rejecting its own false positives before reporting. Use it to
+audit a finished body of work, not to write one — the passes read and report,
+and the fixes come back through the ordinary loop, red-by-design.
+
+Two things it does not license. It is not a substitute for measuring: a pass
+that reads the source and reports a defect has produced a hypothesis, and this
+repository's findings are numbers off the built page. And it stays off for
+ordinary work, where one attentive pass is cheaper than four and the
+coordination is the expensive part.
 
 ## The habit that matters more than any of the above
 

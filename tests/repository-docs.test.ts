@@ -301,7 +301,7 @@ describe("things the README names", () => {
  * write in a file that does not exist before they have read anything else.
  */
 const GUIDELINE_DOCUMENTS: Record<string, string> = {
-  "ENGINEERING_PRINCIPLES.md": "docs/guidelines",
+  "WAYS_OF_WORKING.md": "docs/guidelines",
   "AI_INSTRUCTIONS.md": "docs/guidelines",
   "CLAUDE.md": ".",
 };

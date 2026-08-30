@@ -114,7 +114,7 @@ Chosen for build speed, maintainability, and developer experience.
 
 Development follows two documents, both of which apply to human and AI contributors:
 
-- [Engineering Principles](docs/guidelines/ENGINEERING_PRINCIPLES.md) governs how changes are made: what a test is for, which defect classes to aim at, how much process a change deserves, and what has to be recorded before a change counts as done. It is project-agnostic and takes precedence.
+- [Ways of Working](docs/guidelines/WAYS_OF_WORKING.md) governs how changes are made: the operating loop of a change, how the project's memory is structured, what a test is for, which defect classes to aim at, how much process a change deserves, and what has to be recorded before a change counts as done. It is project-agnostic and takes precedence. Two of its rules decide most of what is in this repository: *a rule you cannot enforce automatically is a wish*, and the tier of a change is set by whether its defect could be seen at all without a gate — not only by what a silent error would cost. This project has no money, auth or data integrity on its critical path, and that second axis is why it has a gate for the printed CV's page breaks and one for what a keyboard focus ring paints.
 - [AI Instructions](docs/guidelines/AI_INSTRUCTIONS.md) covers this repository specifically: execution protocol, architecture rules, Lighthouse guardrails, and UI/UX conventions.
 - [CLAUDE.md](CLAUDE.md) is the working agreement read at the start of a session: authorship, the branch and pull request flow, and the habits that catch a wrong measurement. It restates neither of the above, and points at both.
 
