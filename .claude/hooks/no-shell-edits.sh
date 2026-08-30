@@ -50,12 +50,22 @@ absolute() {
   esac
 }
 
-# Whether writing to this path is the thing the rule is about: a file of this
-# repository's own, rather than a scratch file, a device or a build artefact.
-protected() {
+# One place that takes the quotes off, because there were two and they
+# diverged. `first_protected_token` stripped them and the git-checkout loop
+# below was a hand-rolled copy of it that did not, so `git checkout
+# "src/App.tsx"` went through while the unquoted form was refused.
+unquoted() {
   local raw="$1"
   raw="${raw%\"}"; raw="${raw#\"}"
   raw="${raw%\'}"; raw="${raw#\'}"
+  printf '%s' "$raw"
+}
+
+# Whether writing to this path is the thing the rule is about: a file of this
+# repository's own, rather than a scratch file, a device or a build artefact.
+protected() {
+  local raw
+  raw=$(unquoted "$1")
   [ -n "$raw" ] || return 1
 
   case "$raw" in
@@ -121,9 +131,11 @@ first_protected_token() {
     case "$token" in
       -*) continue ;;
     esac
-    token="${token%\"}"; token="${token#\"}"
-    token="${token%\'}"; token="${token#\'}"
-    if [ -f "$token" ] && protected "$token"; then
+    token=$(unquoted "$token")
+    # Existence is asked of the path the repository would have, not of the
+    # one the hook's own working directory would resolve. The two differ,
+    # and asking the wrong one let `cd src && sed -i … App.tsx` through.
+    if [ -f "$(absolute "$token")" ] && protected "$token"; then
       printf '%s' "$token"
       return 0
     fi
@@ -137,10 +149,16 @@ first_protected_token() {
 # in every other grep run against this codebase, so the character before it
 # decides. A file descriptor may precede it, and `2>&1` is not a write
 # because `&` is excluded from what can follow.
+#
+# Quotes are part of what a target may look like and are taken off after the
+# match, not excluded from it. Excluding them meant a quoted target produced
+# no match at all, so `cat > "src/App.tsx" <<'EOF'` — the first row of this
+# hook's own test table with two characters added — went straight through.
+# `>|` is the same write with the shell's clobber override on it.
 targets=$(
   printf '%s' "$command" |
-    grep -oE '(^|[[:space:];&|(])[0-9]?>>?[[:space:]]*[^[:space:]&|;<>()"'\'']+' |
-    sed -E 's/^.*>>?[[:space:]]*//' || true
+    grep -oE '(^|[[:space:];&|(])[0-9]?>>?\|?[[:space:]]*["'\'']?[^[:space:]&|;<>()"'\'']+' |
+    sed -E 's/^.*>>?\|?[[:space:]]*//' || true
 )
 
 while IFS= read -r target; do
@@ -174,13 +192,42 @@ fi
 # how the work gets done and are left alone; a path argument is the case that
 # has cost edits here.
 if printf '%s' "$command" | grep -qE '(^|[[:space:]])git[[:space:]]+(checkout|restore)([[:space:]]|$)'; then
+  if path=$(first_protected_token); then
+    refuse "This discards uncommitted changes to $path."
+  fi
+fi
+
+# 4. A command that changes directory before writing, where the path cannot
+# be resolved at all.
+#
+# Everything above judges a path against this repository's root. A command
+# that cds first means the shell will resolve a relative path against
+# somewhere else, and the hook has no way to know where: `cd src && sed -i
+# s/a/b/ App.tsx` names a file that does not exist at the root, so every
+# check above found nothing to object to and let a rewrite of
+# src/App.tsx through.
+#
+# Refusing is the only honest answer, because the alternative is a guard
+# that reports "nothing to see" precisely when it cannot see. An absolute
+# path is still resolvable and is still judged on its merits above, so the
+# way through is to name the file in full, or to use Edit and Write, which
+# is what the rule is asking for anyway.
+if
+  printf '%s' "$command" | grep -qE '(^|[[:space:];&|(])cd[[:space:]]' &&
+    printf '%s' "$command" |
+      grep -qE '(^|[[:space:];&|(])[0-9]?>>?\|?[[:space:]]|(^|[[:space:]])(sed[[:space:]]+(-[a-zA-Z]*i|--in-place)|perl[[:space:]]+-[a-zA-Z]*i|tee|truncate|git[[:space:]]+(checkout|restore))([[:space:]]|$)'
+then
   for token in "${tokens[@]}"; do
-    case "$token" in
-      -*) continue ;;
+    case "$(unquoted "$token")" in
+      -* | /* | "~"*) continue ;;
+      */* | *.[A-Za-z0-9]*)
+        # Deliberately names no file. Splitting on spaces cannot tell
+        # `App.tsx` from `s/a/b/`, and after a cd it cannot resolve either
+        # of them — so claiming which one would be the same false precision
+        # the sed branch was already fixed for once.
+        refuse "This changes directory and then writes to a relative path, which cannot be resolved from here — so whether it touches a file of this repository cannot be decided, and a guard that cannot see refuses rather than reporting nothing to see. An absolute path is judged on its merits."
+        ;;
     esac
-    if [ -f "$token" ] && protected "$token"; then
-      refuse "This discards uncommitted changes to $token."
-    fi
   done
 fi
 

@@ -18,10 +18,11 @@ const hook = resolve(root, ".claude/hooks/no-shell-edits.sh");
 const BLOCKED = 2;
 const ALLOWED = 0;
 
-function run(command: string, toolName = "Bash") {
+function run(command: string, toolName = "Bash", cwd = root) {
   const result = spawnSync(hook, {
     input: JSON.stringify({ tool_name: toolName, tool_input: { command } }),
     encoding: "utf8",
+    cwd,
     env: { ...process.env, CLAUDE_PROJECT_DIR: root },
   });
 
@@ -31,6 +32,15 @@ function run(command: string, toolName = "Bash") {
 describe("the hook itself", () => {
   it("is executable, or it never runs and every case below passes vacuously", () => {
     expect(() => accessSync(hook, constants.X_OK)).not.toThrow();
+  });
+
+  it("judges paths against the project, not against wherever it was started", () => {
+    // CLAUDE_PROJECT_DIR is the authority on what the repository is; the
+    // hook's own working directory is whatever the harness happened to
+    // leave it. Asking existence of the second is the bug that let
+    // `cd src && sed -i … App.tsx` through, and it is invisible from the
+    // root, where the two answers agree.
+    expect(run("sed -i s/a/b/ src/App.tsx", "Bash", "/tmp").status).toBe(BLOCKED);
   });
 
   it("leaves every other tool alone", () => {
@@ -52,6 +62,63 @@ describe("writing to a file of this repository through the shell", () => {
     ["tee", "echo x | tee src/App.tsx"],
   ])("refuses %s", (_case, command) => {
     expect(run(command).status).toBe(BLOCKED);
+  });
+
+  /**
+   * The same commands with two characters added, every one of which the
+   * first version let through. Quoting a path is not exotic — it is what
+   * anyone does the moment a name might contain a space — and
+   * `cat > "src/App.tsx" <<'EOF'` is the first row of the table above with
+   * a pair of quotes on it.
+   *
+   * The cause was worth the lesson: the extraction excluded quote
+   * characters from what a target may look like, so a quoted target
+   * produced no match at all and the branch had nothing to judge. The
+   * function that strips quotes sat two lines below, unreachable from that
+   * path. A gate that passes the very defect it was written for, which is
+   * the shape Ways of Working Part 4 names.
+   */
+  it.each([
+    ["a double-quoted target", 'echo x > "src/App.tsx"'],
+    ["a single-quoted target", "echo x > 'src/App.tsx'"],
+    ["a quoted heredoc target", "cat > \"src/App.tsx\" <<'EOF'\nx\nEOF"],
+    ["a quoted append", 'echo x >>"README.md"'],
+    ["the clobber override", "echo x >| src/App.tsx"],
+    ["a quoted path to git checkout", 'git checkout "src/App.tsx"'],
+    ["a quoted path to git restore", "git restore 'src/App.tsx'"],
+  ])("refuses %s", (_case, command) => {
+    expect(run(command).status).toBe(BLOCKED);
+  });
+
+  /**
+   * And the case where the hook cannot resolve the path at all, which it
+   * answers by refusing rather than by finding nothing to object to.
+   *
+   * Every other check judges a path against the repository root. A command
+   * that changes directory first means the shell resolves a relative path
+   * somewhere else, and `cd src && sed -i s/a/b/ App.tsx` names a file that
+   * does not exist at the root — so every check found nothing and let a
+   * rewrite of src/App.tsx through.
+   */
+  it.each([
+    ["an in-place edit after cd", "cd src && sed -i s/a/b/ App.tsx"],
+    ["a redirect after cd", "cd src && echo x > App.tsx"],
+    ["a git checkout after cd", "cd src && git checkout App.tsx"],
+  ])("refuses %s, because it cannot tell what it would touch", (_case, command) => {
+    expect(run(command).status).toBe(BLOCKED);
+  });
+
+  it("says it cannot resolve the path, and names no file", () => {
+    // Naming one would be false precision: splitting on spaces cannot tell
+    // `App.tsx` from `s/a/b/`, and after a cd it cannot resolve either. The
+    // first version of this message named the sed expression as the file
+    // being written — the same mistake the sed branch was fixed for once
+    // already.
+    const { reason } = run("cd src && sed -i s/a/b/ App.tsx");
+
+    expect(reason).toContain("cannot be resolved");
+    expect(reason).not.toContain("s/a/b/");
+    expect(reason).not.toContain("App.tsx");
   });
 
   it("says which file and what to do instead", () => {
@@ -84,6 +151,10 @@ describe("what it has to keep out of the way of", () => {
     ["installing", "npm install"],
     ["switching branch", "git checkout main"],
     ["starting a branch", "git checkout -b claude/something"],
+    // The cd rule has to stay off the reason people cd in the first place.
+    ["changing directory to look at something", "cd src && grep -rn foo ."],
+    ["changing directory outside the repository", "cd /tmp && ls"],
+    ["a redirect after cd, to an absolute path", "cd src && echo x > /tmp/out.txt"],
   ])("allows %s", (_case, command) => {
     expect(run(command).status).toBe(ALLOWED);
   });

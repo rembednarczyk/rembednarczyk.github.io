@@ -22,10 +22,10 @@ do to itself unattended.
       `tests/hookRegistration.test.ts`, and take the "not registered" caveat
       out of the README and CLAUDE.md. The test fails until all three agree,
       in both directions.
-- [ ] The hook has known holes, listed as their own audit item: a quoted
-      redirect target passes it, and so does a path relative to a
-      subdirectory. Registering it is still worth doing first — a guard with
-      holes refuses more than a guard that never runs.
+The holes the audit found in the hook itself are closed: a quoted redirect
+target, `>|`, a quoted path to `git checkout`, and a path relative to a
+subdirectory after a `cd` were all measured passing and are all refused now.
+What remains is only the registration above, which is the owner's to do.
 
 ---
 
