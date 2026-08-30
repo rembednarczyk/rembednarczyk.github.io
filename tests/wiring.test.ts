@@ -46,25 +46,7 @@ const ENTRY_POINTS: Record<string, string> = {
     "a test helper, used by tests by design and by nothing that ships",
 };
 
-/**
- * Components the site does not render.
- *
- * Found by this check on its first run. They are not defects in the way a
- * missing call is — nothing is broken by their presence — but they are
- * maintained, storied, scanned for accessibility and rendered for nobody,
- * which is the same shape as the ten duplicated section components that
- * tests/module-reachability.test.ts exists because of.
- *
- * Listed rather than deleted because that is the owner's call: `Badge` is
- * used by the AiAssistedCard story, which this README documents as a
- * deliberate edge-case demonstration. The list may shrink and may not grow.
- */
-const RENDERED_BY_NOTHING: Record<string, string> = {
-  "src/components/ui/Badge.tsx": "used only by src/components/ui/AiAssistedCard.stories.tsx",
-  "src/components/ui/Card.tsx": "used by nothing at all, story or page",
-};
-
-const EXEMPT = { ...ENTRY_POINTS, ...RENDERED_BY_NOTHING };
+const EXEMPT = ENTRY_POINTS;
 
 const relativeToRoot = (file: string) => relative(root, file).replace(/\\/g, "/");
 
@@ -150,10 +132,18 @@ describe("the exemptions", () => {
   });
 
   it("exempts nothing that has since been wired up", () => {
-    // The list may shrink and may not grow. A module that gained a real
-    // caller must lose its exemption, or the exemption starts covering the
-    // next thing that breaks.
-    const stale = Object.keys(RENDERED_BY_NOTHING).filter((file) => {
+    /**
+     * An exemption is for a module the graph cannot reach through a caller.
+     * The moment one has a caller that a test reaches, the exemption is
+     * covering something it was not written for — and for the test helper
+     * it would mean worse than that: production code importing it puts a
+     * test fixture in the bundle.
+     *
+     * The list this once held two more entries — a Card and a Badge no page
+     * rendered — and it shrank when they were deleted. It may shrink and
+     * may not grow.
+     */
+    const stale = Object.keys(EXEMPT).filter((file) => {
       const module = production.find((m) => relativeToRoot(m) === file);
       return (
         module !== undefined &&
