@@ -3,8 +3,8 @@ import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 /**
- * Engineering Principles, section 1: never trust a version, a count, or a
- * status quoted in prose. Re-derive it from the source of truth.
+ * Ways of Working, Part 2: never quote a version, a count, or a status from
+ * prose. Re-derive it from the source of truth.
  *
  * Prose goes stale the moment the code moves, and a README nobody re-checks
  * is the first place that happens. Every version and every workflow this
@@ -301,7 +301,7 @@ describe("things the README names", () => {
  * write in a file that does not exist before they have read anything else.
  */
 const GUIDELINE_DOCUMENTS: Record<string, string> = {
-  "ENGINEERING_PRINCIPLES.md": "docs/guidelines",
+  "WAYS_OF_WORKING.md": "docs/guidelines",
   "AI_INSTRUCTIONS.md": "docs/guidelines",
   "CLAUDE.md": ".",
 };
@@ -340,6 +340,48 @@ describe("guideline documents", () => {
     expect(
       missing.map(({ file, path }) => `${file}: ${path}`),
       "these are named in the guidelines, and nothing in the repository matches",
+    ).toEqual([]);
+  });
+});
+
+/**
+ * Citations of a governing document, by name and part.
+ *
+ * Renaming ENGINEERING_PRINCIPLES.md to WAYS_OF_WORKING.md left four of
+ * these behind — in `scripts/lighthouse.ts`, `tests/dependencies.test.ts`,
+ * `tests/module-reachability.test.ts` and this file — and nothing turned
+ * red. The path check above only sees a backticked path and the symbol
+ * check only sees an identifier; a document cited in prose is neither, so
+ * the rename looked complete while four comments pointed at a file that no
+ * longer existed.
+ *
+ * Cheap to hold: a citation names a document that governs the work, and
+ * there are only two of those.
+ */
+const CITATION = /([A-Za-z][A-Za-z ]{2,40}),\s+(?:section|Part)\s+\d+/g;
+
+const GOVERNING_TITLES = ["Ways of Working", "AI Instructions"];
+
+describe("citations of a governing document", () => {
+  const cited = allEntries
+    .filter((f) => /\.(tsx?|md)$/.test(f))
+    .flatMap((f) =>
+      [...readFileSync(f, "utf8").matchAll(CITATION)].map((m) => ({
+        file: f.replace(`${root}/`, ""),
+        title: m[1].trim(),
+      })),
+    );
+
+  it("finds the citations it is checking, so this cannot pass vacuously", () => {
+    expect(cited.length).toBeGreaterThan(2);
+  });
+
+  it("names a document that still governs the work", () => {
+    const stale = cited.filter(({ title }) => !GOVERNING_TITLES.includes(title));
+
+    expect(
+      stale.map(({ file, title }) => `${file}: "${title}"`),
+      "these cite a governing document by a name nothing goes by any more",
     ).toEqual([]);
   });
 });

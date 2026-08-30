@@ -3,8 +3,8 @@ import { join, relative, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 /**
- * Engineering Principles, section 1: never trust a version or a status
- * quoted in prose. package.json is prose until something reads it.
+ * Ways of Working, Part 2: never quote a version, a count, or a status from
+ * prose. package.json is prose until something reads it.
  *
  * This repository has already paid for the absence of these. @storybook/test
  * stayed at ^8.6.15 through the upgrade to Storybook 10, and its peer range

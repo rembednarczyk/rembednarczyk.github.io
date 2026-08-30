@@ -6,12 +6,13 @@ Read this ENTIRE document before making any changes.
 
 ## Governing document
 
-[ENGINEERING_PRINCIPLES.md](ENGINEERING_PRINCIPLES.md) sits above this file
-and takes precedence wherever the two disagree. It is project-agnostic and
-covers how a change is made: what a test is for, which defect classes to aim
-at, how much process a change deserves, and what has to be recorded before a
-change counts as done. This document covers what is specific to this
-repository: stack, architecture, Lighthouse guardrails, and UI conventions.
+[WAYS_OF_WORKING.md](WAYS_OF_WORKING.md) sits above this file and takes
+precedence wherever the two disagree. It is project-agnostic and covers the
+whole method: the operating loop of a change, how the project's memory is
+structured, what a test is for, which defect classes to aim at, how much
+process a change deserves, and what has to be recorded before a change counts
+as done. This document covers what is specific to this repository: stack,
+architecture, Lighthouse guardrails, and UI conventions.
 
 Those principles are enforced as tests rather than left as reading. Two
 stand for the rest:
