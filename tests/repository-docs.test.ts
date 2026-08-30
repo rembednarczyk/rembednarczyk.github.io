@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { withoutComments } from "../scripts/withoutComments";
 
 /**
  * Ways of Working, Part 2: never quote a version, a count, or a status from
@@ -98,20 +99,20 @@ describe("files the README links to", () => {
 });
 
 /**
- * Comments are removed before the source is searched. A name that survives
- * only in a note explaining its removal is exactly the case this exists for:
- * the README described `formatProjectTags` as "covered by tests and called by
- * nothing yet" for three merges after it had been deleted, while the only
- * trace of it in the code was the comment recording that it was gone.
+ * The stripper is shared, and its fixtures stay here.
  *
- * The `//` rule ignores a slash preceded by a quote or a colon, so a URL
- * inside a string is not mistaken for a comment.
+ * There were three copies of it — this one, the dependency gate's, and the
+ * one the import graph did not have — so the graph both reachability
+ * ratchets read was the one still reading prose as code. It is one function
+ * now, in `scripts/withoutComments.ts`.
+ *
+ * The tests for it did not move with it. They are written around
+ * `formatProjectTags`, a name this repository deleted, and two of them are
+ * regex literals that no stripping reaches; this file is already the one
+ * excluded from the haystack below for exactly that reason, so moving them
+ * would move the fixtures out from behind the exclusion and reopen the hole
+ * it closes.
  */
-function withoutComments(source: string): string {
-  return source
-    .replace(/\/\*[\s\S]*?\*\//g, " ")
-    .replace(/(^|[^:"'`])\/\/[^\n]*/g, "$1 ");
-}
 
 /** Every file and every directory below `dir`, so both forms can be matched. */
 function listEntries(dir: string): string[] {
