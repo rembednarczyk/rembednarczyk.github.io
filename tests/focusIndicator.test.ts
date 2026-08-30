@@ -6,7 +6,6 @@ import {
   PAINTS_ITS_OWN_COLOUR,
   PAINTS_SOMETHING,
   failures,
-  firstRepeat,
   judgeFocus,
   judgeNotObscured,
   type Overlaid,
@@ -94,29 +93,21 @@ describe("what counts as showing keyboard focus", () => {
   });
 });
 
-describe("walking the tab order", () => {
-  /**
-   * Three sweeps of this page were written and three stopped early, each on
-   * a different key: a label (two project links share one, stopping at 13 of
-   * 29), a markup prefix (the nav buttons share one, stopping at 3), and an
-   * element's identity, which is the one that works.
-   */
-  it("finds where a walk starts going round again", () => {
-    expect(firstRepeat(["a", "b", "c", "a"])).toBe(3);
-  });
-
-  it("reports no repeat when every stop is its own", () => {
-    expect(firstRepeat(["a", "b", "c"])).toBe(-1);
-  });
-
-  it("would have stopped a label-keyed walk at the first shared name", () => {
-    const labels = ["Skip", "About", "Link to ISTQB", "Link to ISTQB", "Say Hello"];
-    expect(firstRepeat(labels)).toBe(3);
-
-    const ids = ["1", "2", "3", "4", "5"];
-    expect(firstRepeat(ids)).toBe(-1);
-  });
-});
+/*
+ * A block titled "walking the tab order" used to sit here, four assertions
+ * against a `firstRepeat` helper. Three sweeps of this page were written and
+ * three stopped early — on a label, on a markup prefix, on an index — so the
+ * subject was the right one.
+ *
+ * The tests were not. `runFocusIndicator` dedupes inline and never called
+ * that helper, so keying the real walk on a label left all four green. They
+ * were coverage of a function nothing ran, under a heading that named the
+ * thing they did not cover, which is worse than no tests at all: it is a
+ * reason not to look.
+ *
+ * The walk is now held by its count, in runFocusIndicator, which is a
+ * property of the sweep that actually runs.
+ */
 
 describe("what the consent banner does to the controls behind it", () => {
   const clear = (over: Partial<Overlaid> = {}): Overlaid => ({
