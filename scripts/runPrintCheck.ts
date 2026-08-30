@@ -10,6 +10,7 @@ import {
   blankShareOf,
   layoutDrift,
   readsAsACv,
+  whatADialogAddedToThePrint,
   type PrintedPage,
 } from "./printedCv.ts";
 
@@ -77,18 +78,45 @@ async function main() {
   const browser = await chromium.launch();
 
   let pdf: Uint8Array;
+  let withDialogOpen: Uint8Array;
   try {
     const page = await browser.newPage();
     await page.goto(`http://127.0.0.1:${PORT}/`, { waitUntil: "networkidle" });
     // The page decides what prints; the CV template is what survives
     // print:hidden. Rendering to PDF is what paginates it.
     pdf = new Uint8Array(await page.pdf({ format: "A4", printBackground: true }));
+
+    // And again with a dialog open, which is a state a visitor can print
+    // from: the browser's own print command is exactly what the print
+    // stylesheet exists for, and it does not care that a dialog is up. The
+    // shell portals into document.body, outside the wrapper that hides the
+    // screen page, so this is the one overlay that can reach paper.
+    const opened = await page.evaluate(() => {
+      const link = [...document.querySelectorAll("button")].find((b) =>
+        /privacy policy/i.test(b.textContent ?? ""),
+      );
+      if (!link) return false;
+      link.click();
+      return true;
+    });
+    if (!opened) {
+      throw new Error(
+        "no control opened the privacy dialog, so the print below proves nothing about a dialog it never opened",
+      );
+    }
+    await page.waitForSelector('[role="dialog"]', { timeout: 5000 });
+    await page.waitForTimeout(600);
+
+    withDialogOpen = new Uint8Array(
+      await page.pdf({ format: "A4", printBackground: true }),
+    );
   } finally {
     await browser.close();
     stop();
   }
 
   const pages = await sheetsOf(pdf);
+  const withDialog = await sheetsOf(withDialogOpen);
 
   console.log(`the printed CV runs to ${pages.length} sheets`);
   for (const page of pages) {
@@ -120,6 +148,23 @@ async function main() {
       Number.isNaN(sheet.expected)
         ? `sheet ${sheet.sheet} is new, and nothing is recorded for it`
         : `sheet ${sheet.sheet} is ${Math.round(sheet.measured * 100)}% blank at the foot, and ${Math.round(sheet.expected * 100)}% was recorded`,
+    );
+  }
+
+  const leaked = whatADialogAddedToThePrint(pages, withDialog);
+
+  console.log(
+    leaked.length === 0
+      ? "printing with the privacy dialog open produces the same document"
+      : "printing with the privacy dialog open does NOT produce the same document",
+  );
+
+  if (leaked.length > 0) {
+    throw new Error(
+      `An open dialog reaches the printed CV:\n  ${leaked.join("\n  ")}\n\n` +
+        `The dialog shell portals into document.body, which puts it outside the print:hidden ` +
+        `wrapper in App.tsx, so it needs the rule on itself the way the consent banner and the ` +
+        `scroll-to-top button already carry it. A fixed element repeats on every printed page.`,
     );
   }
 
