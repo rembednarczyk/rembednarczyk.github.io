@@ -144,7 +144,17 @@ const allEntries = SEARCHED_ROOTS.flatMap((dir) => [
   resolve(root, dir),
   ...listEntries(resolve(root, dir)),
 ])
-  .concat([resolve(root, "package.json"), resolve(root, "vite.config.ts")])
+  .concat([
+    resolve(root, "package.json"),
+    resolve(root, "vite.config.ts"),
+    // The two documents that live at the root. Without them the backlog
+    // naming CLAUDE.md was reported as naming a file the repository does
+    // not have — while the check was reading that very file two lines
+    // above. A check's reach decides what it can see, which is the third
+    // time that lesson has cost something here.
+    resolve(root, "README.md"),
+    resolve(root, "CLAUDE.md"),
+  ])
   .map((f) => f.replace(/\\/g, "/"));
 
 /**
