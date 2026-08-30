@@ -1,5 +1,5 @@
 <div align="center">
-<img width="1200" height="475" alt="Remigiusz Bednarczyk" src="https://remigiuszbednarczyk.com/img/og-image.png" />
+<img width="1200" height="630" alt="Remigiusz Bednarczyk" src="https://remigiuszbednarczyk.com/img/og-image.png" />
 </div>
 
 # Remigiusz Bednarczyk | Quality Engineering Portfolio
