@@ -87,6 +87,54 @@ export function layoutDrift(
  * reader cannot decode — passes everything above by having no sheets to
  * disagree about.
  */
+/**
+ * What an open dialog put onto the printed CV.
+ *
+ * The dialog shell portals into `document.body`, which places it outside the
+ * wrapper that hides the screen page from the printer. Printed with the
+ * privacy policy open, its text came back from all six sheets — a fixed
+ * element repeats on every page — and its backdrop left 96% of each sheet
+ * dark. Nothing saw it, because the gate printed a freshly loaded page and
+ * never opened anything.
+ *
+ * Stated as a relationship rather than a list of forbidden words: printing
+ * with a dialog open must produce the same document as printing without it.
+ * A word list would have to be kept in step with the dialog's prose, and the
+ * first edit to that prose would quietly empty the check.
+ */
+export function whatADialogAddedToThePrint(
+  withoutDialog: PrintedPage[],
+  withDialog: PrintedPage[],
+): string[] {
+  const problems: string[] = [];
+
+  if (withoutDialog.length === 0) {
+    return ["nothing was printed without the dialog, so there is nothing to compare against"];
+  }
+
+  if (withDialog.length !== withoutDialog.length) {
+    problems.push(
+      `it runs to ${withDialog.length} sheets with a dialog open and ${withoutDialog.length} without one`,
+    );
+  }
+
+  for (let i = 0; i < Math.min(withDialog.length, withoutDialog.length); i += 1) {
+    const before = new Set(withoutDialog[i].text);
+    const added = [...new Set(withDialog[i].text.filter((s) => !before.has(s)))];
+
+    if (added.length > 0) {
+      problems.push(
+        `sheet ${i + 1} carries ${added.length} string${added.length === 1 ? "" : "s"} that printing without the dialog does not: ${added
+          .slice(0, 4)
+          .map((s) => JSON.stringify(s.trim().slice(0, 30)))
+          .join(", ")}`,
+      );
+    }
+  }
+
+  return problems;
+}
+
 export function readsAsACv(pages: PrintedPage[], expectedName: string): boolean {
   const all = pages.flatMap((page) => page.text).join(" ");
   return pages.length > 0 && all.includes(expectedName);
