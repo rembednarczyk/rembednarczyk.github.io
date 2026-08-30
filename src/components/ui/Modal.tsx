@@ -73,10 +73,18 @@ export function Modal({
     initialFocusRef: initialFocusRef ?? closeButtonRef,
   });
 
+  // The container below carries `print:hidden` because this shell portals
+  // into document.body, which puts it outside the wrapper in App.tsx that
+  // hides the screen page from the printer. Every other overlay declares the
+  // rule on itself — the consent banner and the scroll-to-top button both do
+  // — and this is the one that escapes the wrapper, so it needed it most and
+  // was the only one without it. Printed while open, it landed on all six
+  // sheets of the CV: a fixed element repeats on every page, and its
+  // backdrop left 96% of each sheet dark.
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 print:hidden">
           <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
