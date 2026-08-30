@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { withoutComments } from "../scripts/withoutComments";
 
 /**
  * Ways of Working, Part 2: never quote a version, a count, or a status from
@@ -187,19 +188,6 @@ function listSourceFiles(dir: string): string[] {
 function packageOf(specifier: string): string {
   const parts = specifier.split("/");
   return specifier.startsWith("@") ? parts.slice(0, 2).join("/") : parts[0];
-}
-
-/**
- * Comments are removed before the source is scanned. `from "..."` is a
- * shape prose falls into: a doc comment reading `"behind it" from "in front
- * of it"` was read as an import of a package called `in front of\n * it`,
- * and the check reported it as an undeclared dependency. The same rule the
- * README's symbol check needs, for the same reason.
- */
-function withoutComments(source: string): string {
-  return source
-    .replace(/\/\*[\s\S]*?\*\//g, " ")
-    .replace(/(^|[^:"'`])\/\/[^\n]*/g, "$1 ");
 }
 
 function importedPackages(file: string): string[] {

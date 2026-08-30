@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { withoutComments } from "./withoutComments.ts";
 
 /**
  * The import graph, in one place.
@@ -34,7 +35,16 @@ export function listSourceFiles(dir: string): string[] {
  * `root` resolves the `@/` alias, which points at the repository root.
  */
 export function importedPaths(file: string, root: string): string[] {
-  const source = readFileSync(file, "utf8");
+  // Comments first. This repository's comments name modules and describe
+  // their removal, so prose here reads as an import: `tests/dependencies`
+  // carries a doc comment about stripping comments, and this function used
+  // to extract a specifier out of it. Harmless there — it resolved to no
+  // file — but a comment naming a real relative path made an unimported
+  // module read as reachable, and a module read as exercised through a
+  // caller that does not call it. Measured on a two-file fixture: before
+  // this line, a caller whose only mention of `./orphan` was a comment
+  // saying the import had been removed reached it.
+  const source = withoutComments(readFileSync(file, "utf8"));
   const specifiers = [
     ...source.matchAll(/from\s+["']([^"']+)["']/g),
     ...source.matchAll(/import\s+["']([^"']+)["']/g),
