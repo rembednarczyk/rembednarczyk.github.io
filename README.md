@@ -118,7 +118,9 @@ Development follows two documents, both of which apply to human and AI contribut
 - [AI Instructions](docs/guidelines/AI_INSTRUCTIONS.md) covers this repository specifically: execution protocol, architecture rules, Lighthouse guardrails, and UI/UX conventions.
 - [CLAUDE.md](CLAUDE.md) is the working agreement read at the start of a session: authorship, the branch and pull request flow, and the habits that catch a wrong measurement. It restates neither of the above, and points at both.
 
-`.claude/hooks/session-start.sh` runs at session start and sets the repository's git identity, because the container's global one is not the owner's and a rule that depends on remembering is not a rule. All three documents are held to naming only files that exist by `tests/repository-docs.test.ts`.
+`.claude/hooks/session-start.sh` runs at session start and sets the repository's git identity, because the container's global one is not the owner's and a rule that depends on remembering is not a rule. `.claude/hooks/no-shell-edits.sh` runs before every shell command and refuses the two that CLAUDE.md names and that carried on happening anyway: changing a repository file through a redirect, a heredoc or `sed -i`, and discarding uncommitted work with `git checkout <path>`. Reading and searching through the shell are untouched. All three documents are held to naming only files that exist by `tests/repository-docs.test.ts`.
+
+[Backlog](docs/BACKLOG.md) holds the work that is understood but not done, with enough detail that picking it up costs nothing.
 
 Rules that can be automated are automated, following the principle that a ratchet beats a checklist. Several run as tests, each written after the repository had already broken the rule it now enforces:
 
@@ -138,6 +140,7 @@ Rules that can be automated are automated, following the principle that a ratche
 - `tests/dialogShell.test.ts` fails on a dialog that builds its own shell instead of using `src/components/ui/Modal.tsx`. The keyboard and focus behaviour was already shared, and that is the half where a mistake is obvious; the markup around it is the half where a mistake is silent. A dialog that forgets `aria-modal`, or labels itself with an id that resolves to nothing, still opens and still looks right.
 - `tests/sourceMaps.test.ts` builds the site and reads the output, failing if a script ships without a map, without a `sourceMappingURL`, or with the map inlined into what every visitor downloads. Error reports carry a position inside the minified bundle, which is exact with a map beside it and worthless without one, and nothing at runtime would report the difference.
 - `src/components/ErrorBoundary.test.tsx` reads `src/main.tsx` and fails if the error boundary is not mounted around the app. The component keeps passing its own tests and its own story while wired to nothing, so removing it from the root was previously invisible.
+- `tests/shellEditGuard.test.ts` runs `.claude/hooks/no-shell-edits.sh` as a process and checks it refuses a shell file edit and allows ordinary shell use. It tests the hook rather than a function inside it, because what goes wrong with a hook is that it never fires — a bad shebang, a missing `jq`, a payload that does not parse — and a unit test of the patterns passes through all three. This is the one ratchet aimed at how the work is done rather than at the code, and it exists because writing the rule down in two documents did not stop it being broken: the harness re-states the opposite preference every turn, and repetition beats recall.
 
 ---
 
