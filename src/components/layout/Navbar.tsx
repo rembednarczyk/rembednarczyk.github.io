@@ -97,11 +97,26 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/*
+        Mobile Menu Dropdown.
+
+        The height subtracts whatever a fixed bar has claimed at the foot of
+        the viewport, the same `--fixed-bar-space` the body's padding spends.
+        Without it the menu grows to 16px from the bottom edge and lands on
+        the consent banner: at 812x375, 740x360 and 768x500 it covered Accept
+        and Decline completely, and a tap on Accept went to a nav button, so
+        the page scrolled away and no choice was recorded.
+
+        The banner's own `z-[90]` does not save it. It is trapped inside the
+        footer's stacking context, which is `z-10`, so against this menu at
+        `z-50` it loses — the same trap App.tsx documents for the
+        scroll-to-top button. Reserving the space is what fixes it; the menu
+        already scrolls internally, so nothing becomes unreachable.
+      */}
       {isMobileMenuOpen && (
         <div
           ref={menuRef}
-          className="lg:hidden absolute top-20 right-4 w-56 sm:w-64 max-h-[calc(100vh-6rem)] overflow-y-auto bg-[#020617]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-5 flex flex-col gap-3 text-sm font-medium origin-top-right animate-in fade-in slide-in-from-top-4 duration-200 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+          className="lg:hidden absolute top-20 right-4 w-56 sm:w-64 max-h-[calc(100vh-6rem-var(--fixed-bar-space,0px))] overflow-y-auto bg-[#020617]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-5 flex flex-col gap-3 text-sm font-medium origin-top-right animate-in fade-in slide-in-from-top-4 duration-200 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
         >
           {NAV_ITEMS.map((item) => (
             <button
