@@ -1,5 +1,6 @@
 import { MotionProvider } from "./components/MotionProvider";
 import { useAutoPrint } from "./hooks/useAutoPrint";
+import { useCookieConsent } from "./hooks/useCookieConsent";
 import { useHashTarget } from "./hooks/useHashTarget";
 import { isKnownPath } from "./lib/routing";
 import { Navbar } from "./components/layout/Navbar";
@@ -53,6 +54,11 @@ export function Portfolio() {
   // shared link to one of them has to be honoured here instead.
   useHashTarget();
 
+  // Held here rather than in the footer: the banner and the scroll-to-top
+  // button both live in the bottom-right corner, and one of them has to
+  // know about the other.
+  const { consent, accept, decline, reset } = useCookieConsent();
+
   return (
     <div className="relative min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-cyan-500/30 overflow-x-hidden print:overflow-visible print:bg-white">
       <a
@@ -91,10 +97,22 @@ export function Portfolio() {
         </main>
 
         {/* Footer */}
-        <Footer />
+        <Footer
+          consent={consent}
+          onAccept={accept}
+          onDecline={decline}
+          onReset={reset}
+        />
 
-        {/* Floating Scroll to Top Button */}
-        <ScrollToTop />
+        {/*
+          Floating Scroll to Top Button. It stands down while the consent
+          banner is up: both sit in the bottom-right corner, and the banner
+          is the one asking for an answer. The button's z-50 does not save
+          it either — the banner's z-[90] is trapped inside the footer's
+          stacking context, so the button paints over the banner rather than
+          under it.
+        */}
+        {consent !== "unset" && <ScrollToTop />}
       </div>
 
       {/* Print CV Template */}

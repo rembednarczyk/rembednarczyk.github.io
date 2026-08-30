@@ -1,6 +1,8 @@
+import { useRef } from "react";
 import { m, AnimatePresence } from "motion/react";
 import { Cookie } from "lucide-react";
 import { Button } from "./Button";
+import { useSpaceForFixedBar } from "../../hooks/useSpaceForFixedBar";
 
 export interface CookieConsentProps {
   /** Whether the banner is shown. Hidden once a choice has been made. */
@@ -21,10 +23,17 @@ export function CookieConsent({
   onDecline,
   onOpenPolicy,
 }: CookieConsentProps) {
+  const bandRef = useRef<HTMLDivElement>(null);
+
+  // The banner covers the foot of the viewport, so the page has to be told
+  // that space is spoken for — otherwise a focused control lands behind it.
+  useSpaceForFixedBar(bandRef, isVisible);
+
   return (
     <AnimatePresence>
       {isVisible && (
         <m.div
+          ref={bandRef}
           // Transform only, never opacity: a partially faded banner spends
           // its entrance below the contrast threshold, which is both an
           // accessibility problem and a source of flaky a11y assertions.
@@ -34,9 +43,15 @@ export function CookieConsent({
           transition={{ type: "spring", stiffness: 260, damping: 30 }}
           role="region"
           aria-label="Cookie consent"
-          className="fixed bottom-0 left-0 right-0 z-[90] p-4 sm:p-6 print:hidden"
+          // pointer-events-none on the band, auto on the card. The band runs
+          // the full width of the viewport and the card does not, so the
+          // transparent strip either side of it was swallowing clicks: two
+          // project links sat under it, visually untouched and unclickable.
+          className="fixed bottom-0 left-0 right-0 z-[90] p-4 sm:p-6 print:hidden pointer-events-none"
         >
-          <div className="max-w-3xl mx-auto flex flex-col sm:flex-row sm:items-center gap-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-5 sm:pr-6">
+          <div
+            className="pointer-events-auto max-w-3xl mx-auto flex flex-col sm:flex-row sm:items-center gap-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-5 sm:pr-6"
+          >
             <Cookie
               className="w-6 h-6 text-cyan-400 shrink-0 hidden sm:block"
               aria-hidden="true"

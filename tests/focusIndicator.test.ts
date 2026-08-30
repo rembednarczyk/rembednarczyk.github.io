@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  ANY_OF_IT,
   ENOUGH_IN_PAGE_COLOUR,
+  ENTIRELY,
   PAINTS_ITS_OWN_COLOUR,
   PAINTS_SOMETHING,
   failures,
   firstRepeat,
   judgeFocus,
+  judgeNotObscured,
+  type Overlaid,
   type Stop,
 } from "../scripts/focusIndicator";
 
@@ -111,5 +115,115 @@ describe("walking the tab order", () => {
 
     const ids = ["1", "2", "3", "4", "5"];
     expect(firstRepeat(ids)).toBe(-1);
+  });
+});
+
+describe("what the consent banner does to the controls behind it", () => {
+  const clear = (over: Partial<Overlaid> = {}): Overlaid => ({
+    name: "a control",
+    coveredByCard: 0,
+    clickReaches: true,
+    blockedBy: "",
+    ...over,
+  });
+
+  it("passes a control the banner leaves alone", () => {
+    expect(failures(judgeNotObscured([clear()]))).toEqual([]);
+  });
+
+  it("fails one entirely behind the banner when it takes focus", () => {
+    // Measured before the fix: the contact button and the footer's privacy
+    // link, at 1280x900.
+    const [verdict] = judgeNotObscured([
+      clear({
+        name: "Get in Touch",
+        coveredByCard: 1,
+        clickReaches: false,
+        blockedBy: "the consent banner",
+        inFrontWhereCovered: false,
+      }),
+    ]);
+
+    expect(verdict.ok).toBe(false);
+    expect(verdict.problem).toContain("SC 2.4.11");
+  });
+
+  it("fails one the banner only half covers, because this page holds to AAA", () => {
+    // SC 2.4.11 would allow this: it fails on entirely hidden. SC 2.4.12
+    // fails on any of it hidden, and 47% was what was left after the first
+    // round of fixes — the reservation stopped at the card's top edge
+    // instead of the band's.
+    const [verdict] = judgeNotObscured([
+      clear({ coveredByCard: 0.47, inFrontWhereCovered: false }),
+    ]);
+
+    expect(verdict.ok).toBe(false);
+    expect(verdict.problem).toContain("SC 2.4.12");
+    expect(verdict.problem).toContain("47%");
+  });
+
+  it("passes a rounding artefact, which is not something anyone can see", () => {
+    // Two rects meeting exactly produce a sliver. The real failures were
+    // 7%, 47% and 100%.
+    expect(
+      failures(judgeNotObscured([clear({ coveredByCard: 0.004, inFrontWhereCovered: false })])),
+    ).toEqual([]);
+  });
+
+  it("fails one the banner swallows the click for, however visible it looks", () => {
+    // Two project links were in this state: the card covered none of them,
+    // and the band's transparent strip took the click anyway.
+    const [verdict] = judgeNotObscured([
+      clear({ name: "Link to a project", coveredByCard: 0, clickReaches: false, blockedBy: "the consent banner" }),
+    ]);
+
+    expect(verdict.ok).toBe(false);
+    expect(verdict.problem).toContain("wider than its card");
+  });
+
+  it("fails one of the banner's own controls that something else covers", () => {
+    // The scroll-to-top button took the right third of Accept at 768px and
+    // left its middle clickable, so a centre-only test called it fine.
+    const [verdict] = judgeNotObscured([
+      clear({
+        name: "Accept",
+        clickReaches: false,
+        blockedBy: "Scroll to top",
+        partOfTheBanner: true,
+        failedAt: 0.7,
+      }),
+    ]);
+
+    expect(verdict.ok).toBe(false);
+    expect(verdict.problem).toContain("70% across it");
+    expect(verdict.problem).toContain("Scroll to top");
+  });
+
+  it("does not call a control obscured when it is the one doing the obscuring", () => {
+    // Geometry said the scroll-to-top button was entirely behind the card.
+    // It was painting over it. Only the hit test tells them apart.
+    expect(
+      failures(
+        judgeNotObscured([
+          clear({
+            name: "Scroll to top",
+            coveredByCard: 1,
+            clickReaches: true,
+            inFrontWhereCovered: true,
+          }),
+        ]),
+      ),
+    ).toEqual([]);
+  });
+
+  it("treats anything short of complete as not entirely hidden", () => {
+    expect(ENTIRELY).toBeLessThan(1);
+    expect(ENTIRELY).toBeGreaterThan(0.99);
+  });
+
+  it("sets the AAA threshold well below the smallest real overlap", () => {
+    // The smallest that mattered was 7%.
+    expect(ANY_OF_IT).toBeLessThan(0.07);
+    expect(ANY_OF_IT).toBeGreaterThan(0);
   });
 });

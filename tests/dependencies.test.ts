@@ -189,8 +189,21 @@ function packageOf(specifier: string): string {
   return specifier.startsWith("@") ? parts.slice(0, 2).join("/") : parts[0];
 }
 
+/**
+ * Comments are removed before the source is scanned. `from "..."` is a
+ * shape prose falls into: a doc comment reading `"behind it" from "in front
+ * of it"` was read as an import of a package called `in front of\n * it`,
+ * and the check reported it as an undeclared dependency. The same rule the
+ * README's symbol check needs, for the same reason.
+ */
+function withoutComments(source: string): string {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, " ")
+    .replace(/(^|[^:"'`])\/\/[^\n]*/g, "$1 ");
+}
+
 function importedPackages(file: string): string[] {
-  const source = readFileSync(file, "utf8");
+  const source = withoutComments(readFileSync(file, "utf8"));
   const specifiers = [
     ...source.matchAll(/from\s+["']([^"']+)["']/g),
     ...source.matchAll(/import\s+["']([^"']+)["']/g),

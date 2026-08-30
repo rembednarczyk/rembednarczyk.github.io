@@ -8,6 +8,8 @@ import {
   PAINTS_SOMETHING,
   failures,
   judgeFocus,
+  judgeNotObscured,
+  type Overlaid,
   type Stop,
 } from "./focusIndicator.ts";
 
@@ -51,6 +53,13 @@ function isPageCyan(r: number, g: number, b: number): boolean {
     Math.abs(b - CYAN.b) < CLOSE_ENOUGH
   );
 }
+
+/**
+ * Where the consent banner is checked. It reflows between these: its buttons
+ * sit beside the text at 1280 and the card nearly fills the viewport at 768,
+ * which is where the scroll-to-top button used to land on top of Accept.
+ */
+const BANNER_WIDTHS = [1280, 768];
 
 /** Long enough for a `transition-all` control to finish fading its ring in. */
 const SETTLE_MS = 450;
@@ -155,6 +164,126 @@ async function paintedBy(page: Page, probe: string): Promise<Stop> {
   return { name: box.name, painted, inPageColour };
 }
 
+/**
+ * Walks the tab order while the consent banner is showing, and reports what
+ * the banner does to each control it is not part of.
+ *
+ * This has to run before the banner is dismissed, and it has to combine
+ * geometry with a hit test: a control can sit behind the card and still
+ * paint over it. Measuring geometry alone called the scroll-to-top button
+ * obscured when it was the one doing the obscuring.
+ */
+async function underTheBanner(page: Page): Promise<Overlaid[]> {
+  const order = await tabOrder(page);
+  const controls: Overlaid[] = [];
+
+  for (const probe of order) {
+    const row = await page.evaluate((id) => {
+      const el = document.querySelector<HTMLElement>(`[data-probe="${id}"]`);
+      const region = document.querySelector('[aria-label="Cookie consent"]');
+      const card = region?.firstElementChild;
+      if (!el || !region || !card) return null;
+      // The banner's own controls are meant to be in front of everything.
+      if (region.contains(el)) return null;
+
+      el.focus();
+      const a = el.getBoundingClientRect();
+      const name = (
+        el.getAttribute("aria-label") ||
+        el.textContent ||
+        el.tagName
+      ).trim().slice(0, 34);
+      if (a.width === 0 || a.height === 0) {
+        return { name, coveredByCard: 0, clickReaches: true, blockedBy: "" };
+      }
+
+      const b = card.getBoundingClientRect();
+      const w = Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left));
+      const h = Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+
+      const cx = a.left + a.width / 2;
+      const cy = a.top + a.height / 2;
+      const onScreen = cx >= 0 && cy >= 0 && cx <= innerWidth && cy <= innerHeight;
+      const top = onScreen ? document.elementFromPoint(cx, cy) : null;
+      const reaches = !onScreen || !!(top && (el === top || el.contains(top)));
+
+      // Inside the part the two share, which is the only place the question
+      // "is it behind the banner" has an answer. The centre is no use: a
+      // control whose middle clears the card can still have its lower half
+      // behind it, and the scroll-to-top button lies entirely inside the
+      // band's box while painting over it.
+      let inFrontWhereCovered: boolean | undefined;
+      if (w > 0 && h > 0) {
+        const ox = Math.max(a.left, b.left) + w / 2;
+        const oy = Math.max(a.top, b.top) + h / 2;
+        const overThere = document.elementFromPoint(ox, oy);
+        inFrontWhereCovered = !!(
+          overThere && (el === overThere || el.contains(overThere))
+        );
+      }
+
+      return {
+        name,
+        coveredByCard: (w * h) / (a.width * a.height),
+        clickReaches: reaches,
+        blockedBy: reaches || !top
+          ? ""
+          : region.contains(top)
+            ? "the consent banner"
+            : top.tagName.toLowerCase(),
+        inFrontWhereCovered,
+      };
+    }, probe);
+
+    if (row) controls.push(row);
+  }
+
+  // And the banner's own buttons, which are meant to be in front of
+  // everything. Sampled across rather than at the centre: the scroll-to-top
+  // button covered the right third of Accept while leaving its middle
+  // clickable, so a centre-only test called it fine.
+  const ownControls = await page.evaluate(() => {
+    const region = document.querySelector('[aria-label="Cookie consent"]');
+    if (!region) return [];
+
+    return [...region.querySelectorAll("button, a")].map((el) => {
+      const a = el.getBoundingClientRect();
+      const name = (el.getAttribute("aria-label") || el.textContent || el.tagName)
+        .trim()
+        .slice(0, 34);
+
+      for (const across of [0.1, 0.3, 0.5, 0.7, 0.9]) {
+        const x = a.left + a.width * across;
+        const y = a.top + a.height / 2;
+        const top = document.elementFromPoint(x, y);
+        if (!top || !(el === top || el.contains(top))) {
+          return {
+            name,
+            coveredByCard: 0,
+            clickReaches: false,
+            blockedBy: top
+              ? top.getAttribute("aria-label") || top.tagName.toLowerCase()
+              : "nothing",
+            partOfTheBanner: true,
+            failedAt: across,
+          };
+        }
+      }
+
+      return {
+        name,
+        coveredByCard: 0,
+        clickReaches: true,
+        blockedBy: "",
+        partOfTheBanner: true,
+      };
+    });
+  });
+
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur?.());
+  return [...controls, ...ownControls];
+}
+
 async function main() {
   if (!existsSync(join(dist, "index.html"))) {
     throw new Error("dist/index.html is missing. Run `npm run build` first.");
@@ -199,16 +328,72 @@ async function main() {
     stops = [];
     for (const probe of inTheBar) stops.push(await paintedBy(page, probe));
 
+    // What the banner does to everything else, while it is still up, at two
+    // widths. The banner reflows and so does the page: the scroll-to-top
+    // button cleared it entirely at 1280 and took a third of Accept at 768,
+    // so one width would have proved nothing about the other.
+    const shadowed: { width: number; name: string; problem: string }[] = [];
+    let checked = 0;
+
+    for (const width of BANNER_WIDTHS) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.waitForTimeout(400);
+      await label();
+
+      const overlaid = await underTheBanner(page);
+      checked += overlaid.length;
+      shadowed.push(
+        ...failures(judgeNotObscured(overlaid)).map((v) => ({
+          width,
+          name: v.name,
+          problem: v.problem,
+        })),
+      );
+    }
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.waitForTimeout(300);
+
+    console.log(
+      `${checked} control checks against the consent banner across ${BANNER_WIDTHS.join("px and ")}px; ${checked - shadowed.length} clear of it`,
+    );
+
+    if (shadowed.length > 0) {
+      throw new Error(
+        `The consent banner is in the way of controls behind it:\n  ${shadowed
+          .map((v) => `at ${v.width}px, ${v.name}: ${v.problem}`)
+          .join("\n  ")}\n\n` +
+          `The banner's band is pointer-events-none and only its card takes clicks, ` +
+          `useSpaceForFixedBar reserves the height it covers so nothing is scrolled under it, ` +
+          `and the scroll-to-top button stands down while the banner is up.`,
+      );
+    }
+
     // Then the rest, with the bar out of the way. It covers the foot of the
     // page, including controls the browser scrolls a visitor to.
+    //
+    // Answer it and reload rather than carrying on: the walk above focused
+    // every control and left the page scrolled somewhere, and the button
+    // that appears only after 300px of scrolling then entered the tab order
+    // and unmounted again before it could be measured. The choice is in
+    // localStorage, so the reload comes back with the banner already
+    // answered and the page at the top.
     await page.evaluate(() =>
       [...document.querySelectorAll("button")]
         .find((b) => b.textContent?.trim() === "Accept")
         ?.click(),
     );
-    await page.waitForTimeout(600);
+    await page.waitForTimeout(400);
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForTimeout(400);
+
+    const reloaded = await page.evaluate(() => document.body.scrollHeight);
+    for (let y = 0; y < reloaded; y += 600) {
+      await page.evaluate((v) => scrollTo(0, v), y);
+      await page.waitForTimeout(70);
+    }
     await page.evaluate(() => scrollTo(0, 0));
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(400);
     await label();
 
     const order = await tabOrder(page);
