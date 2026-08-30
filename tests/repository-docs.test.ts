@@ -146,8 +146,21 @@ const allEntries = SEARCHED_ROOTS.flatMap((dir) => [
   .concat([resolve(root, "package.json"), resolve(root, "vite.config.ts")])
   .map((f) => f.replace(/\\/g, "/"));
 
+/**
+ * The haystack the symbol checks below search.
+ *
+ * `.claude/settings.json` is in it as well as the source, because the hook
+ * configuration is where some of the names the documents use actually live:
+ * `SessionStart` and `PreToolUse` are real and are not TypeScript, and a
+ * check that only reads `.ts` files reported the first of them as a name
+ * nothing in the repository goes by. That is the same lesson the extension
+ * list in `pathsNamedIn` already carries — a check's reach decides what it
+ * can see — and correcting the reach is not the same as widening the rule.
+ * Only that one file: package.json is a list of other people's package
+ * names, and admitting it would satisfy the check for almost any word.
+ */
 const codeWithoutComments = allEntries
-  .filter((f) => /\.tsx?$/.test(f))
+  .filter((f) => /\.tsx?$/.test(f) || f.endsWith(".claude/settings.json"))
   .map((f) => withoutComments(readFileSync(f, "utf8")))
   .join("\n");
 

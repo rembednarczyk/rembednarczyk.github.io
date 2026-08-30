@@ -6,6 +6,29 @@ decided against — not when it is forgotten.
 
 ---
 
+## Register the shell-edit hook
+
+`.claude/hooks/no-shell-edits.sh` exists, is tested twenty-one ways and was
+mutation-tested six ways. Nothing invokes it. A `PreToolUse` entry edits the
+agent's own permission surface, and the permission classifier refuses to
+write one — correctly, since that is not a thing an agent should be able to
+do to itself unattended.
+
+- [ ] Add to `.claude/settings.json`, beside the existing `SessionStart`
+      array, a `PreToolUse` array with one entry: `matcher` `"Bash"`, and one
+      hook of type `command` running
+      `$CLAUDE_PROJECT_DIR/.claude/hooks/no-shell-edits.sh`.
+- [ ] Then remove `no-shell-edits.sh` from `NOT_REGISTERED` in
+      `tests/hookRegistration.test.ts`, and take the "not registered" caveat
+      out of the README and CLAUDE.md. The test fails until all three agree,
+      in both directions.
+- [ ] The hook has known holes, listed as their own audit item: a quoted
+      redirect target passes it, and so does a path relative to a
+      subdirectory. Registering it is still worth doing first — a guard with
+      holes refuses more than a guard that never runs.
+
+---
+
 ## Verify the page on a real iPhone and in Safari
 
 **Why this and nothing else.** Five gates run on every push and between them
