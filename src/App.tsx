@@ -1,4 +1,4 @@
-import { LazyMotion, domAnimation } from "motion/react";
+import { MotionProvider } from "./components/MotionProvider";
 import { useAutoPrint } from "./hooks/useAutoPrint";
 import { useHashTarget } from "./hooks/useHashTarget";
 import { isKnownPath } from "./lib/routing";
@@ -22,22 +22,10 @@ import { BrandPresenceSection } from "./components/sections/BrandPresence/BrandP
 import { ProjectsSection } from "./components/sections/Projects/ProjectsSection";
 import { ContactSection } from "./components/sections/ContactSection";
 
-/**
- * Loads the animation feature set once, for the whole tree.
- *
- * `m` carries no features of its own, so nothing renders without this
- * wrapper. `strict` makes that a loud failure rather than a silent one: a
- * `motion.div` left behind anywhere inside throws instead of quietly
- * pulling the full bundle back in, which is the whole saving.
- *
- * domAnimation rather than domMax: the page uses initial, animate, exit,
- * transition, whileInView and viewport, and no drag, layout or gesture
- * props at all. domMax exists for those.
- */
 /** Chooses between the page and the 404 view. */
 export default function App() {
   return (
-    <LazyMotion features={domAnimation} strict>
+    <MotionProvider>
       {isKnownPath(window.location.pathname) ? (
         <Portfolio />
       ) : (
@@ -45,7 +33,7 @@ export default function App() {
           <NotFound />
         </div>
       )}
-    </LazyMotion>
+    </MotionProvider>
   );
 }
 

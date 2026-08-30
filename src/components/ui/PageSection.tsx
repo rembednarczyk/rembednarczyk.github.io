@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { m } from "motion/react";
+import { Reveal } from "./Reveal";
 import { SectionHeading } from "./SectionHeading";
 
 /**
@@ -31,16 +31,11 @@ export interface PageSectionProps {
 export function PageSection({ id, number, title, children }: PageSectionProps) {
   return (
     <section id={id} className="py-24">
-      <m.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.5 }}
-      >
+      <Reveal>
         <SectionHeading number={number} title={title} />
 
         {children}
-      </m.div>
+      </Reveal>
     </section>
   );
 }

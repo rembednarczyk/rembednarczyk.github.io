@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { LazyMotion, domAnimation } from "motion/react";
 import { ReactElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App";
+import { MotionProvider } from "./MotionProvider";
 import { NOT_FOUND_TITLE, NotFound } from "./NotFound";
 
 /**
@@ -18,12 +18,13 @@ vi.mock("./ParticleBackground", () => ({
   ParticleBackground: () => null,
 }));
 
-/** NotFound uses `m`, which renders nothing without the feature set App loads. */
-const withMotion = (ui: ReactElement) => (
-  <LazyMotion features={domAnimation} strict>
-    {ui}
-  </LazyMotion>
-);
+/**
+ * NotFound uses `m`, which renders nothing without the feature set App
+ * loads. The app's own wrapper rather than a copy of it: a copy is how the
+ * reduced-motion answer came to be missing from two of the three places
+ * that set motion up.
+ */
+const withMotion = (ui: ReactElement) => <MotionProvider>{ui}</MotionProvider>;
 
 function visit(path: string) {
   window.history.replaceState(null, "", path);

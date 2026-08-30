@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
-import { LazyMotion, domAnimation } from "motion/react";
 import { describe, expect, it, vi } from "vitest";
 import { Portfolio } from "../App";
+import { MotionProvider } from "../components/MotionProvider";
 import { CVTemplate } from "../components/CVTemplate";
 
 /**
@@ -27,9 +27,9 @@ function textOf(container: HTMLElement): string {
 describe("what the page renders", () => {
   it("says the same words as before the content was split", () => {
     const { container } = render(
-      <LazyMotion features={domAnimation} strict>
+      <MotionProvider>
         <Portfolio />
-      </LazyMotion>,
+      </MotionProvider>,
     );
 
     expect(textOf(container)).toMatchSnapshot();

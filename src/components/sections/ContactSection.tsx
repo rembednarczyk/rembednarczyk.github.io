@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { m } from "motion/react";
 import { Mail, Download } from "lucide-react";
 import { LinkedinIcon, GithubIcon } from "../ui/BrandIcon";
 import { ContactModal } from "../ui/ContactModal";
+import { Reveal } from "../ui/Reveal";
 
 export function ContactSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,13 +12,7 @@ export function ContactSection() {
       id="contact"
       className="pt-32 pb-16 text-center max-w-2xl mx-auto flex flex-col items-center"
     >
-      <m.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.5 }}
-        className="w-full"
-      >
+      <Reveal className="w-full">
         <p className="text-cyan-400 font-mono mb-4 text-lg">
           11. What&apos;s next?
         </p>
@@ -71,7 +65,7 @@ export function ContactSection() {
             <GithubIcon aria-hidden="true" size={28} />
           </a>
         </div>
-      </m.div>
+      </Reveal>
       
       <ContactModal 
         isOpen={isModalOpen} 

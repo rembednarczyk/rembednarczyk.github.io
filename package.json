@@ -15,7 +15,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test-storybook": "test-storybook",
-    "check:print": "node --experimental-strip-types scripts/runPrintCheck.ts"
+    "check:print": "node --experimental-strip-types scripts/runPrintCheck.ts",
+    "check:motion": "node --experimental-strip-types scripts/runRevealMotion.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
