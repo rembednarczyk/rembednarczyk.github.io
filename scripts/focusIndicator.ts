@@ -110,3 +110,79 @@ export function firstRepeat(ids: string[]): number {
   }
   return -1;
 }
+
+/**
+ * A control, and what the consent banner does to it while it is showing.
+ *
+ * Three separate defects lived here, and only the first is a focus problem:
+ *
+ *  - two controls were *entirely* behind the banner's card when they took
+ *    focus, which is WCAG 2.2 SC 2.4.11 Focus Not Obscured;
+ *  - five were unclickable, including two the card did not visually cover at
+ *    all — the banner's band runs the full width of the viewport while its
+ *    card does not, and the transparent strip either side was swallowing
+ *    clicks;
+ *  - the scroll-to-top button took a third of the Accept button at 768px,
+ *    and a tap on the right of Accept scrolled the page instead.
+ */
+export interface Overlaid {
+  name: string;
+  /** Share of the control the banner's visible card covers, 0 to 1. */
+  coveredByCard: number;
+  /** Whether a click reaches the control at all. */
+  clickReaches: boolean;
+  /** What the click lands on instead, when it does not. */
+  blockedBy: string;
+  /**
+   * The banner's own buttons are checked differently: they are meant to be
+   * in front, so what matters is whether anything is in front of *them*.
+   * The centre alone missed it — the scroll-to-top button took the right
+   * third of Accept and left its middle clickable, so a tap at 80% across
+   * scrolled the page instead of recording a choice.
+   */
+  partOfTheBanner?: boolean;
+  /** Where across the control the click stopped reaching it, 0 to 1. */
+  failedAt?: number;
+}
+
+/**
+ * SC 2.4.11 is failed by "entirely hidden", not by "partly". A control the
+ * banner half covers still shows where the keyboard is; one it covers
+ * completely does not.
+ */
+export const ENTIRELY = 0.999;
+
+export function judgeNotObscured(controls: Overlaid[]): Verdict[] {
+  return controls.map((control) => {
+    const base = { name: control.name, painted: 0 };
+
+    // Geometry alone is not enough: a control can sit behind the card and
+    // still paint over it, which is how the scroll-to-top button did.
+    if (control.coveredByCard >= ENTIRELY && !control.clickReaches) {
+      return {
+        ...base,
+        ok: false,
+        problem:
+          "it is entirely behind the consent banner when it takes focus, so a visitor tabbing to it cannot see where they are (WCAG 2.2 SC 2.4.11)",
+      };
+    }
+
+    if (!control.clickReaches && control.partOfTheBanner) {
+      return {
+        ...base,
+        ok: false,
+        problem: `a click ${Math.round((control.failedAt ?? 0) * 100)}% across it lands on ${control.blockedBy} instead — something is covering the banner's own control`,
+      };
+    }
+
+    if (!control.clickReaches) {
+      return {
+        ...base,
+        ok: false,
+        problem: `a click at its centre lands on ${control.blockedBy} instead — the banner's band is wider than its card, and the transparent part still takes the click`,
+      };
+    }
+
+    return { ...base, ok: true, problem: "" };
+  });
+}

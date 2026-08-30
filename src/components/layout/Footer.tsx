@@ -1,11 +1,25 @@
 import { useState } from "react";
 import { PrivacyPolicyModal } from "../ui/PrivacyPolicyModal";
 import { CookieConsent } from "../ui/CookieConsent";
-import { useCookieConsent } from "../../hooks/useCookieConsent";
+import type { ConsentState } from "../../hooks/useCookieConsent";
 
-export function Footer() {
+export interface FooterProps {
+  consent: ConsentState;
+  onAccept: () => void;
+  onDecline: () => void;
+  /** Clears the stored choice, which brings the banner back. */
+  onReset: () => void;
+}
+
+/**
+ * The consent choice is passed in rather than read here. It used to be this
+ * component's own state, and the scroll-to-top button — a sibling two levels
+ * up — had no way to know the banner was up, so the two of them claimed the
+ * same corner: at 768px the button covered a third of Accept and took the
+ * taps meant for it.
+ */
+export function Footer({ consent, onAccept, onDecline, onReset }: FooterProps) {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-  const { consent, accept, decline, reset } = useCookieConsent();
 
   return (
     <footer className="relative z-10 pt-8 pb-24 sm:pb-12 border-t border-white/10">
@@ -29,12 +43,12 @@ export function Footer() {
       <PrivacyPolicyModal
         isOpen={isPrivacyOpen}
         onClose={() => setIsPrivacyOpen(false)}
-        onChangeConsent={consent === "unset" ? undefined : reset}
+        onChangeConsent={consent === "unset" ? undefined : onReset}
       />
       <CookieConsent
         isVisible={consent === "unset"}
-        onAccept={accept}
-        onDecline={decline}
+        onAccept={onAccept}
+        onDecline={onDecline}
         onOpenPolicy={() => setIsPrivacyOpen(true)}
       />
     </footer>
