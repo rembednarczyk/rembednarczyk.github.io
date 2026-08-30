@@ -1,25 +1,15 @@
-import { m } from "motion/react";
-import { SectionHeading } from "../../ui/SectionHeading";
 import { experienceData } from "../../../data/portfolioFacts";
 import { ExperienceItem } from "./ExperienceItem";
+import { PageSection } from "../../ui/PageSection";
 
 export function ExperienceSection() {
   return (
-    <section id="experience" className="py-24">
-      <m.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.5 }}
-      >
-        <SectionHeading number="03" title="Professional Experience" />
-
-        <div className="space-y-8">
-          {experienceData.map((job, idx) => (
-            <ExperienceItem key={idx} job={job} />
-          ))}
-        </div>
-      </m.div>
-    </section>
+    <PageSection id="experience" number="03" title="Professional Experience">
+      <div className="space-y-8">
+        {experienceData.map((job, idx) => (
+          <ExperienceItem key={idx} job={job} />
+        ))}
+      </div>
+    </PageSection>
   );
 }
