@@ -74,6 +74,48 @@ describe("useContactForm", () => {
     expect(result.current.status).toBe("idle");
   });
 
+  it("does not let a failed attempt's timer clear the retry that replaced it", async () => {
+    // The window above is three seconds wide, and a visitor who sees the
+    // error retries inside it. The first attempt had already scheduled a
+    // return to idle, and that timer carried no attempt with it, so it
+    // fired against whichever attempt was current when it landed.
+    //
+    // What the visitor sees, in ContactModal: the spinner disappears and
+    // Send re-enables while their message is still in flight. A third click
+    // sends a duplicate, and when the second attempt answers, its outcome
+    // arrives out of nowhere.
+    let calls = 0;
+    vi.stubGlobal("fetch", () =>
+      ++calls === 1
+        ? Promise.resolve(new Response("", { status: 500 }))
+        : new Promise(() => undefined),
+    );
+
+    const { result } = renderHook(() => useContactForm({ onSent: vi.fn() }));
+
+    act(() => result.current.submit(submitEvent()));
+    await waitFor(() => expect(result.current.status).toBe("error"));
+
+    // One second into the three the error is readable for.
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
+    });
+    act(() => result.current.submit(submitEvent()));
+
+    expect(result.current.status).toBe("loading");
+    expect(calls, "a second request really went out").toBe(2);
+
+    // Past the moment the first attempt's timer was set for.
+    await act(async () => {
+      vi.advanceTimersByTime(2100);
+    });
+
+    expect(
+      result.current.status,
+      "the second attempt is still in flight and the form must still say so",
+    ).toBe("loading");
+  });
+
   it("names the failure it is describing", async () => {
     vi.stubGlobal("fetch", () => Promise.reject(new TypeError("Failed to fetch")));
     const { result } = renderHook(() => useContactForm({ onSent: vi.fn() }));

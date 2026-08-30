@@ -63,13 +63,24 @@ export function useContactForm({ onSent }: UseContactFormOptions): ContactFormSt
     timeoutsRef.current.push(setTimeout(fn, delay));
   }, []);
 
-  useEffect(() => {
-    const timeouts = timeoutsRef;
-    return () => {
-      timeouts.current.forEach(clearTimeout);
-      timeouts.current = [];
-    };
+  /**
+   * Drops every transition the previous attempt was still waiting to make.
+   *
+   * `attemptRef` guarded the promise, so an answer arriving late could not
+   * put the dialog back into a state the visitor had left. It did not guard
+   * the timers, and a timer carries no attempt with it: the one scheduled
+   * to clear an error three seconds later fired against whichever attempt
+   * was current when it landed. A visitor who retried inside those three
+   * seconds — which is what the window is for — had the spinner cleared and
+   * Send re-enabled while their message was still in flight, so a third
+   * click sent a duplicate.
+   */
+  const cancelPending = useCallback(() => {
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
   }, []);
+
+  useEffect(() => cancelPending, [cancelPending]);
 
   /**
    * Ends the attempt and returns to the opening state.
@@ -84,15 +95,18 @@ export function useContactForm({ onSent }: UseContactFormOptions): ContactFormSt
    */
   const reset = useCallback(() => {
     attemptRef.current += 1;
-    timeoutsRef.current.forEach(clearTimeout);
-    timeoutsRef.current = [];
+    cancelPending();
     setStatus("idle");
     setFailure(null);
-  }, []);
+  }, [cancelPending]);
 
   const submit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      // A new attempt supersedes the one before it, including whatever that
+      // one had scheduled. Without this the retry inherited the previous
+      // attempt's return-to-idle timer.
+      cancelPending();
       setStatus("loading");
 
       const fields = readContactFields(event.currentTarget);
@@ -120,7 +134,7 @@ export function useContactForm({ onSent }: UseContactFormOptions): ContactFormSt
         }, OUTCOME_VISIBLE);
       });
     },
-    [schedule],
+    [cancelPending, schedule],
   );
 
   return { status, failure, submit, reset };
