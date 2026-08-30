@@ -61,7 +61,7 @@ All content lives outside the UI in `portfolioData.tsx`, including dynamic secti
 ### Component Decomposition and Custom Hooks
 
 Large sections are decomposed into focused components such as `ExperienceItem`, `ProjectCard`, and `SkillCategoryCard`.
-Custom hooks (`useActiveSection`, `useScrollToSection`, `useModalA11y`, `useScrollLock`, `useContactForm`, `useCookieConsent`) hold side effects and DOM work, which keeps the components declarative.
+Custom hooks (`useActiveSection`, `useScrollToSection`, `useHashTarget`, `useAutoPrint`, `useModalA11y`, `useScrollLock`, `useContactForm`, `useCookieConsent`) hold side effects and DOM work, which keeps the components declarative.
 
 ---
 
@@ -69,7 +69,7 @@ Custom hooks (`useActiveSection`, `useScrollToSection`, `useModalA11y`, `useScro
 
 - **Single Responsibility Principle:** `ExperienceSection` handles layout and iteration; `ExperienceItem` renders one job entry.
 - **Separation of Concerns:** data (`portfolioData.tsx`), pure helpers (`utils/domain.ts`), React-free logic (`lib/`), side effects (`hooks/`), and UI (`components/`) stay isolated.
-- **DRY:** shared UI elements such as `SectionHeading` and `Button` live in `ui/`.
+- **DRY:** shared UI lives in `ui/` — the leaf elements (`SectionHeading`, `Button`, `Tag`) and the shells the page is assembled from (`PageSection`, `Reveal`, `IconCard`, `IconListItem`, `Modal`).
 - **Strong typing:** TypeScript runs in `strict` mode with `@types/react` installed, so component props, hooks, and event handlers are all checked. Shared contracts live in `src/types/index.ts`.
 
 ---
@@ -94,14 +94,14 @@ Chosen for build speed, maintainability, and developer experience.
 - Smooth navigation between sections
 - Animations restricted to `transform` and `opacity`, which keeps them off the layout path
 - Focus trapped inside open dialogs, and returned to the trigger on close
-- Full `prefers-reduced-motion` alternative for the animated background
+- `prefers-reduced-motion` honoured across the whole page, not only the animated background: `MotionProvider` sets `reducedMotion="user"`, which drops the transform from every entrance and leaves the fade alone. Measured on the built page, a section arriving moves through two positions instead of thirty-two
 
 ---
 
 ### Performance Optimization
 
 - Single bundle by design. `React.lazy` was tried and removed because the extra requests hurt LCP on HTTP/1.1 more than the smaller entry chunk helped. The work went into making that one bundle smaller instead.
-- Motion loads one feature set, `domAnimation`, once at the root through `LazyMotion`, and every animated element uses `m` rather than `motion`. The page animates with `initial`, `animate`, `exit`, `transition`, `whileInView` and `viewport`, and nothing else, so the drag, layout and gesture code never ships. `strict` mode makes a stray `motion` element throw rather than quietly restore the full bundle.
+- Motion is set up once at the root by `MotionProvider`, which loads one feature set, `domAnimation`, through `LazyMotion`; every animated element uses `m` rather than `motion`. The page animates with `initial`, `animate`, `exit`, `transition`, `whileInView` and `viewport`, and nothing else, so the drag, layout and gesture code never ships. `strict` mode makes a stray `motion` element throw rather than quietly restore the full bundle.
 - The printed CV's QR code is drawn from committed path data. It encodes a constant, and generating it in the browser meant shipping a QR library to every visitor for a picture that only appears on paper.
 - Passive scroll listeners so scrolling never waits on a handler
 - Canvas background using a spatial hash for particle linking and batched path strokes, with the backing store scaled to `devicePixelRatio`
@@ -130,6 +130,8 @@ Rules that can be automated are automated, following the principle that a ratche
 - `scripts/runRevealMotion.ts` drives the built page in a browser and counts the distinct positions a section passes through as it arrives, with and without `prefers-reduced-motion`. Twelve entrance animations across nine files ignored the setting while the particle canvas and the 404 view honoured it, so the page disagreed with itself: a section moved through 32 positions either way, and now moves through two when the preference is set. The fade is deliberately left alone — a fade is not what makes motion unbearable. This needs a real browser, because motion reads the preference through `matchMedia` at load and under jsdom both settings animate identically, so a test there passes whether or not the page honours anything.
 - `scripts/runFocusIndicator.ts` tabs the built page and checks, in pixels, that every keyboard stop shows where the keyboard is. Twenty controls spelled out their own focus ring in two variants and eight — every link on a project card — declared nothing at all and fell back to the browser's own, so twenty-nine stops carried four different indicators. There is now one, `focus-ring` in `src/index.css`. It has to be a browser and it has to be pixels: a computed style reports a colour Chrome does not paint, and a control mid-transition reports a ring it is still fading in. The first version of this gate checked only that *something* was painted and passed the very defect it was written for — Chrome draws a ring where the page draws none — so it checks the colour too.
 - `tests/cvSections.test.ts` fails on a headed section of the printed CV written by hand instead of through `src/components/CvSection.tsx`. Seven of them carried the same two print rules and the same nine-class heading, all seven identical — which is the fragile case, because the next hand to touch one makes it six and one, on the page nobody sees on a screen. `print:break-inside-avoid` is what the printed layout is made of, so the check above would catch it losing that rule, but only after the layout had already changed.
+- `tests/storyCoverage.test.ts` fails on a component in `src/components/ui/` with no `.stories.tsx`. Both guideline documents already required one and neither said it to anything that runs, so four components were added without one and the documents went on claiming otherwise for two pull requests. The rule is not paperwork: `.storybook/preview.ts` sets the accessibility addon to `test: 'error'`, so a story is an axe run that fails the build, and a component with no story is one that scan never sees on its own.
+- `tests/documentedStructure.test.ts` re-derives the project tree drawn in `AI_INSTRUCTIONS.md` from `src/`, in both directions — a directory missing from the tree and a directory the tree invents both fail. `src/lib/` and `src/test/` had existed for some time without appearing in it, so a document telling a contributor where things go was silent about two of the places they go.
 - `tests/dialogShell.test.ts` fails on a dialog that builds its own shell instead of using `src/components/ui/Modal.tsx`. The keyboard and focus behaviour was already shared, and that is the half where a mistake is obvious; the markup around it is the half where a mistake is silent. A dialog that forgets `aria-modal`, or labels itself with an id that resolves to nothing, still opens and still looks right.
 - `tests/sourceMaps.test.ts` builds the site and reads the output, failing if a script ships without a map, without a `sourceMappingURL`, or with the map inlined into what every visitor downloads. Error reports carry a position inside the minified bundle, which is exact with a map beside it and worthless without one, and nothing at runtime would report the difference.
 - `src/components/ErrorBoundary.test.tsx` reads `src/main.tsx` and fails if the error boundary is not mounted around the app. The component keeps passing its own tests and its own story while wired to nothing, so removing it from the root was previously invisible.
@@ -163,7 +165,7 @@ npm run storybook
 # Full quality gate: lint, test, build Storybook, test Storybook, build app
 npm run check:quality
 
-# The three checks that need a browser, and run as their own CI steps.
+# The four checks that need a browser, and run as their own CI steps.
 # Each needs `npm run build` first; check:quality ends with one.
 npm run check:lighthouse   # scores the built site against the badges above
 npm run check:print        # prints the CV to PDF and reads the sheets back
@@ -176,7 +178,7 @@ Test coverage spans three layers:
 
 - **Unit and integration** through Vitest: navigation targets resolving to real sections, the scroll spy mapping, data from `portfolioData` reaching the page, and heading structure.
 - **Component behaviour** through Storybook interaction tests: focus trapping, keyboard operation, and consent flows.
-- **Accessibility** through `jest-axe` assertions inside every story.
+- **Accessibility** through the Storybook addon, which runs axe on every story and fails the build; the dialogs add a `jest-axe` assertion of their own, since they render through a portal the addon's scan does not reach.
 
 ---
 
@@ -184,19 +186,21 @@ Test coverage spans three layers:
 
 Storybook serves as an automated accessibility gate. Every reusable component in `src/components/ui/` is required to have a matching `.stories.tsx` file.
 
-Stories are state-driven, covering `Loading`, `ErrorState`, `EmptyState`, and `LongTextOverflow` alongside behavioural cases such as `FocusIsTrapped` and `EscapeRestoresFocus`.
+Stories are state-driven, covering `Loading`, `MissingFields`, `UnreachableService` and `LongTextOverflow` alongside behavioural cases such as `FocusIsTrapped`, `EscapeRestoresFocus` and `ReopeningAfterAHungSubmission`.
 
 ### Edge Case: AI-Assisted Component Usage
 
 The `ProjectCard` stories model how the UI behaves with unpredictable, AI-generated data: very long text, single words with nothing to break on, missing fields, and the same content at 320px. They assert that nothing reaches past the card's own edge, which is what the earlier version of this claimed and never checked — and they run against the card the site actually renders, rather than against components no page used.
 
-Every story asserts accessibility:
+Accessibility is checked on every story by the addon, which `.storybook/preview.ts` sets to `test: 'error'` so a violation fails the pipeline rather than appearing in a panel nobody opens. `tests/storyCoverage.test.ts` holds every component in `src/components/ui/` to having one, because a component with no story is a component that scan never sees on its own.
+
+Stories that render through a portal assert it themselves as well:
 
 ```tsx
-expect(await axe(canvasElement)).toHaveNoViolations();
+expect(await axe(dialog)).toHaveNoViolations();
 ```
 
-A component that fails a contrast or ARIA check fails the pipeline.
+The addon scans the story's own root, and a dialog is not inside it — so the dialogs name the node to scan.
 
 ---
 

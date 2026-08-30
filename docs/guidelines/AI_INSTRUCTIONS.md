@@ -13,13 +13,19 @@ at, how much process a change deserves, and what has to be recorded before a
 change counts as done. This document covers what is specific to this
 repository: stack, architecture, Lighthouse guardrails, and UI conventions.
 
-Two of those principles are enforced as tests rather than left as reading:
+Those principles are enforced as tests rather than left as reading. Two
+stand for the rest:
 
 - `tests/repository-docs.test.ts` re-derives every version and workflow the
-  README states from `package.json` and `.github/workflows/`. Section 1: never
+  README states from `package.json` and `.github/workflows/`, and checks that
+  every file, symbol and component it names still exists. Section 1: never
   trust a version, a count, or a status quoted in prose.
 - `tests/module-reachability.test.ts` fails on any module nothing imports.
   Section 4: a control attached to nothing is deleted, not wired up.
+
+The README lists them all, under *Development Guidelines and Guardrails*.
+That list is the current one; this file does not repeat it, because a second
+copy is a second thing to go stale.
 
 Add a ratchet whenever a rule here can become one. A checklist does not run.
 
@@ -111,8 +117,11 @@ src/
 │   └── ui/
 ├── data/
 ├── hooks/
+├── lib/      React-free logic: the canvas simulation, the form transport,
+│             error reporting, routing
+├── test/     helpers used by tests and by nothing that ships
 ├── types/
-└── utils/
+└── utils/    pure helpers that run without React
 ```
 
 ---
@@ -141,7 +150,10 @@ src/
 
 - ALL icon-only buttons MUST have `aria-label`
 - Maintain proper heading hierarchy (h1 -> h2 -> h3)
-- Ensure keyboard navigation (Tab + focus states)
+- Ensure keyboard navigation. The focus indicator is `focus-ring`
+  (`focus-ring-always` on a text field, which should show focus on a click
+  too); never spell one out by hand. `npm run check:focus` tabs the built
+  page and fails on a control that does not show it
 - Maintain contrast (no low-contrast text)
 
 ---
@@ -156,9 +168,15 @@ src/
 
 ## Patterns
 
-- Cards -> Glassmorphism (`bg-slate-900/50 backdrop-blur-md`)
+- Cards -> reuse the shell rather than restating it. `IconCard` for a card
+  with an icon tile and a title, `IconListItem` for an icon beside a line of
+  prose, `Modal` for a dialog, `PageSection` for a numbered section of the
+  page. Each carries its own glassmorphism, and the values differ on purpose:
+  a panel that sits over the page is `bg-slate-900/90 backdrop-blur-xl`, a
+  card on it is `bg-[#0a1128]/80 backdrop-blur-sm`.
 - Hover -> subtle transform (`-translate-y-1`)
-- Lists -> staggered animations
+- Entrances -> `Reveal`, which owns the distance, the fade and `viewport.once`
+- Focus -> `focus-ring`, defined once in `src/index.css`
 
 ## Typography
 
@@ -169,22 +187,28 @@ src/
 
 # 8. STORYBOOK (MANDATORY FOR UI COMPONENTS)
 
-Every component in `components/ui/` MUST have `.stories.tsx`
+Every component in `components/ui/` MUST have `.stories.tsx`.
+`tests/storyCoverage.test.ts` enforces it. Four components were once added
+without one and both guideline documents went on claiming otherwise, which
+is what a rule with nothing running behind it is worth.
 
 ## Requirements
 
-- Cover real states:
-  - Default
-  - Loading
-  - Error
-  - Empty
-  - Edge cases
+- Cover the states the component actually has. Default, and then whichever of
+  loading, error, empty and edge cases exist — a story for a state a component
+  cannot reach asserts nothing.
 
-- Include A11y test:
+- Accessibility is scanned automatically: `.storybook/preview.ts` sets the
+  addon to `test: 'error'`, so every story is an axe run and a violation
+  fails the build. Nothing extra is needed for an ordinary component.
+
+- A component that renders through a portal has to name the node itself,
+  because the addon scans the story's own root and a dialog is not inside it:
 
 ```tsx
-play: async ({ canvasElement }) => {
-  expect(await axe(canvasElement)).toHaveNoViolations();
+play: async () => {
+  const dialog = document.querySelector('[role="dialog"]');
+  expect(await axe(dialog)).toHaveNoViolations();
 };
 ```
 
