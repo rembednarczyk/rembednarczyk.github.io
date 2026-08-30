@@ -88,6 +88,20 @@
       property="og:image"
       content="https://remigiuszbednarczyk.com/img/og-image.png"
     />
+    <!--
+      Declared, so a platform can lay the card out before the image has
+      arrived. Without these, LinkedIn and Slack have to fetch and measure
+      it first, and on a first share they sometimes fall back to the small
+      card rather than wait. The values are held to the file itself by
+      tests/declaredImageSizes.test.ts.
+    -->
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta
+      property="og:image:alt"
+      content="Remigiusz Bednarczyk, Quality Engineering Lead and Test Manager"
+    />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -103,6 +117,10 @@
     <meta
       property="twitter:image"
       content="https://remigiuszbednarczyk.com/img/og-image.png"
+    />
+    <meta
+      property="twitter:image:alt"
+      content="Remigiusz Bednarczyk, Quality Engineering Lead and Test Manager"
     />
 
     <!--
