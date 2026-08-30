@@ -14,7 +14,8 @@
     "check:quality": "npm run lint && npm run test && npm run build-storybook && concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:6006 && test-storybook --url http://127.0.0.1:6006\" && npm run build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test-storybook": "test-storybook"
+    "test-storybook": "test-storybook",
+    "check:print": "node --experimental-strip-types scripts/runPrintCheck.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -60,6 +61,7 @@
     "jest-axe": "^11.0.0",
     "jsdom": "^30.0.1",
     "lighthouse": "^13.4.1",
+    "pdfjs-dist": "^6.3.289",
     "playwright": "^1.62.1",
     "qrcode-generator": "^2.0.4",
     "react-qr-code": "^2.2.0",
