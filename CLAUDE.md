@@ -65,15 +65,22 @@ Reading is a different question, and this rule does not touch it: `cat`,
 `grep`, `sed -n` and `find` are the right tools for finding things and always
 were. What is refused is *changing* a file through the shell.
 
-`.claude/hooks/no-shell-edits.sh` enforces both rules, because writing them
-down did not. The reason is worth knowing, since it is not carelessness and
-it will not go away: the harness re-states the opposite preference — make
-file changes with sed, heredocs or short scripts rather than the dedicated
-tools — at the top of every turn, while this file is read once when a session
-starts. Repetition beats recall. Anything here that depends on someone
-remembering it across a hundred turns against a per-turn instruction is not a
-rule yet; it is a wish. The hook is the same answer the authorship problem
-got, for the same reason.
+`.claude/hooks/no-shell-edits.sh` is written to enforce both rules, because
+writing them down did not. The reason is worth knowing, since it is not
+carelessness and it will not go away: the harness re-states the opposite
+preference — make file changes with sed, heredocs or short scripts rather
+than the dedicated tools — at the top of every turn, while this file is read
+once when a session starts. Repetition beats recall. Anything here that
+depends on someone remembering it across a hundred turns against a per-turn
+instruction is not a rule yet; it is a wish. The hook is the same answer the
+authorship problem got, for the same reason.
+
+**It is not registered, so today it is still a wish.** Registering it means
+a `PreToolUse` entry in `.claude/settings.json`, and writing one edits the
+agent's own permission surface — which the permission classifier refuses,
+correctly. The owner adds that entry by hand; the README says what it looks
+like. Until then the rule above is held by attention alone, and knowing that
+is the difference between a rule and a comforting sentence.
 
 ### Parallel read-only passes
 
