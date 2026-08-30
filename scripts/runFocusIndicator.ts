@@ -61,6 +61,26 @@ function isPageCyan(r: number, g: number, b: number): boolean {
  */
 const BANNER_WIDTHS = [1280, 768];
 
+/**
+ * And where its own buttons are checked for anything on top of them.
+ *
+ * Two widths at one comfortable height proved nothing about a short one.
+ * The navigation's mobile menu grows downward until 16px from the foot of
+ * the viewport, so on a short screen it covered Accept and Decline whole —
+ * measured 100% at all three viewports below — and a tap on Accept went to
+ * a nav button instead: the page scrolled away and no choice was recorded.
+ *
+ * This is the second time two things pinned to the same corner have found
+ * each other here. The first was the scroll-to-top button over Accept at
+ * 768px. Neither is wrong alone, which is why only a check of the two
+ * together can see it.
+ */
+const SHORT_VIEWPORTS = [
+  { width: 812, height: 375 },
+  { width: 740, height: 360 },
+  { width: 768, height: 500 },
+];
+
 /** Long enough for a `transition-all` control to finish fading its ring in. */
 const SETTLE_MS = 450;
 
@@ -238,11 +258,28 @@ async function underTheBanner(page: Page): Promise<Overlaid[]> {
     if (row) controls.push(row);
   }
 
-  // And the banner's own buttons, which are meant to be in front of
-  // everything. Sampled across rather than at the centre: the scroll-to-top
-  // button covered the right third of Accept while leaving its middle
-  // clickable, so a centre-only test called it fine.
-  const ownControls = await page.evaluate(() => {
+  const ownControls = await bannerOwnControls(page);
+
+  // The walk above focused every stop it visited; leave nothing focused
+  // behind it, or the next viewport starts from a scrolled position.
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur?.());
+
+  return [...controls, ...ownControls];
+}
+
+/**
+ * The banner's own buttons, which are meant to be in front of everything.
+ *
+ * Sampled across rather than at the centre: the scroll-to-top button covered
+ * the right third of Accept while leaving its middle clickable, so a
+ * centre-only test called it fine.
+ *
+ * Separate from the sweep above because it needs no tab walk, which makes it
+ * cheap enough to run in several viewports and in more than one state of the
+ * page — with the navigation's mobile menu open, for one.
+ */
+async function bannerOwnControls(page: Page): Promise<Overlaid[]> {
+  return page.evaluate(() => {
     const region = document.querySelector('[aria-label="Cookie consent"]');
     if (!region) return [];
 
@@ -279,9 +316,6 @@ async function underTheBanner(page: Page): Promise<Overlaid[]> {
       };
     });
   });
-
-  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur?.());
-  return [...controls, ...ownControls];
 }
 
 async function main() {
@@ -351,11 +385,60 @@ async function main() {
       );
     }
 
+    // The banner's own buttons again, on short viewports and with the
+    // navigation's mobile menu open. That menu grows downward until it is
+    // 16px from the foot of the screen, so on a short one it landed on the
+    // banner's card: Accept and Decline were covered whole, and a tap on
+    // Accept reached a nav button, scrolling the page away without
+    // recording a choice.
+    for (const viewport of SHORT_VIEWPORTS) {
+      await page.setViewportSize(viewport);
+      await page.waitForTimeout(400);
+
+      const opened = await page.evaluate(() => {
+        const toggle = [...document.querySelectorAll("nav button")].find(
+          (b) => (b as HTMLElement).offsetParent !== null && b.querySelector("svg") && !b.textContent?.trim(),
+        );
+        if (!toggle) return false;
+        (toggle as HTMLElement).click();
+        return true;
+      });
+      if (!opened) {
+        throw new Error(
+          `no mobile menu toggle was found at ${viewport.width}x${viewport.height} — the sweep below proves nothing about a menu it never opened`,
+        );
+      }
+      await page.waitForTimeout(400);
+
+      const own = await bannerOwnControls(page);
+      if (own.length < 3) {
+        throw new Error(
+          `the consent bar should offer three controls at ${viewport.width}x${viewport.height} and ${own.length} were found`,
+        );
+      }
+      checked += own.length;
+      shadowed.push(
+        ...failures(judgeNotObscured(own)).map((v) => ({
+          width: viewport.width,
+          name: `${v.name} (mobile menu open, ${viewport.height}px tall)`,
+          problem: v.problem,
+        })),
+      );
+
+      await page.evaluate(() => {
+        const toggle = [...document.querySelectorAll("nav button")].find(
+          (b) => (b as HTMLElement).offsetParent !== null && b.querySelector("svg") && !b.textContent?.trim(),
+        );
+        (toggle as HTMLElement | undefined)?.click();
+      });
+      await page.waitForTimeout(250);
+    }
+
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.waitForTimeout(300);
 
     console.log(
-      `${checked} control checks against the consent banner across ${BANNER_WIDTHS.join("px and ")}px; ${checked - shadowed.length} clear of it`,
+      `${checked} control checks against the consent banner across ${BANNER_WIDTHS.join("px and ")}px, and on ${SHORT_VIEWPORTS.length} short viewports with the mobile menu open; ${checked - shadowed.length} clear of it`,
     );
 
     if (shadowed.length > 0) {
@@ -365,7 +448,9 @@ async function main() {
           .join("\n  ")}\n\n` +
           `The banner's band is pointer-events-none and only its card takes clicks, ` +
           `useSpaceForFixedBar reserves the height it covers so nothing is scrolled under it, ` +
-          `and the scroll-to-top button stands down while the banner is up.`,
+          `the scroll-to-top button stands down while the banner is up, and the ` +
+          `navigation's mobile menu subtracts --fixed-bar-space from its height so it ` +
+          `stops above the banner rather than growing onto it.`,
       );
     }
 
