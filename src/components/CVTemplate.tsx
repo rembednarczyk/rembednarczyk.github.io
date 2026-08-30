@@ -1,4 +1,5 @@
 import { Mail, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm, BadgeCheck, BrainCircuit, BookOpen } from "lucide-react";
+import { CvSection } from "./CvSection";
 import { LinkedinIcon } from "./ui/BrandIcon";
 import { fullCertificationsList, cvData, experienceData } from "../data/portfolioFacts";
 import { LINKEDIN_QR } from "../data/linkedinQr";
@@ -98,22 +99,14 @@ export const CVTemplate = () => {
       </header>
 
       {/* Summary */}
-      <section className="mb-8 print:mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <IdCard size={20} className="text-slate-400" aria-hidden="true" />
-          Summary
-        </h3>
+      <CvSection icon={IdCard} title="Summary">
         <p className="text-slate-700 text-justify">
           {cvData.summary}
         </p>
-      </section>
+      </CvSection>
 
       {/* Skills */}
-      <section className="mb-8 print:mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <BrainCog size={20} className="text-slate-400" aria-hidden="true" />
-          Core Competencies & Skills
-        </h3>
+      <CvSection icon={BrainCog} title="Core Competencies & Skills">
         <div className="grid grid-cols-1 gap-2 text-sm text-slate-700">
           {cvData.skills.map((skill, idx) => (
             <div key={idx}>
@@ -122,14 +115,10 @@ export const CVTemplate = () => {
             </div>
           ))}
         </div>
-      </section>
+      </CvSection>
 
       {/* Experience */}
-      <section className="mb-8 print:mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <MonitorCog size={20} className="text-slate-400" aria-hidden="true" />
-          Professional Experience
-        </h3>
+      <CvSection icon={MonitorCog} title="Professional Experience">
 
         <div className="border-l-2 border-slate-200 ml-2">
           {experienceData.map((job, idx) => (
@@ -177,14 +166,10 @@ export const CVTemplate = () => {
             </div>
           ))}
         </div>
-      </section>
+      </CvSection>
 
       {/* Community & Leadership */}
-      <section className="mb-8 print:mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <UsersRound size={20} className="text-slate-400" aria-hidden="true" />
-          Community & Leadership
-        </h3>
+      <CvSection icon={UsersRound} title="Community & Leadership">
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
           {cvData.community.map((item, idx) => (
             <li key={idx}>
@@ -192,14 +177,10 @@ export const CVTemplate = () => {
             </li>
           ))}
         </ul>
-      </section>
+      </CvSection>
 
       {/* Recognition & Brand Presence */}
-      <section className="mb-8 print:mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <Award size={20} className="text-slate-400" aria-hidden="true" />
-          Recognition & Brand Presence
-        </h3>
+      <CvSection icon={Award} title="Recognition & Brand Presence">
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
           {cvData.recognition.map((item, idx) => (
             <li key={idx}>
@@ -208,14 +189,10 @@ export const CVTemplate = () => {
             </li>
           ))}
         </ul>
-      </section>
+      </CvSection>
       
       {/* Certifications & Credentials */}
-      <section className="mb-8 print:mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <ShieldCheck size={20} className="text-slate-400" aria-hidden="true" />
-          Certifications & Credentials
-        </h3>
+      <CvSection icon={ShieldCheck} title="Certifications & Credentials">
         <div className="space-y-6">
           {fullCertificationsList.map((category, catIdx) => (
             <div key={catIdx}>
@@ -244,20 +221,16 @@ export const CVTemplate = () => {
             </div>
           ))}
         </div>
-      </section>
+      </CvSection>
 
       {/* Passions & Hobbies */}
-      <section className="mb-8 print:mb-6 print:break-inside-avoid">
-        <h3 className="text-lg font-bold text-slate-800 uppercase tracking-widest border-b border-slate-300 pb-1 mb-3 flex items-center gap-2">
-          <TreePalm size={20} className="text-slate-400" aria-hidden="true" />
-          Passions & Hobbies
-        </h3>
+      <CvSection icon={TreePalm} title="Passions & Hobbies">
         <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
           {cvData.passions.map((passion, idx) => (
             <li key={idx}>{passion}</li>
           ))}
         </ul>
-      </section>
+      </CvSection>
     </div>
   );
 };
