@@ -203,7 +203,7 @@ export function NotFound() {
             <a
               href="/"
               aria-label="Return to homepage"
-              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 hover:from-cyan-500/20 hover:to-purple-500/20 border border-cyan-500/20 hover:border-cyan-400/40 rounded-xl text-white font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617] backdrop-blur-sm"
+              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 hover:from-cyan-500/20 hover:to-purple-500/20 border border-cyan-500/20 hover:border-cyan-400/40 rounded-xl text-white font-medium transition-all focus-ring backdrop-blur-sm"
             >
               <span aria-hidden="true" className="text-cyan-400 group-hover:-translate-x-1 transition-transform">
                 &larr;
