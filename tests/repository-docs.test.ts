@@ -133,6 +133,7 @@ const SEARCHED_ROOTS = [
   "docs",
   ".github",
   ".storybook",
+  ".claude",
   "public",
 ];
 
@@ -150,11 +151,18 @@ const codeWithoutComments = allEntries
   .map((f) => withoutComments(readFileSync(f, "utf8")))
   .join("\n");
 
-/** Anything backticked that reads as a path or a filename. */
+/**
+ * Anything backticked that reads as a path or a filename.
+ *
+ * The extension list is the check's reach. It held only source and config
+ * formats, so `src/index.css` and `.claude/hooks/session-start.sh` were
+ * named in the documents and never verified — renaming either to something
+ * that does not exist left every test green.
+ */
 function pathsNamedIn(document: string): string[] {
   return [
     ...new Set(
-      [...document.matchAll(/`([\w@./-]*[\w-]\.(?:tsx?|jsx?|json|ya?ml|xml|md)|[\w./-]+\/)`/g)].map(
+      [...document.matchAll(/`([\w@./-]*[\w-]\.(?:tsx?|jsx?|json|ya?ml|xml|md|css|html|sh)|[\w./-]+\/)`/g)].map(
         (m) => m[1],
       ),
     ),
@@ -286,12 +294,22 @@ describe("things the README names", () => {
   });
 });
 
-const GUIDELINE_DOCUMENTS = ["ENGINEERING_PRINCIPLES.md", "AI_INSTRUCTIONS.md"];
+/**
+ * The documents that govern the work, with where each one lives. CLAUDE.md
+ * sits at the root and is the first thing read in a session, which makes a
+ * stale path in it the most expensive kind: it sends the next contributor to
+ * write in a file that does not exist before they have read anything else.
+ */
+const GUIDELINE_DOCUMENTS: Record<string, string> = {
+  "ENGINEERING_PRINCIPLES.md": "docs/guidelines",
+  "AI_INSTRUCTIONS.md": "docs/guidelines",
+  "CLAUDE.md": ".",
+};
 
 describe("guideline documents", () => {
-  it("keeps both guideline documents present and non-empty", () => {
-    GUIDELINE_DOCUMENTS.forEach((file) => {
-      const path = resolve(root, "docs/guidelines", file);
+  it("keeps every guideline document present and non-empty", () => {
+    Object.entries(GUIDELINE_DOCUMENTS).forEach(([file, dir]) => {
+      const path = resolve(root, dir, file);
       expect(existsSync(path), `${file} is missing`).toBe(true);
       expect(readFileSync(path, "utf8").trim().length).toBeGreaterThan(0);
     });
@@ -307,10 +325,11 @@ describe("guideline documents", () => {
    * repository has never had.
    */
   it("names only files that exist", () => {
-    const named = GUIDELINE_DOCUMENTS.flatMap((file) =>
-      pathsNamedIn(readFileSync(resolve(root, "docs/guidelines", file), "utf8")).map(
-        (path) => ({ file, path }),
-      ),
+    const named = Object.entries(GUIDELINE_DOCUMENTS).flatMap(([file, dir]) =>
+      pathsNamedIn(readFileSync(resolve(root, dir, file), "utf8")).map((path) => ({
+        file,
+        path,
+      })),
     );
 
     const missing = named.filter(({ path }) => pathsThatDoNotExist([path]).length > 0);
