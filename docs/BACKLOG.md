@@ -29,6 +29,30 @@ What remains is only the registration above, which is the owner's to do.
 
 ---
 
+## Catch an export nobody calls
+
+A walk-termination helper lived in `scripts/focusIndicator.ts` with four
+tests under the heading "walking the tab order", and the sweep that actually
+runs never called it. Keying the real walk on a label — the historical
+defect — left all four green. It has been deleted, which is why it is not
+named here: this file is held to naming only things the code still has.
+
+Both reachability ratchets work at the level of a module, and that module is
+reached, by the runner and by its own tests. An export inside a reached
+module that nobody calls is invisible to them.
+
+- [ ] A check that an exported symbol has a consumer outside the tests.
+      Measured before writing one: a regex over named imports reports **81**
+      exports here with no production consumer, and most are legitimate —
+      prop types used as annotations rather than imported by name, and
+      constants a test pins on purpose (`scrollLockHolders` says so in its
+      own doc comment). So it needs the TypeScript compiler's own view of
+      references, not a text scan, and an exemption list with reasons.
+- [ ] Until then this class is held by reading, which is what Ways of Working
+      Part 5 means by being honest where only discipline holds.
+
+---
+
 ## Verify the page on a real iPhone and in Safari
 
 **Why this and nothing else.** Five gates run on every push and between them

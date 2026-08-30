@@ -97,19 +97,28 @@ export function failures(verdicts: Verdict[]): Verdict[] {
   return verdicts.filter((v) => !v.ok);
 }
 
-/**
- * The tab order is walked by element identity. Keying it on a label stopped
- * the sweep at 13 of 29 stops, because two project links share one; keying
- * it on a markup prefix stopped it at 3, because the nav buttons do.
+/*
+ * `firstRepeat` used to live here: a walk-termination helper with four tests
+ * under the heading "walking the tab order", claiming to hold the sweep to
+ * element identity.
+ *
+ * It held nothing. `runFocusIndicator` does its own dedupe inline and never
+ * called this, so keying the real walk on a label — the historical defect,
+ * which stopped it at 13 of 29 stops — left all four assertions green. It
+ * was a control attached to nothing, and enriching it would only have made
+ * the false sense of coverage stronger.
+ *
+ * What guards the walk now is knowing how many stops it should find, in
+ * runFocusIndicator.
+ *
+ * Nothing yet guards against the next one. Both reachability ratchets work
+ * at the level of a module, and this module is reached — by the runner and
+ * by its own tests — so an export inside it that nobody calls is invisible
+ * to them. A check for that is in the backlog; measured, 81 exports here
+ * have no production consumer, and most of those are types and constants a
+ * test legitimately pins, so it needs real type analysis rather than a
+ * regex over imports.
  */
-export function firstRepeat(ids: string[]): number {
-  const seen = new Set<string>();
-  for (let i = 0; i < ids.length; i += 1) {
-    if (seen.has(ids[i])) return i;
-    seen.add(ids[i]);
-  }
-  return -1;
-}
 
 /**
  * A control, and what the consent banner does to it while it is showing.

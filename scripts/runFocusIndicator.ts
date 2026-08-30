@@ -84,6 +84,56 @@ const SHORT_VIEWPORTS = [
 /** Long enough for a `transition-all` control to finish fading its ring in. */
 const SETTLE_MS = 450;
 
+/**
+ * How many stops the walks are supposed to find, recorded rather than
+ * bounded.
+ *
+ * A floor is the wrong instrument here. The keyboard sweep was floored at
+ * "more than 20" while the page has 28, so a truncation to 21 — seven
+ * controls never checked for a focus indicator — reported "21 keyboard
+ * stops; 21 show where the keyboard is" and exited 0. The sweep under the
+ * banner had no floor at all: its count was accumulated, printed, and never
+ * asserted, so a walk that broke on its first stop would have printed "6
+ * control checks … 6 clear of it" and passed.
+ *
+ * Truncation is the failure this whole file is most exposed to. The walk
+ * stops at the first focusable element without a probe, and elements mount
+ * and unmount as the page scrolls; three separate sweeps of this page were
+ * written and three stopped early. What catches that is knowing the number,
+ * the same way `EXPECTED_LAYOUT` knows how many sheets the CV runs to.
+ *
+ * Adding a control to the page changes these, and updating them is the
+ * right response — the point is that it has to be a decision rather than
+ * something that happens quietly.
+ */
+const EXPECTED_KEYBOARD_STOPS = 28;
+
+/**
+ * What one sweep under the banner covers, per width: the page's controls
+ * plus the banner's own three.
+ *
+ * Per width, because the page reflows and the tab order is not the same
+ * length at both. The first version of this recorded one number for both,
+ * derived by arithmetic from the printed total rather than measured, and it
+ * was wrong at both widths — which is the mistake this whole file exists to
+ * make expensive.
+ */
+const EXPECTED_CONTROLS_UNDER_THE_BANNER: Record<number, number> = {
+  1280: 28,
+  768: 22,
+};
+
+function countMustMatch(what: string, found: number, recorded: number): void {
+  if (found === recorded) return;
+
+  throw new Error(
+    `${what}: ${found} were found and ${recorded} are recorded. ` +
+      (found < recorded
+        ? "The walk stopped early — it ends at the first focusable element without a data-probe, which is what happens when something mounts after the probes were stamped. Everything downstream would pass on the part it did reach."
+        : "The page has grown controls. If that is wanted, update the recorded number in scripts/runFocusIndicator.ts."),
+  );
+}
+
 async function tabOrder(page: Page): Promise<string[]> {
   const order: string[] = [];
   const seen = new Set<string>();
@@ -375,6 +425,11 @@ async function main() {
       await label();
 
       const overlaid = await underTheBanner(page);
+      countMustMatch(
+        `controls under the banner at ${width}px`,
+        overlaid.length,
+        EXPECTED_CONTROLS_UNDER_THE_BANNER[width] ?? -1,
+      );
       checked += overlaid.length;
       shadowed.push(
         ...failures(judgeNotObscured(overlaid)).map((v) => ({
@@ -482,11 +537,9 @@ async function main() {
     await label();
 
     const order = await tabOrder(page);
-    if (order.length < 20) {
-      throw new Error(
-        `only ${order.length} keyboard stops were found, and there should be far more — the sweep stopped early and everything below would pass on almost nothing`,
-      );
-    }
+    // `stops` already holds the consent bar's three, walked before it was
+    // dismissed, so the two halves together are what the page offers.
+    countMustMatch("keyboard stops", stops.length + order.length, EXPECTED_KEYBOARD_STOPS);
 
     for (const probe of order) stops.push(await paintedBy(page, probe));
   } finally {
