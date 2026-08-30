@@ -1,6 +1,7 @@
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { join, relative, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { listSourceFiles, reachableFrom } from "../scripts/importGraph";
 
 /**
  * Engineering Principles, section 4: a control attached to nothing is
@@ -30,57 +31,6 @@ const srcDir = resolve(root, "src");
  */
 const CONFIG_OWNED = new Set(["src/setupTests.ts"]);
 const isAmbientDeclaration = (rel: string) => rel.endsWith(".d.ts");
-
-const SOURCE_EXTENSIONS = [".ts", ".tsx"];
-const RESOLUTION_CANDIDATES = [
-  "",
-  ".ts",
-  ".tsx",
-  "/index.ts",
-  "/index.tsx",
-];
-
-function listSourceFiles(dir: string): string[] {
-  return readdirSync(dir).flatMap((entry) => {
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) return listSourceFiles(full);
-    return SOURCE_EXTENSIONS.some((ext) => entry.endsWith(ext)) ? [full] : [];
-  });
-}
-
-/** Relative and alias specifiers only; a bare specifier is a package. */
-function importedPaths(file: string): string[] {
-  const source = readFileSync(file, "utf8");
-  const specifiers = [
-    ...source.matchAll(/from\s+["']([^"']+)["']/g),
-    ...source.matchAll(/import\s+["']([^"']+)["']/g),
-    ...source.matchAll(/import\(\s*["']([^"']+)["']\s*\)/g),
-  ].map((m) => m[1]);
-
-  return specifiers
-    .filter((s) => s.startsWith(".") || s.startsWith("@/"))
-    .map((s) => (s.startsWith("@/") ? resolve(root, s.slice(2)) : resolve(dirname(file), s)))
-    .flatMap((base) => {
-      const hit = RESOLUTION_CANDIDATES.map((suffix) => base + suffix).find(
-        (candidate) => existsSync(candidate) && statSync(candidate).isFile(),
-      );
-      return hit ? [hit] : [];
-    });
-}
-
-function reachableFrom(entries: string[]): Set<string> {
-  const seen = new Set<string>();
-  const queue = [...entries];
-
-  while (queue.length > 0) {
-    const file = queue.pop()!;
-    if (seen.has(file)) continue;
-    seen.add(file);
-    queue.push(...importedPaths(file));
-  }
-
-  return seen;
-}
 
 /**
  * Files served at the root by convention. Nothing in the site links to
@@ -156,7 +106,7 @@ describe("module reachability", () => {
       ...listSourceFiles(resolve(root, "tests")),
     ];
 
-    const reachable = reachableFrom(entries);
+    const reachable = reachableFrom(entries, root);
 
     const orphans = all
       .map((f) => relative(root, f).replace(/\\/g, "/"))
@@ -172,7 +122,7 @@ describe("module reachability", () => {
   it("resolves the entry point, so the graph is not empty by accident", () => {
     // Without this, a broken entry path would make the check above pass
     // trivially with an empty reachable set.
-    const reachable = reachableFrom([resolve(srcDir, "main.tsx")]);
+    const reachable = reachableFrom([resolve(srcDir, "main.tsx")], root);
     expect(reachable.size).toBeGreaterThan(20);
   });
 });
