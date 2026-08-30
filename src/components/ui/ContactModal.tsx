@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react";
 import { m } from "motion/react";
-import { Mail, Loader2, CheckCircle2 } from "lucide-react";
+import { Mail, CheckCircle2 } from "lucide-react";
 import { Button } from "./Button";
 import { Modal } from "./Modal";
 import { useContactForm } from "../../hooks/useContactForm";
@@ -104,13 +104,26 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
             </p>
           )}
 
-          <Button 
-            type="submit" 
+          {/*
+            The loading state goes through the shell's `isLoading` rather
+            than being written out here. Written out here, it replaced the
+            children with a bare spinner, so from the moment the visitor
+            pressed Send until the request answered, the control they had
+            just used had no accessible name at all — axe reports
+            button-name, and a screen reader announces "button, dimmed".
+
+            The shell renders its spinner beside the children and sets
+            aria-busy, so the name survives and the state is announced.
+            "Sending…" rather than "Send Message" because the button is
+            reporting what is happening, not offering to do it again.
+          */}
+          <Button
+            type="submit"
             className="w-full py-6 text-lg mt-2"
-            disabled={status === "loading"}
+            isLoading={status === "loading"}
           >
             {status === "loading" ? (
-              <Loader2 className="w-5 h-5 animate-spin mx-auto" aria-hidden="true" />
+              "Sending…"
             ) : (
               <>
                 <Mail className="w-5 h-5 mr-2" aria-hidden="true" />
