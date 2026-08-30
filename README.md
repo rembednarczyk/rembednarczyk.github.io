@@ -105,7 +105,7 @@ Chosen for build speed, maintainability, and developer experience.
 - The printed CV's QR code is drawn from committed path data. It encodes a constant, and generating it in the browser meant shipping a QR library to every visitor for a picture that only appears on paper.
 - Passive scroll listeners so scrolling never waits on a handler
 - Canvas background using a spatial hash for particle linking and batched path strokes, with the backing store scaled to `devicePixelRatio`
-- Preconnect directives for the analytics origin
+- No connection to the analytics origin until the visitor accepts. There was a preconnect here, and a tag beside it, both firing before anyone had answered the banner; the privacy policy said no measurement data was collected until acceptance, and that could not both be true.
 - ViteSingleFile was considered and rejected to avoid over-optimizing at the cost of future scalability
 
 ---
@@ -174,7 +174,7 @@ Stories are state-driven, covering `Loading`, `ErrorState`, `EmptyState`, and `L
 
 ### Edge Case: AI-Assisted Component Usage
 
-The `AiAssistedCard` story models how the UI behaves with unpredictable, AI-generated data: very long text, missing fields, and unexpected formatting.
+The `ProjectCard` stories model how the UI behaves with unpredictable, AI-generated data: very long text, single words with nothing to break on, missing fields, and the same content at 320px. They assert that nothing reaches past the card's own edge, which is what the earlier version of this claimed and never checked — and they run against the card the site actually renders, rather than against components no page used.
 
 Every story asserts accessibility:
 
