@@ -116,6 +116,9 @@ Development follows two documents, both of which apply to human and AI contribut
 
 - [Engineering Principles](docs/guidelines/ENGINEERING_PRINCIPLES.md) governs how changes are made: what a test is for, which defect classes to aim at, how much process a change deserves, and what has to be recorded before a change counts as done. It is project-agnostic and takes precedence.
 - [AI Instructions](docs/guidelines/AI_INSTRUCTIONS.md) covers this repository specifically: execution protocol, architecture rules, Lighthouse guardrails, and UI/UX conventions.
+- [CLAUDE.md](CLAUDE.md) is the working agreement read at the start of a session: authorship, the branch and pull request flow, and the habits that catch a wrong measurement. It restates neither of the above, and points at both.
+
+`.claude/hooks/session-start.sh` runs at session start and sets the repository's git identity, because the container's global one is not the owner's and a rule that depends on remembering is not a rule. All three documents are held to naming only files that exist by `tests/repository-docs.test.ts`.
 
 Rules that can be automated are automated, following the principle that a ratchet beats a checklist. Several run as tests, each written after the repository had already broken the rule it now enforces:
 
