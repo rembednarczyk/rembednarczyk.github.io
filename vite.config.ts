@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "path";
 import { defineConfig, type Plugin } from "vite";
+import { PRINT_QR_CARD_FILE, printQrCard } from "./scripts/printQrCard";
 import { countLastmod, stampSitemap } from "./scripts/sitemap";
 import { injectPersonSchema } from "./scripts/structuredData";
 
@@ -26,6 +27,39 @@ function stampSitemapPlugin(): Plugin {
   };
 }
 
+
+/**
+ * Draws the card served at /cv-qr-code.png.
+ *
+ * That address is on material this site does not control and cannot recall,
+ * and it answered 404 from the day the two files behind it — a PNG and an
+ * SVG, for a QR the print template had stopped rendering — were taken out
+ * as assets nothing pointed at.
+ *
+ * It comes back drawn rather than committed. A generated artifact checked
+ * into the repository is free to drift from what generated it; this one is
+ * made at build time from PRINT_URL, so the address it shows and the code
+ * it draws cannot disagree. Written straight into dist/ and never into
+ * public/, which is also why it needs no exemption from the ratchet that
+ * removed its predecessors: nothing in public/ is what that check reads.
+ *
+ * The build fails rather than shipping a deploy where this address is
+ * broken again. It came back once; it should not go quiet twice.
+ */
+function printQrCardPlugin(): Plugin {
+  return {
+    name: "draw-print-qr-card",
+    apply: "build",
+    closeBundle() {
+      // Storybook builds through this same config and has no dist/ of the
+      // site's shape to write into.
+      const dist = path.resolve(__dirname, "dist");
+      if (!fs.existsSync(path.resolve(dist, "index.html"))) return;
+
+      fs.writeFileSync(path.resolve(dist, PRINT_QR_CARD_FILE), printQrCard());
+    },
+  };
+}
 
 /**
  * Writes the schema.org Person from the data the page renders.
@@ -61,6 +95,7 @@ export default defineConfig(() => {
       tailwindcss(),
       structuredDataPlugin(),
       stampSitemapPlugin(),
+      printQrCardPlugin(),
     ],
     build: {
       /**
