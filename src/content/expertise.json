@@ -1,0 +1,34 @@
+{
+  "areas": [
+    {
+      "title": "Quality Engineering Leadership",
+      "desc": "Building and scaling testing processes for complex and regulated environments.",
+      "icon": "Terminal"
+    },
+    {
+      "title": "Test Strategy & Risk-Based Testing",
+      "desc": "Designing test approaches aligned with compliance, delivery pressure, and business priorities.",
+      "icon": "Cpu"
+    },
+    {
+      "title": "GxP / CSV Validation",
+      "desc": "Ensuring software quality within validated pharmaceutical environments.",
+      "icon": "Database"
+    },
+    {
+      "title": "Testing Transformation",
+      "desc": "Transitioning organizations from manual or paper-based processes to modern digital QA workflows.",
+      "icon": "Code"
+    },
+    {
+      "title": "Technical Assessment & Mentoring",
+      "desc": "Evaluating engineering talent and mentoring testers across all seniority levels.",
+      "icon": "Layers"
+    },
+    {
+      "title": "Pre-Sales & Consulting",
+      "desc": "Supporting discovery phases, solution design, and QA strategy for new engagements.",
+      "icon": "Globe"
+    }
+  ]
+}

@@ -240,6 +240,8 @@ const NAMED_ONLY_IN_STRINGS: Record<string, string> = {
   domMax:
     "the motion feature set tests/animationFeatures.test.ts forbids, named as the string the bundle would contain if it came back",
   Edit: "the tool the same hook tells you to use instead, named in the payloads its tests feed it",
+  Code2:
+    "the lucide alias the project card used to import, named in the README and in tests/icons.test.ts as the reason the icon registry throws — its canonical name is CodeXml, and the two disagreed the moment the icon became a string in content. It is exempt precisely because the code no longer has it: the entry exists to let a document say what a name used to be",
 };
 
 /**

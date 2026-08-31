@@ -1,16 +1,19 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import * as cards from "../src/data/portfolioData";
 import * as facts from "../src/data/portfolioFacts";
 import { fillPlaceholders } from "../src/data/placeholders";
 
 /**
  * The split is only worth having if it stays true.
  *
- * Every word the site states now lives in src/content as JSON, and
- * portfolioFacts.ts assembles it into the typed shapes the page and the
- * build read. That arrangement buys one thing: an editor outside this
- * repository can change what the site says by rewriting a JSON file. It
+ * Every word the site states now lives in src/content as JSON, and two
+ * modules assemble it into the typed shapes the page and the build read:
+ * portfolioFacts.ts, which carries no JSX so the Vite config can load it,
+ * and portfolioData.tsx, which draws the cards. That arrangement buys one
+ * thing: an editor outside this repository can change what the site says
+ * by rewriting a JSON file. It
  * buys nothing at all the moment a sentence goes back into the TypeScript,
  * because then the editor shows a page it cannot fully change and nothing
  * says which half is which.
@@ -39,6 +42,15 @@ const content = contentFiles.map(
 
 function stringsIn(value: unknown): string[] {
   if (typeof value === "string") return [value];
+
+  // A React element or a component, which is drawing rather than content.
+  // The card modules hand out both, and the Tailwind classes inside them
+  // are presentation the assembly layer is supposed to own — what content
+  // names is the icon and the accent, and tests/icons.test.ts holds those.
+  // `$$typeof` catches both, since lucide's icons are forwardRef objects
+  // and asking whether one is a function gets the wrong answer.
+  if (value !== null && typeof value === "object" && "$$typeof" in value) return [];
+
   if (Array.isArray(value)) {
     // Both the parts and what joining them produces, because that join is
     // the second of the two things the assembly layer is allowed to do:
@@ -58,28 +70,36 @@ function stringsIn(value: unknown): string[] {
 const VALUES = { yearsOfExperience: String(facts.yearsOfExperience) };
 const offered = new Set(stringsIn(fillPlaceholders(content, VALUES)));
 
-/** Everything the module hands to the page and to the build. */
-const handedOut = stringsIn(Object.values(facts));
+/**
+ * Everything the two assembly modules hand to the page and to the build.
+ * Both of them, because the split was drawn twice: portfolioFacts.ts is
+ * what the build can load, portfolioData.tsx is what needs JSX, and a rule
+ * that held for one of them would leave the other free to state sentences
+ * — which is exactly where the 79 the second migration moved had been.
+ */
+const handedOut = stringsIn([...Object.values(facts), ...Object.values(cards)]);
 
 describe("the content tree", () => {
-  it("has a file for each thing the site says, and the module reads them all", () => {
-    const module = readFileSync(resolve(root, "src/data/portfolioFacts.ts"), "utf8");
+  it("has a file for each thing the site says, and the modules read them all", () => {
+    const modules = ["src/data/portfolioFacts.ts", "src/data/portfolioData.tsx"]
+      .map((file) => readFileSync(resolve(root, file), "utf8"))
+      .join("\n");
 
-    const unread = contentFiles.filter((file) => !module.includes(`../content/${file}`));
+    const unread = contentFiles.filter((file) => !modules.includes(`../content/${file}`));
 
     expect(
       unread,
-      `these are in src/content and portfolioFacts.ts imports none of them, so they ship to nobody and drift unnoticed:\n  ${unread.join("\n  ")}`,
+      `these are in src/content and neither assembly module imports them, so they ship to nobody and drift unnoticed:\n  ${unread.join("\n  ")}`,
     ).toEqual([]);
     expect(contentFiles.length).toBeGreaterThan(5);
   });
 
   it("is read as more than a handful of strings, so the check below is not vacuous", () => {
-    // Measured: 253 distinct strings offered, 315 handed out. The numbers
+    // Measured: 372 distinct strings offered, 436 handed out. The numbers
     // are not the point — an empty haystack passing every containment
     // check is.
-    expect(offered.size).toBeGreaterThan(200);
-    expect(handedOut.length).toBeGreaterThan(200);
+    expect(offered.size).toBeGreaterThan(300);
+    expect(handedOut.length).toBeGreaterThan(300);
   });
 });
 
@@ -89,7 +109,7 @@ describe("what the assembly layer hands out", () => {
 
     expect(
       invented,
-      `these are stated in src/data/portfolioFacts.ts and in no content file, so an editor rewriting the content cannot change them:\n  ${invented.map((text) => `"${text}"`).join("\n  ")}`,
+      `these are stated in an assembly module and in no content file, so an editor rewriting the content cannot change them:\n  ${invented.map((text) => `"${text}"`).join("\n  ")}`,
     ).toEqual([]);
   });
 });
