@@ -34,6 +34,45 @@ describe("the hook itself", () => {
     expect(() => accessSync(hook, constants.X_OK)).not.toThrow();
   });
 
+  /**
+   * The three failures the doc comment above names, which it named and then
+   * asserted nothing about.
+   *
+   * The middle one was live. With `jq` off the path — the hook parsed its
+   * payload with `jq` until this — `set -uo pipefail` has no `-e`, so the
+   * tool name came back empty and the next line exited 0. Every shell edit
+   * was allowed on a machine without one, while twenty-one green tests
+   * reported them refused. A guard that cannot read its input has to refuse.
+   */
+  it("refuses when it cannot run at all", () => {
+    const withoutPython = spawnSync(hook, {
+      input: JSON.stringify({ tool_name: "Bash", tool_input: { command: "cat x" } }),
+      encoding: "utf8",
+      env: { ...process.env, PATH: "/nonexistent", CLAUDE_PROJECT_DIR: root },
+    });
+
+    expect(withoutPython.status).toBe(BLOCKED);
+    expect(withoutPython.stderr).toContain("cannot see");
+  });
+
+  it("refuses a payload it cannot read", () => {
+    const result = spawnSync(hook, {
+      input: "not json at all",
+      encoding: "utf8",
+      env: { ...process.env, CLAUDE_PROJECT_DIR: root },
+    });
+
+    expect(result.status).toBe(BLOCKED);
+    expect(result.stderr).toContain("could not be read as JSON");
+  });
+
+  it("refuses a command it cannot split the way a shell would", () => {
+    const { status, reason } = run('echo "unbalanced');
+
+    expect(status).toBe(BLOCKED);
+    expect(reason).toContain("unbalanced quote");
+  });
+
   it("judges paths against the project, not against wherever it was started", () => {
     // CLAUDE_PROJECT_DIR is the authority on what the repository is; the
     // hook's own working directory is whatever the harness happened to
@@ -105,6 +144,28 @@ describe("writing to a file of this repository through the shell", () => {
     ["a redirect after cd", "cd src && echo x > App.tsx"],
     ["a git checkout after cd", "cd src && git checkout App.tsx"],
   ])("refuses %s, because it cannot tell what it would touch", (_case, command) => {
+    expect(run(command).status).toBe(BLOCKED);
+  });
+
+  /**
+   * The second sweep's eight, every one of them a case already in the table
+   * above with a character or a flag moved. Seven were real; the eighth —
+   * `git checkout "src/My File.tsx"` — turned out to name a path the
+   * repository does not have, which git refuses on its own. What it really
+   * showed was that splitting a command on spaces cannot see a quoted path
+   * with a space in it, so the hook splits with a shell's own rules now, and
+   * the case is covered here against a file that exists.
+   */
+  it.each([
+    ["a redirect with no space before it", "echo x>src/App.tsx"],
+    ["an append with no space before it", "echo x>>CLAUDE.md"],
+    ["sed with -i after another flag", "sed -e s/a/b/ -i src/App.tsx"],
+    ["sed over a glob, which is no single file", "sed -i s/a/b/ src/*.tsx"],
+    ["sed reached through find", "find src -name App.tsx -exec sed -i s/a/b/ {} \\;"],
+    ["git with a flag before the subcommand", "git -C . checkout src/App.tsx"],
+    ["a redirect to a quoted path", 'echo x > "src/App.tsx"'],
+    ["git checkout on a quoted path", 'git checkout "src/App.tsx"'],
+  ])("refuses %s", (_case, command) => {
     expect(run(command).status).toBe(BLOCKED);
   });
 

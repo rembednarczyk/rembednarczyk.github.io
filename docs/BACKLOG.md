@@ -28,13 +28,10 @@ and `npx vitest run tests/shellEditGuard.test.ts` prints the current one.
       `tests/hookRegistration.test.ts`, and take the "not registered" caveat
       out of the README and CLAUDE.md. The test fails until all three agree,
       in both directions.
-The holes the first audit found in the hook are closed: a quoted redirect
-target, `>|`, a quoted path to `git checkout`, and a path relative to a
-subdirectory after a `cd` were all measured passing and are all refused now.
-A second sweep found eight more, listed below — the hook is worth
-registering before they are all closed, because a guard with holes refuses
-more than a guard that never runs, but it is not the finished thing the
-first sweep left it looking like.
+Two audits found fifteen ways past the hook between them and all are closed;
+the deciding moved to Python for it, since nearly every one was a shell
+command taken apart with regular expressions and word splitting. Registering
+it is the only thing left, and it is the owner's.
 
 ---
 
@@ -50,88 +47,34 @@ something about themselves which is not true. That is not a reason to stop
 auditing. It is the reason the ritual says to audit finished work rather
 than trusting it.
 
-## 1. The mobile menu is empty on a short, narrow screen
+## 1 and 2. Closed
 
-The fix that stopped the menu covering the consent banner subtracts the
-banner's whole height with no floor, so where the banner is most of the
-screen the menu gets nothing. First visit, menu open, items fully visible
-out of seven:
+The mobile menu showed zero of its seven items below 640px wide, where the
+reservation added by the first audit ran to the whole height of a banner
+that takes most of a short screen. It has a floor now, measured against the
+banner's policy link rather than its Accept button — the first attempt used
+Accept and the gate refused it — and the sweep runs at 568x320, 480x320 and
+320x320, asserting the menu keeps rows as well as asking whether the
+banner's buttons are covered.
 
-| viewport | reserved | computed max-height | now | before the fix |
-|---|---|---|---|---|
-| 320×320 | 236px | `0px` | **0/7** | 4/7 |
-| 480×320 | 191px | 33px | **0/7** | 4/7 |
-| 568×320 | 191px | 33px | **0/7** | 4/7 |
-| 560×360 | 191px | 73px | 1/7 | 5/7 |
-| 812×375 | 136px | 143px | 2/7 | 5/7 |
+The focus gate did not measure the scroll-to-top button, which exists only
+past 300px of scrolling. An earlier fix for an unstable sweep had reloaded
+to a state where it is absent, which steadied the sweep by leaving a control
+out of it. It has its own pass now, and the gate refuses if it cannot find
+it. 29 stops.
 
-What a visitor sees at 568×320 is an empty rounded box with half a word in
-it. The commit's own comment says "the menu already scrolls internally, so
-nothing becomes unreachable" — true at the three viewports it measured, all
-of them 640px wide or more, and false below that.
+## 3 and 4. Closed
 
-The root cause is upstream of the menu: at 568×320 the banner claims 191 of
-320 pixels, 60% of the screen, and at 320×320 it claims 74%.
+The hook failed open when `jq` was missing, and eight more commands walked
+past it. Both are fixed: the deciding is done in Python, which reads the
+payload with `json` and splits the command with `shlex`, and every path that
+cannot see refuses. The one case that turned out not to be a bypass is
+recorded in the tests — `git checkout "src/My File.tsx"` names a path this
+repository does not have, and git refuses it on its own; what it really
+showed was that splitting on spaces cannot see a quoted path with a space
+in it, which is now covered against a file that exists.
 
-- [ ] Give the menu a floor, and cap what the banner may claim on a short
-      viewport so no fixed element takes most of the screen. The banner's
-      buttons must stay visible whatever else scrolls.
-- [ ] Add narrow **and** short viewports to the sweep in
-      `scripts/runFocusIndicator.ts`. Its `SHORT_VIEWPORTS` are all 640px
-      wide or wider, which is why this was invisible.
-- [ ] The sweep asks only whether the banner's own buttons are covered. It
-      needs to ask whether the menu survived being shortened.
-
-## 2. The focus gate does not see the scroll-to-top button
-
-Measured by mutation: strip `focus-ring` from `src/components/ui/ScrollToTop.tsx`
-— leaving a control with no focus indicator at all — rebuild, and
-`npm run check:focus` prints `28 keyboard stops; 28 show where the keyboard
-is` and exits 0. The README says the gate checks every keyboard stop.
-
-The button mounts only after a scroll event and a debounce, and renders
-last, so when the walk reaches the end it is either absent or has no probe.
-Both give 25 stops, and 3 + 25 = 28 — the recorded number agrees with a walk
-that truncates on its last stop. The count cannot tell "finished" from
-"stopped at the end", which is blind exactly where it was pointed.
-
-- [ ] Make the sweep reach the button: scroll before stamping probes, or
-      stamp again after the page has settled, and assert the walk ended at
-      the document rather than at an element it could not identify.
-
-## 3. The shell hook allows everything when `jq` is missing
-
-`set -uo pipefail` has no `-e`, so a failed `jq` leaves the tool name empty
-and the next line exits 0. Measured: the same command that is refused with
-`jq` on the path is allowed without it.
-
-The doc comment in `tests/shellEditGuard.test.ts` names this exact failure —
-"a bad shebang, a missing `jq`, a payload that does not parse" — as the
-reason the hook is tested as a process, and then asserts none of the three.
-
-- [ ] Fail closed. A guard that cannot read its input must refuse, not
-      allow, and the three cases its own comment names should be tests.
-
-## 4. Eight more ways past the hook
-
-All measured by running it:
-
-| command | today |
-|---|---|
-| `echo x>src/App.tsx` (no space) | allowed |
-| `echo x>>CLAUDE.md` | allowed |
-| `sed -e s/a/b/ -i src/App.tsx` | allowed |
-| `sed -i s/a/b/ src/*.tsx` (a glob is not an existing file) | allowed |
-| `find src -name App.tsx -exec sed -i s/a/b/ {} \;` | allowed |
-| `git -C . checkout src/App.tsx` | allowed |
-| `git checkout "src/My File.tsx"` (a space defeats token splitting) | allowed |
-| a redirect to a quoted path with a space | refusal names a truncated path |
-
-The first is one character from a row in the hook's own test table. The
-seventh reopens the quoted-path case the last sweep closed.
-
-- [ ] Close them, and add each as a test. The `>` cases need care: the rule
-      that keeps the guard off `->` and `=>` is what lets `x>` through.
+Registering the hook is still the owner's, at the top of this file.
 
 ## 5. Two text gates read prose as code — one of them added in the same arc
 
