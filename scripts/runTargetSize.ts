@@ -11,12 +11,18 @@ import {
 } from "./targetSize.ts";
 
 /**
- * Measures every pointer target on the built page against SC 2.5.5.
+ * Measures pointer targets on the built page against SC 2.5.5.
  *
  * A browser, because this is geometry after layout: a control's tap area is
  * its box plus its padding at the width it is actually rendered at, and no
  * amount of reading Tailwind classes produces that number. It is the same
  * argument the focus gate makes and the same shape of gate.
+ *
+ * Measurements rather than targets: the page is swept in every state whose
+ * controls exist only in that state, and the ones present throughout are
+ * measured again in each. Counting them once would mean deciding what
+ * counts as the same control across two widths and five states, which is a
+ * judgement the count does not need to make to do its job.
  */
 
 const root = resolve(import.meta.dirname, "..");
@@ -89,6 +95,83 @@ async function targetsOn(page: Page, where: string): Promise<Target[]> {
   );
 }
 
+/**
+ * Clicks a control by its visible text, and says whether it found one.
+ *
+ * Every state below is reached this way rather than by selector, so a pass
+ * that stops working says so instead of measuring an emptier page.
+ */
+async function click(page: Page, text: RegExp): Promise<boolean> {
+  const hit = await page.evaluate((source) => {
+    const wanted = new RegExp(source, "i");
+    const control = [...document.querySelectorAll("button")].find(
+      (button) =>
+        wanted.test(button.textContent ?? "") ||
+        wanted.test(button.getAttribute("aria-label") ?? ""),
+    );
+    if (!control) return false;
+    control.click();
+    return true;
+  }, text.source);
+
+  if (hit) await page.waitForTimeout(600);
+  return hit;
+}
+
+/**
+ * The states whose controls do not exist in the page as it loads.
+ *
+ * This is the defect the focus gate was caught by and the one this gate
+ * shipped with: a sweep measures the page it visits, and a control that is
+ * not rendered yet is not a passing control, it is an unmeasured one. Both
+ * dialogs portal in only while open, so neither close button had ever been
+ * measured — and both were 32x32, the way out of a dialog for anyone using
+ * a pointer. The scroll-to-top button is worse: it is mounted only once the
+ * consent banner has been answered *and* the page is 300px down, so no
+ * amount of scrolling on a fresh load reaches it.
+ */
+async function inEachHiddenState(
+  page: Page,
+  width: number,
+  collect: (where: string) => Promise<void>,
+): Promise<void> {
+  for (const [name, open] of [
+    ["contact dialog", /say hello/],
+    ["privacy dialog", /read the privacy policy/],
+  ] as const) {
+    if (!(await click(page, open))) {
+      throw new Error(`nothing opened the ${name}, so its controls were never measured`);
+    }
+    await page.waitForSelector('[role="dialog"]', { timeout: 5000 });
+    await collect(`${width}px, ${name}`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(500);
+  }
+
+  // Answering the banner is what mounts the scroll-to-top button at all.
+  if (!(await click(page, /accept/))) {
+    throw new Error("nothing answered the consent banner, so scroll-to-top never mounted");
+  }
+
+  await page.evaluate(() => window.scrollTo(0, 800));
+  await page.waitForTimeout(700);
+
+  const showing = await page.evaluate(() =>
+    [...document.querySelectorAll("button")].some((button) =>
+      /scroll to top/i.test(button.getAttribute("aria-label") ?? ""),
+    ),
+  );
+
+  if (!showing) {
+    throw new Error(
+      "the scroll-to-top button did not appear 800px down with the banner answered, " +
+        "so the sweep below proves nothing about a control it never found",
+    );
+  }
+
+  await collect(`${width}px, scrolled`);
+}
+
 /** Opens the mobile navigation, whose items exist only while it is open. */
 async function openTheMenu(page: Page): Promise<boolean> {
   const opened = await page.evaluate(() => {
@@ -136,7 +219,12 @@ async function main() {
           );
         }
         measured.push(...(await targetsOn(page, `${width}px, menu open`)));
+        await click(page, /toggle mobile menu/);
       }
+
+      await inEachHiddenState(page, width, async (where) => {
+        measured.push(...(await targetsOn(page, where)));
+      });
 
       await page.close();
     }
@@ -150,7 +238,8 @@ async function main() {
   const stale = staleExemptions(measured);
 
   console.log(
-    `${verdicts.length} pointer targets measured across ${WIDTHS.join("px and ")}px; ` +
+    `${verdicts.length} measurements of pointer targets across ${WIDTHS.join("px and ")}px ` +
+      `and the states that only exist once something is opened, answered or scrolled to; ` +
       `${verdicts.length - failures.length} are at least ${ENHANCED}x${ENHANCED}`,
   );
 
@@ -158,7 +247,7 @@ async function main() {
   // early, which is the defect the focus gate was caught by twice.
   if (verdicts.length < EXPECTED_TARGETS) {
     throw new Error(
-      `only ${verdicts.length} targets were found and ${EXPECTED_TARGETS} were recorded. ` +
+      `only ${verdicts.length} measurements were taken and ${EXPECTED_TARGETS} were recorded. ` +
         `Either the sweep stopped early or the page lost controls; both are worth knowing, ` +
         `and neither shows up as a failure below.`,
     );
@@ -186,13 +275,13 @@ async function main() {
 }
 
 /**
- * How many targets the sweep finds, recorded rather than floored.
+ * How many measurements the sweep takes, recorded rather than floored.
  *
  * A floor is the wrong instrument for a sweep that can stop early: the
  * focus gate was floored at "more than 20" while the page had 28, so a
  * truncation to 21 reported success. Measured, per the widths above.
  */
-const EXPECTED_TARGETS = 79;
+const EXPECTED_TARGETS = 241;
 
 main().catch((error: unknown) => {
   console.error(error instanceof Error ? error.message : error);
