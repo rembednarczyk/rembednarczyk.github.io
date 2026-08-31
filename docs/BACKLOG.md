@@ -125,21 +125,34 @@ All thirteen are written down now, and the claim is enforced in both
 directions: a check in `tests/` that no document names fails the build, and
 so does deleting an entry for one that still runs.
 
-## 9. Numbers in prose that do not re-derive
+## 9. Closed
 
-- [ ] `README.md` says a section moves through "thirty-two" positions
-      without reduced motion. Two runs measured 23 to 31; the figure for
-      reduced motion, two, is exact and reproducible. The sentence is
-      present tense.
+Numbers in prose that did not re-derive.
+
+- [x] `README.md` said a section moves through "thirty-two" positions
+      without reduced motion, in two places, in the present tense. Four runs
+      of one build measured the same section at 24, 26, 23 and 26, and no
+      section on any run reached 32. The figure for reduced motion, two,
+      held everywhere, because the transform is gone rather than shortened
+      — an exact number and a spread, in one sentence, and only one of them
+      belonged in prose. Both sentences
+      name `SLIDING` and `ARRIVING_AT_ONCE` now — the constants the gate
+      actually holds the page to — and say why there is no figure between
+      them. Naming a constant instead of quoting a number is only an
+      improvement if the name is checked, so the README's symbol gate reads
+      capitals as well as camelCase now; it did not, and all three of the
+      capitalised names in that file were unverified.
 - [x] One README bullet said the compression defect made the page "measure
       86 on mobile emulation where it actually scores 98", then said the
       same page "scores in the low eighties under Lighthouse's mobile
       emulation" — the second being the defect the first sentence diagnoses.
       The trailing sentence is gone; the badges are labelled as the desktop
       preset, which is what `scripts/runLighthouse.ts` measures.
-- [ ] The item below quotes a bolded count of exports with no method
-      recorded, so it cannot be re-derived. Record the method or drop the
-      number.
+- [x] The item below quoted a bolded count of exports with no method
+      recorded. Rebuilding a plausible method landed near the figure and not
+      on it, so neither is checkable; the number is gone and the argument it
+      was carrying — that a text scan is the wrong instrument here — is
+      stated without one.
 
 Two commit messages in the arc state test totals that were wrong when
 written. Commit bodies cannot be corrected, and both are contradicted by
@@ -160,12 +173,20 @@ reached, by the runner and by its own tests. An export inside a reached
 module that nobody calls is invisible to them.
 
 - [ ] A check that an exported symbol has a consumer outside the tests.
-      Measured before writing one: a regex over named imports reports **81**
-      exports here with no production consumer, and most are legitimate —
-      prop types used as annotations rather than imported by name, and
-      constants a test pins on purpose (`scrollLockHolders` says so in its
-      own doc comment). So it needs the TypeScript compiler's own view of
-      references, not a text scan, and an exemption list with reasons.
+      What is known before writing one: a regex over named imports reports
+      most of this repository's exports as unconsumed, and nearly all of
+      those are legitimate — prop types used as annotations rather than
+      imported by name, component exports the entry point renders rather
+      than imports by name, and constants a test pins on purpose
+      (`scrollLockHolders` says so in its own doc comment). So it needs the
+      TypeScript compiler's own view of references, not a text scan, and an
+      exemption list with reasons.
+      This bullet used to state that count in bold with no method recorded.
+      Rebuilding a plausible one did not reproduce it — near it, not it —
+      which is the whole argument for the rule against quoting a count in
+      prose, made against this file. The number is gone rather than
+      corrected: a second unverifiable figure is not an improvement on the
+      first, and the sentence never needed one.
 - [ ] Until then this class is held by reading, which is what Ways of Working
       Part 5 means by being honest where only discipline holds.
 
