@@ -28,6 +28,12 @@ The README lists them all, under *Development Guidelines and Guardrails*.
 That list is the current one; this file does not repeat it, because a second
 copy is a second thing to go stale.
 
+"Them all" is now checked rather than asserted: `tests/repository-docs.test.ts`
+fails on any check in `tests/` that none of the README, this file or
+`CLAUDE.md` names. Thirteen were missing when it was added. Adding one and
+saying nothing about it turns the suite red, in both directions — deleting an
+entry for a guard that still runs does too.
+
 Add a ratchet whenever a rule here can become one. A checklist does not run.
 
 ---

@@ -112,19 +112,18 @@ comparison between two prints cannot report an instrument that has stopped
 reading the page: the same wrong number on both sides is agreement, and the
 log prints it as a passing figure.
 
-## 8. The claim that the README lists every ratchet is not true
+## 8. Closed
 
-`CLAUDE.md` and `docs/guidelines/AI_INSTRUCTIONS.md` both say the README
-lists them all and that the list is current. Seven test files that hold a
-shipped artifact against a source of truth appear in none of the three
-documents, two of them guarding claims the README itself makes.
+The claim that the README lists every ratchet was made by two documents and
+checked by none. Counted by file rather than by subject it was thirteen of
+the twenty-eight in `tests/`, not the seven this entry first said — seven was
+a count of missing *subjects*, and four of the thirteen were the fast halves
+of browser gates whose story was told under the runner's name and whose file
+was not.
 
-`CLAUDE.md` also casts that list as this repository's decisions log, so the
-gap is a gap in the memory, not only in a README.
-
-- [ ] List them, or stop claiming the list is complete. Listing them is
-      better: an incomplete decisions log is the failure the log exists to
-      prevent.
+All thirteen are written down now, and the claim is enforced in both
+directions: a check in `tests/` that no document names fails the build, and
+so does deleting an entry for one that still runs.
 
 ## 9. Numbers in prose that do not re-derive
 
@@ -132,10 +131,12 @@ gap is a gap in the memory, not only in a README.
       without reduced motion. Two runs measured 23 to 31; the figure for
       reduced motion, two, is exact and reproducible. The sentence is
       present tense.
-- [ ] One README bullet says the compression defect made the page "measure
-      86 on mobile emulation where it actually scores 98", then says the
+- [x] One README bullet said the compression defect made the page "measure
+      86 on mobile emulation where it actually scores 98", then said the
       same page "scores in the low eighties under Lighthouse's mobile
-      emulation". The second is the defect the first sentence diagnoses.
+      emulation" — the second being the defect the first sentence diagnoses.
+      The trailing sentence is gone; the badges are labelled as the desktop
+      preset, which is what `scripts/runLighthouse.ts` measures.
 - [ ] The item below quotes a bolded count of exports with no method
       recorded, so it cannot be re-derived. Record the method or drop the
       number.
