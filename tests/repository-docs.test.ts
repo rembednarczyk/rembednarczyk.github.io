@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join, relative, resolve } from "node:path";
+import { basename, join, relative, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { withoutComments } from "../scripts/withoutComments";
+import { withoutComments, withoutCommentsOrStrings } from "../scripts/withoutComments";
 
 /**
  * Ways of Working, Part 2: never quote a version, a count, or a status from
@@ -193,11 +193,52 @@ const allEntries = SEARCHED_ROOTS.flatMap((dir) => [
  */
 const OWN_FIXTURES = "tests/repository-docs.test.ts";
 
-const codeWithoutComments = allEntries
-  .filter((f) => /\.tsx?$/.test(f) || f.endsWith(".claude/settings.json"))
-  .filter((f) => !f.endsWith(OWN_FIXTURES))
-  .map((f) => withoutComments(readFileSync(f, "utf8")))
-  .join("\n");
+/**
+ * Strings go too, and the two exceptions are the point.
+ *
+ * A name surviving only inside an English sentence in a test fixture is not
+ * the repository having it, and the gate was being satisfied by exactly
+ * that: `PreToolUse` is named in three documents and appears in the code in
+ * one place, the prose in `tests/hookRegistration.test.ts` explaining that
+ * the entry does not exist. The check for a document naming something gone
+ * was answered by the document's own explanation of why it is gone.
+ *
+ * `.claude/settings.json` keeps its strings, because it is JSON: every key
+ * and value in it is one, so stripping them removes the file entirely and
+ * with it the only trace of `SessionStart`. It is in this haystack for the
+ * hook names, and the hook names are strings by nature.
+ *
+ * And the repository's own filenames are in it, because a module is
+ * something the repository has whether or not any identifier spells it:
+ * `portfolioData` is a real file that no line of code names outside an
+ * import path, which is a string.
+ */
+const codeWithoutComments = [
+  ...allEntries
+    .filter((f) => /\.tsx?$/.test(f))
+    .filter((f) => !f.endsWith(OWN_FIXTURES))
+    .map((f) => withoutCommentsOrStrings(readFileSync(f, "utf8"))),
+  ...allEntries
+    .filter((f) => f.endsWith(".claude/settings.json"))
+    .map((f) => readFileSync(f, "utf8")),
+  ...allEntries.map((f) => basename(f).replace(/\.[^.]+$/, "")),
+].join("\n");
+
+/**
+ * Names the documents use that live only inside a string, with the reason.
+ *
+ * Four, measured. Each is a real thing this repository refers to and none of
+ * them is an identifier: three are names belonging to tools outside the
+ * source, and the fourth is a bundle string a ratchet forbids.
+ */
+const NAMED_ONLY_IN_STRINGS: Record<string, string> = {
+  domMax:
+    "the motion feature set tests/animationFeatures.test.ts forbids, named as the string the bundle would contain if it came back",
+  PreToolUse:
+    "the settings entry that would register the shell-edit hook and has not been added; all three documents say so, and the day it is added it becomes a key in .claude/settings.json and this entry goes",
+  Bash: "the tool name the shell-edit hook matches on, which reaches it as a string in a payload",
+  Edit: "the tool the same hook tells you to use instead, named in the payloads its tests feed it",
+};
 
 /**
  * Anything backticked that reads as a path or a filename.
@@ -273,6 +314,92 @@ const quotedIdentifiers = [
 const quotedComponents = [
   ...new Set([...readme.matchAll(/`([A-Z][a-zA-Z0-9]*)`/g)].map((m) => m[1])),
 ];
+
+describe("withoutCommentsOrStrings", () => {
+  /**
+   * The stripper the symbol checks use, and the reason there are two.
+   *
+   * The import scanners must keep strings — a specifier lives inside one —
+   * and this check must not, because a name surviving only inside an
+   * English sentence in a fixture is not the repository having it.
+   */
+  it("takes the words out of a string and leaves the quotes", () => {
+    const source = 'const note = "PreToolUse is not registered yet";';
+
+    expect(withoutCommentsOrStrings(source)).not.toContain("PreToolUse");
+    expect(withoutCommentsOrStrings(source)).toContain("const note");
+  });
+
+  it("keeps what a template interpolates, which is code", () => {
+    // `${componentName}` inside a string is a real reference to a symbol.
+    // Dropping those would take genuine consumers out of the haystack along
+    // with the prose, and report a name the code does use as missing.
+    const source = "const path = `./components/${ComponentName}.tsx`;";
+
+    expect(withoutCommentsOrStrings(source)).toContain("ComponentName");
+    expect(withoutCommentsOrStrings(source)).not.toContain("components/");
+  });
+
+  it("leaves the plain stripper alone, since one consumer needs the strings", () => {
+    // Assembled rather than written out, and deliberately not shaped like an
+    // import. tests/dependencies.test.ts scans this file with the
+    // string-keeping stripper, so a fixture spelling `from "a-package"` is
+    // read as a real undeclared dependency — which is exactly what happened
+    // the first time these fixtures were written, in this file, for this
+    // reason. A guard's fixtures are not evidence about the repository.
+    const specifier = "a-package-this-repository-does-not-have";
+    const source = `const wanted = "${specifier}"; const Thing = 1;`;
+
+    expect(withoutComments(source)).toContain(specifier);
+    expect(withoutCommentsOrStrings(source)).not.toContain(specifier);
+    expect(withoutCommentsOrStrings(source)).toContain("Thing");
+  });
+
+  it("still removes comments", () => {
+    expect(withoutCommentsOrStrings("// PreToolUse\nconst a = 1;")).not.toContain("PreToolUse");
+  });
+});
+
+describe("names the documents use that live only in a string", () => {
+  it("carries a reason for each, long enough to be one", () => {
+    for (const [name, reason] of Object.entries(NAMED_ONLY_IN_STRINGS)) {
+      expect(reason.length, `${name} is exempt and says nothing about why`).toBeGreaterThan(40);
+    }
+
+    expect(Object.keys(NAMED_ONLY_IN_STRINGS).length).toBeGreaterThan(0);
+  });
+
+  it("names nothing the repository has stopped mentioning altogether", () => {
+    // A list that can only be added to is a list that grows. An exemption
+    // says "this is here, in a string"; when it is not here at all any more
+    // the entry is a claim about nothing and has to go.
+    const everything = allEntries
+      .filter((f) => /\.(tsx?|json)$/.test(f))
+      .filter((f) => !f.endsWith(OWN_FIXTURES))
+      .map((f) => readFileSync(f, "utf8"))
+      .join("\n");
+
+    const gone = Object.keys(NAMED_ONLY_IN_STRINGS).filter(
+      (name) => !new RegExp(`\\b${name}\\b`).test(everything),
+    );
+
+    expect(
+      gone,
+      `these are exempt from the symbol check and appear nowhere at all:\n  ${gone.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("names nothing the code defines outright, which would need no exemption", () => {
+    const unnecessary = Object.keys(NAMED_ONLY_IN_STRINGS).filter((name) =>
+      new RegExp(`\\b${name}\\b`).test(codeWithoutComments),
+    );
+
+    expect(
+      unnecessary,
+      `these are exempt and the code names them outside a string, so the exemption hides nothing and should go:\n  ${unnecessary.join("\n  ")}`,
+    ).toEqual([]);
+  });
+});
 
 describe("withoutComments", () => {
   /**
@@ -361,9 +488,9 @@ describe("things the README names", () => {
   });
 
   it("names only symbols the code still contains", () => {
-    const missing = quotedIdentifiers.filter(
-      (name) => !new RegExp(`\\b${name}\\b`).test(codeWithoutComments),
-    );
+    const missing = quotedIdentifiers
+      .filter((name) => !(name in NAMED_ONLY_IN_STRINGS))
+      .filter((name) => !new RegExp(`\\b${name}\\b`).test(codeWithoutComments));
 
     expect(quotedIdentifiers.length).toBeGreaterThan(5);
     // Both forms, asserted separately: the camelCase half alone clears the
@@ -378,9 +505,9 @@ describe("things the README names", () => {
   });
 
   it("names only components, types and stories the code still exports", () => {
-    const missing = quotedComponents.filter(
-      (name) => !new RegExp(`\\b${name}\\b`).test(codeWithoutComments),
-    );
+    const missing = quotedComponents
+      .filter((name) => !(name in NAMED_ONLY_IN_STRINGS))
+      .filter((name) => !new RegExp(`\\b${name}\\b`).test(codeWithoutComments));
 
     expect(quotedComponents.length).toBeGreaterThan(5);
     expect(
@@ -528,9 +655,9 @@ describe("the backlog", () => {
           .filter((name) => /[A-Z]/.test(name)),
       ),
     ];
-    const missing = named.filter(
-      (name) => !new RegExp(`\\b${name}\\b`).test(codeWithoutComments),
-    );
+    const missing = named
+      .filter((name) => !(name in NAMED_ONLY_IN_STRINGS))
+      .filter((name) => !new RegExp(`\\b${name}\\b`).test(codeWithoutComments));
 
     expect(named.length).toBeGreaterThan(3);
     expect(

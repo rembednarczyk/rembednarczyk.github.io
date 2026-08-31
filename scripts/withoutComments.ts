@@ -28,6 +28,33 @@
  * accident of the character before the slashes.
  */
 export function withoutComments(source: string): string {
+  return scan(source, false);
+}
+
+/**
+ * The same, with the contents of string and template literals taken out too.
+ *
+ * One consumer wants this and the rest must not have it. The import
+ * scanners read specifiers, which live inside quotes, so a stripper that
+ * emptied strings would blind them completely. The documentation gate is
+ * the other way round: it asks whether the repository still *has* a name a
+ * document mentions, and a name surviving only inside an English sentence
+ * in a test fixture is not the repository having it.
+ *
+ * Measured before this existed: `PreToolUse` is named in three documents
+ * and appears in the code in exactly one place — the explanatory prose in
+ * `tests/hookRegistration.test.ts`, describing the entry that does not
+ * exist. The check meant to catch a document naming something gone was
+ * being satisfied by the document's own explanation of why it is gone.
+ *
+ * Quotes are kept and only what is between them goes, so what is left still
+ * reads as code to anything that scans it by shape.
+ */
+export function withoutCommentsOrStrings(source: string): string {
+  return scan(source, true);
+}
+
+function scan(source: string, emptyStrings: boolean): string {
   let out = "";
   let index = 0;
 
@@ -58,7 +85,7 @@ export function withoutComments(source: string): string {
     // not a comment either, and the import scanners need them.
     if (character === '"' || character === "'" || character === "`") {
       const closed = copyString(source, index, character, templates);
-      out += closed.text;
+      out += emptyStrings ? emptied(closed.text, character) : closed.text;
       index = closed.index;
       continue;
     }
@@ -161,4 +188,18 @@ function copyRegex(source: string, start: number): { text: string; index: number
 function startsARegex(before: string): boolean {
   const previous = before.trimEnd().slice(-1);
   return previous === "" || !/[\w$)\]]/.test(previous);
+}
+
+/**
+ * A quoted run with its contents gone and its quotes kept.
+ *
+ * A template's `${...}` holes are code and stay: a symbol interpolated into
+ * a string is a real reference to it, and dropping those would take genuine
+ * consumers out of the haystack along with the prose.
+ */
+function emptied(text: string, quote: string): string {
+  if (quote !== "`") return `${quote}${quote}`;
+
+  const holes = [...text.matchAll(/\$\{[^}]*\}/g)].map((match) => match[0]);
+  return `\`${holes.join("")}\``;
 }
