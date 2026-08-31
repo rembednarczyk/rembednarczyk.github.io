@@ -580,6 +580,39 @@ async function main() {
     countMustMatch("keyboard stops", stops.length + order.length, EXPECTED_KEYBOARD_STOPS);
 
     for (const probe of order) stops.push(await paintedBy(page, probe));
+
+    // And the one control the walk cannot reach, because at the top of the
+    // page it does not exist.
+    //
+    // The scroll-to-top button mounts only past 300px of scrolling, after a
+    // 100ms debounce, and the walk starts from the top. The note above says
+    // the button "entered the tab order and unmounted again before it could
+    // be measured" — and the answer taken then was to reload to a state
+    // where it is absent, which made the sweep stable by leaving a control
+    // out of it. Measured: strip focus-ring from that button, leaving it
+    // with no indicator at all, and this gate printed "28 keyboard stops;
+    // 28 show where the keyboard is" and exited 0, while the README said it
+    // checks every stop.
+    //
+    // So it gets its own pass, in the state a visitor meets it in.
+    await page.evaluate(() => scrollTo(0, 800));
+    await page.waitForTimeout(600);
+    await label();
+
+    const upward = await page.evaluate(
+      () =>
+        [...document.querySelectorAll("button")]
+          .find((b) => (b.getAttribute("aria-label") ?? "") === "Scroll to top")
+          ?.getAttribute("data-probe") ?? "",
+    );
+
+    if (!upward) {
+      throw new Error(
+        "the scroll-to-top button was not on the page after scrolling, so its focus indicator went unmeasured — which is how it went unmeasured for the whole of this gate's life",
+      );
+    }
+
+    stops.push(await paintedBy(page, upward));
   } finally {
     await browser.close();
     stop();
