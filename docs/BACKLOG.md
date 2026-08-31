@@ -76,7 +76,7 @@ in it, which is now covered against a file that exists.
 
 Registering the hook is still the owner's, at the top of this file.
 
-## 5 and 6. Partly closed
+## 5 and 6. Closed
 
 `scripts/withoutComments.ts` scans rather than substitutes now, so a doubled slash
 inside a regex literal or a string no longer deletes the rest of the line.
@@ -85,18 +85,27 @@ it was the one consumer that did not. `tests/documentedStructure.test.ts`
 tracks the enclosing path at every depth, so a third level is placed under
 what actually encloses it.
 
-One part is left, and it is a judgement rather than a defect:
+The last part is done too, and re-measuring it was worth the trouble: this
+entry said four false positives and the number is six, of which only four
+belong on a list.
 
-- [ ] `tests/repository-docs.test.ts` strips comments but not strings, so a
-      name surviving only in an English sentence inside a test fixture counts
-      as the repository having it — `PreToolUse` is found in exactly one
-      place, the explanatory prose in `tests/hookRegistration.test.ts`.
-      Stripping strings closes it and costs four false positives, measured:
-      `domMax`, `PreToolUse`, `Bash` and one filename word are names the
-      documents use legitimately that live only in strings or config. The
-      honest fix is to strip strings and carry those four in a named list
-      with reasons, the way the other exemption lists here work. Worth doing;
-      not worth doing carelessly.
+`SessionStart` was one of the two that did not. It lives solely in
+`.claude/settings.json`, which is JSON — every key and value there is a
+string — so stripping strings from that file removes it from the haystack
+entirely. It keeps its strings, because the reason it is in the haystack at
+all is the hook names, and hook names are strings by nature.
+
+`portfolioData` was the other. It is a real module that no line of code
+names outside an import path, and an import path is a string. The haystack
+carries the repository's own filenames now, which closes that class rather
+than that one entry.
+
+What is left is `domMax`, `PreToolUse`, `Bash` and `Edit` — four names the
+documents use legitimately and no identifier defines — each with its reason,
+and the list fails on an entry that has stopped appearing anywhere or that
+the code turns out to define after all. `PreToolUse` retires itself: the day
+the hook is registered it becomes a real key in `.claude/settings.json`, and
+the entry then fails as unnecessary.
 
 ## 7. Closed
 
