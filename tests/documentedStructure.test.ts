@@ -50,27 +50,34 @@ const tree = /```text\s*\nsrc\/\n([\s\S]*?)```/.exec(instructions)?.[1] ?? "";
  * Depth comes from the box-drawing prefix: each level of nesting adds four
  * columns before the branch.
  */
-const drawn = (() => {
+function readTree(text: string): string[] {
   const paths: string[] = [];
-  let parent = "";
+  // The path to the directory drawn at each depth, so a name is placed under
+  // whatever encloses it. The first version tracked one parent, assigned only
+  // at depth 0, which put a third level under the top-level directory: a tree
+  // drawing a layout directory inside components/ui recorded it as
+  // src/components/layout, which exists, so a directory that is not there
+  // passed both checks. That is the defect this parser replaced, moved one
+  // level down — a bare name is not unique across levels, and neither is a
+  // parent that only knows about the top.
+  const enclosing: string[] = ["src"];
 
-  for (const line of tree.split("\n")) {
+  for (const line of text.split("\n")) {
     const branch = /^((?:[│|]\s{3}|\s{4})*)[├└]──\s+([a-zA-Z][\w-]*)\//.exec(line);
     if (!branch) continue;
 
     const depth = branch[1].length / 4;
     const name = branch[2];
 
-    if (depth === 0) {
-      parent = name;
-      paths.push(`src/${name}`);
-    } else {
-      paths.push(`src/${parent}/${name}`);
-    }
+    enclosing.length = depth + 1;
+    paths.push(`${enclosing[depth]}/${name}`);
+    enclosing[depth + 1] = `${enclosing[depth]}/${name}`;
   }
 
   return paths;
-})();
+}
+
+const drawn = readTree(tree);
 
 /** The same two levels of the real tree, as paths. */
 const real = [
@@ -91,6 +98,11 @@ describe("the documented project structure", () => {
     expect(drawn).toContain("src/components/ui");
     expect(drawn).toContain("src/hooks");
     expect(drawn).not.toContain("src/ui");
+    // And a third level is placed under what actually encloses it, not
+    // under the top-level directory it happens to sit beneath.
+    expect(
+      readTree("├── components/\n│   └── ui/\n│       └── layout/\n"),
+    ).toEqual(["src/components", "src/components/ui", "src/components/ui/layout"]);
   });
 
   it("draws every directory src/ and src/components/ have", () => {

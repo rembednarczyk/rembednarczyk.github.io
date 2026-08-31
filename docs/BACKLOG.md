@@ -76,31 +76,27 @@ in it, which is now covered against a file that exists.
 
 Registering the hook is still the owner's, at the top of this file.
 
-## 5. Two text gates read prose as code — one of them added in the same arc
+## 5 and 6. Partly closed
 
-- [ ] `tests/storyCoverage.test.ts` matches `export const` over unstripped
-      source, so a story that is commented out satisfies it. It was added in
-      the same body of work that extracted `scripts/withoutComments.ts` for
-      exactly this class, and is the one consumer that did not get it.
+`scripts/withoutComments.ts` scans rather than substitutes now, so a doubled slash
+inside a regex literal or a string no longer deletes the rest of the line.
+`tests/storyCoverage.test.ts` uses it, which was the point of extracting it;
+it was the one consumer that did not. `tests/documentedStructure.test.ts`
+tracks the enclosing path at every depth, so a third level is placed under
+what actually encloses it.
+
+One part is left, and it is a judgement rather than a defect:
+
 - [ ] `tests/repository-docs.test.ts` strips comments but not strings, so a
-      name surviving only in an English sentence inside a test fixture
-      counts as the repository having it. Measured: `PreToolUse` is found in
-      exactly one place, the explanatory prose in `tests/hookRegistration.test.ts`.
-- [ ] `scripts/withoutComments.ts` deletes the tail of any line where a
-      doubled slash follows an ordinary character — inside a regex literal (`/x\//`) or a
-      string (`"a//b"`). Live on four lines today; nothing is currently lost
-      that matters, and the doc comment overclaims that a URL in a string is
-      safe. Only `://` is.
-
-## 6. The tree parser has the same defect one level down
-
-`tests/documentedStructure.test.ts` was rewritten to compare paths instead
-of bare names. It assigns the parent only at depth 0, so a third level is
-recorded under the top-level directory: a tree drawing a layout directory
-under `src/components/ui/`, which does not exist, is recorded as
-`src/components/layout`, which does. Both directions pass.
-
-- [ ] Track the parent at every depth, and test three levels.
+      name surviving only in an English sentence inside a test fixture counts
+      as the repository having it — `PreToolUse` is found in exactly one
+      place, the explanatory prose in `tests/hookRegistration.test.ts`.
+      Stripping strings closes it and costs four false positives, measured:
+      `domMax`, `PreToolUse`, `Bash` and one filename word are names the
+      documents use legitimately that live only in strings or config. The
+      honest fix is to strip strings and carry those four in a named list
+      with reasons, the way the other exemption lists here work. Worth doing;
+      not worth doing carelessly.
 
 ## 7. The print gate measures text and not ink
 

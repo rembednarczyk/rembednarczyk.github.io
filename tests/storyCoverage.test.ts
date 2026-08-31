@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { listSourceFiles } from "../scripts/importGraph";
+import { withoutComments } from "../scripts/withoutComments";
 
 /**
  * Both guideline documents say every component in `src/components/ui/` must
@@ -56,7 +57,11 @@ describe("every reusable component has a story", () => {
       .map((file) => file.replace(/\.tsx$/, ".stories.tsx"))
       .filter(existsSync)
       .filter((file) => {
-        const source = readFileSync(file, "utf8");
+        // Comments off first. A story commented out satisfies a text match
+        // over raw source, and this check was added in the same body of
+        // work that extracted withoutComments for exactly that class — the
+        // one consumer that did not get it.
+        const source = withoutComments(readFileSync(file, "utf8"));
         return !/export\s+const\s+[A-Z][A-Za-z0-9]*\s*[:=]/.test(source);
       })
       .map((file) => basename(file));

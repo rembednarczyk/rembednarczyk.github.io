@@ -284,6 +284,44 @@ export function getYearsOfExperience() {}`;
     expect(stripped).toMatch(/getYearsOfExperience/);
   });
 
+  it("keeps the tail of a line carrying a regex with a slash in it", () => {
+    // The two regular expressions this replaced could not tell a comment
+    // from a `//` inside something else, so everything after `/x\//` was
+    // deleted. Live on four lines of this repository, and a false green
+    // waiting for the first undeclared import to land on one of them.
+    // The marker is not written as an import. It was, and the dependency
+    // gate immediately reported an undeclared package imported by this
+    // file — correctly, because a corrected stripper stopped eating the
+    // tail and the forged import became visible. A fixture that plants
+    // code in a repository that scans for code is the thing this whole
+    // class is about.
+    const source = String.raw`const rx = /x\//; const survivedTheRegex = 1;`;
+
+    expect(withoutComments(source)).toContain("survivedTheRegex");
+  });
+
+  it("keeps the tail of a line carrying a string with a slash pair in it", () => {
+    const source = 'const p = "a//b"; const survivedTheString = 1;';
+
+    expect(withoutComments(source)).toContain("survivedTheString");
+  });
+
+  it("does not let a string open a block comment", () => {
+    // `"a /* b"` swallowed every line up to the next real close, imports
+    // included.
+    const source = 'const s = "a /* b"; const survivedTheBlock = 1;';
+
+    expect(withoutComments(source)).toContain("survivedTheBlock");
+  });
+
+  it("removes a comment glued to a closing quote", () => {
+    // The old rule ignored a slash preceded by a quote, so this survived
+    // stripping and the import graph read `./orphan` out of a comment.
+    const source = 'const a = "x"// import { Foo } from "./orphan";';
+
+    expect(withoutComments(source)).not.toContain("orphan");
+  });
+
   it("keeps a URL, which is not a comment however much it looks like one", () => {
     // Without the guard this eats the rest of the line, and a symbol
     // declared next to a link would read as deleted.
