@@ -47,10 +47,7 @@ const isRegistered = (script: string) => commands.some((c) => c.includes(script)
  * the reason. It may shrink and may not grow: an entry here is a guard that
  * is not guarding, so it is a debt, not a design.
  */
-const NOT_REGISTERED: Record<string, string> = {
-  "no-shell-edits.sh":
-    "registering a PreToolUse hook edits the agent's own permission surface, which the permission classifier refuses — so the repository's owner adds the entry by hand. Until then the hook is inert and the documents have to say so.",
-};
+const NOT_REGISTERED: Record<string, string> = {};
 
 /** The documents that describe the hooks to the next contributor. */
 const DOCUMENTS = ["README.md", "CLAUDE.md"];

@@ -227,16 +227,15 @@ const codeWithoutComments = [
 /**
  * Names the documents use that live only inside a string, with the reason.
  *
- * Four, measured. Each is a real thing this repository refers to and none of
- * them is an identifier: three are names belonging to tools outside the
- * source, and the fourth is a bundle string a ratchet forbids.
+ * Two left, and the list shrank on its own. It held four when it was
+ * written; registering the shell-edit hook put `PreToolUse` and `Bash` into
+ * `.claude/settings.json` as a real key and a real matcher, and the check
+ * below — an exemption is unnecessary once the code names the thing outside
+ * a string — reported both. Neither was removed by anyone remembering to.
  */
 const NAMED_ONLY_IN_STRINGS: Record<string, string> = {
   domMax:
     "the motion feature set tests/animationFeatures.test.ts forbids, named as the string the bundle would contain if it came back",
-  PreToolUse:
-    "the settings entry that would register the shell-edit hook and has not been added; all three documents say so, and the day it is added it becomes a key in .claude/settings.json and this entry goes",
-  Bash: "the tool name the shell-edit hook matches on, which reaches it as a string in a payload",
   Edit: "the tool the same hook tells you to use instead, named in the payloads its tests feed it",
 };
 

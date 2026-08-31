@@ -129,6 +129,48 @@ def names_a_file(token: str) -> bool:
     )
 
 
+def git_runs(text: str) -> list:
+    """
+    Each `git` invocation's own arguments, and nothing after it.
+
+    This used to be every token following the first `git` anywhere in the
+    command — across pipes, `&&` and newlines alike — so any path mentioned
+    later in a compound command read as a path handed to `git checkout`.
+    Registering the hook found it within seconds of the first run, on the
+    command that was registering it: `git checkout -B claude/x origin/main`
+    followed on the next line by a `cat` of a settings file was refused as
+    discarding that file. The rule was right and its reach was not, which is
+    a lesson this repository has now paid for in four separate checks.
+
+    Newlines become separators before splitting, because a shell starts a new
+    command at one and `shlex` treats it as plain whitespace. Inside quotes
+    it turns into a literal semicolon, which changes a string this never
+    reads and separates nothing.
+    """
+    lexer = shlex.shlex(text.replace("\n", " ; "), posix=True, punctuation_chars=True)
+    lexer.whitespace_split = True
+
+    try:
+        parts = list(lexer)
+    except ValueError:
+        # The whole-command split above already refused an unbalanced quote.
+        return []
+
+    runs: list = []
+    current = None
+
+    for token in parts:
+        if token and all(character in ";&|()" for character in token):
+            current = None
+        elif current is not None:
+            current.append(token)
+        elif token == "git":
+            current = []
+            runs.append(current)
+
+    return runs
+
+
 def looks_like_a_redirect_target(token: str) -> bool:
     """
     The same question for the right of a `>`, where a directory counts too.
@@ -151,6 +193,31 @@ if payload.get("tool_name") != "Bash":
 command = (payload.get("tool_input") or {}).get("command") or ""
 if not command.strip():
     sys.exit(0)
+
+HEREDOC_BODY = re.compile(
+    r"""(<<-?\s*(['"]?)(\w+)\2[^\n]*\n).*?^\s*\3\s*$""",
+    re.S | re.M,
+)
+
+
+def without_heredoc_bodies(text: str) -> str:
+    """
+    The command with what a heredoc feeds it taken out.
+
+    A heredoc's body is data. The shell does not parse it as shell, and
+    neither should this — but `shlex` does, and the second thing registering
+    this hook found was that it refused every commit message containing an
+    apostrophe: one unbalanced quote inside prose, and a guard that fails
+    closed refuses. Nearly every commit message in this repository has one.
+
+    Nothing is lost by it. What the rules below look for on a heredoc line —
+    the `>` of `cat > file <<EOF` — is on the line, not in the body, and a
+    `> file` written inside a body is text that never runs.
+    """
+    return HEREDOC_BODY.sub(lambda match: match.group(1), text)
+
+
+command = without_heredoc_bodies(command)
 
 try:
     tokens = shlex.split(command, comments=False, posix=True)
@@ -257,10 +324,9 @@ if uses("tee") or uses("truncate"):
 # how the work gets done and are left alone; a path argument is the case that
 # has cost edits here. The subcommand is looked for anywhere after `git`,
 # because `git -C . checkout src/App.tsx` is the same command.
-if "git" in tokens:
-    after_git = tokens[tokens.index("git") + 1 :]
-    if "checkout" in after_git or "restore" in after_git:
-        for token in after_git:
+for run in git_runs(command):
+    if "checkout" in run or "restore" in run:
+        for token in run:
             if token.startswith("-"):
                 continue
             # Existence separates a path from a branch name: `claude/foo` and
