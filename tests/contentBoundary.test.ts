@@ -90,6 +90,11 @@ const handedOut = stringsIn([...Object.values(facts), ...Object.values(cards)]);
 
 describe("the content tree", () => {
   it("has a file for each thing the site says, and the modules read them all", () => {
+    // Matched on `content/<file>` rather than on `../content/<file>`,
+    // because the page's own layout is read by src/App.tsx, one level up
+    // from the rest, where the specifier is `./content/...`. The stricter
+    // pattern called that file an orphan.
+    //
     // Every source file, not the two assembly modules: the printed CV's
     // layout is read by the template that draws it, which is where a
     // layout belongs, and a check that knew about only two readers would
@@ -98,7 +103,7 @@ describe("the content tree", () => {
       .map((file) => readFileSync(file, "utf8"))
       .join("\n");
 
-    const unread = contentFiles.filter((file) => !modules.includes(`../content/${file}`));
+    const unread = contentFiles.filter((file) => !modules.includes(`content/${file}`));
 
     expect(
       unread,

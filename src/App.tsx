@@ -1,27 +1,18 @@
 import { MotionProvider } from "./components/MotionProvider";
+import { PageSection } from "./components/ui/PageSection";
+import { pageBodyOf } from "./components/PageBodies";
+import { numbered } from "./lib/pageLayout";
+import pageLayout from "./content/pageLayout.json" with { type: "json" };
 import { useAutoPrint } from "./hooks/useAutoPrint";
 import { useCookieConsent } from "./hooks/useCookieConsent";
 import { useHashTarget } from "./hooks/useHashTarget";
 import { isKnownPath } from "./lib/routing";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
-import { HeroSection } from "./components/sections/HeroSection";
-import { ExpertiseSection } from "./components/sections/Expertise/ExpertiseSection";
-import { AboutSection } from "./components/sections/About/AboutSection";
-import { ThinkingSection } from "./components/sections/ThinkingSection";
 import { ParticleBackground } from "./components/ParticleBackground";
 import { CVTemplate } from "./components/CVTemplate";
 import { ScrollToTop } from "./components/ui/ScrollToTop";
 import { NotFound } from "./components/NotFound";
-import { SkillsSection } from "./components/sections/Skills/SkillsSection";
-import { CertificationsSection } from "./components/sections/Certifications/CertificationsSection";
-import { AchievementsSection } from "./components/sections/Achievements/AchievementsSection";
-import { RecognitionSection } from "./components/sections/Recognition/RecognitionSection";
-import { ExperienceSection } from "./components/sections/Experience/ExperienceSection";
-import { CommunitySection } from "./components/sections/Community/CommunitySection";
-import { BrandPresenceSection } from "./components/sections/BrandPresence/BrandPresenceSection";
-import { ProjectsSection } from "./components/sections/Projects/ProjectsSection";
-import { ContactSection } from "./components/sections/ContactSection";
 
 /** Chooses between the page and the 404 view. */
 export default function App() {
@@ -81,19 +72,25 @@ export function Portfolio() {
           itemType="https://schema.org/Person"
           className="relative z-10 max-w-6xl mx-auto px-6 pt-24 pb-8"
         >
-          <HeroSection />
-          <ExpertiseSection />
-          <AboutSection />
-          <ThinkingSection />
-          <ExperienceSection />
-          <AchievementsSection />
-          <RecognitionSection />
-          <SkillsSection />
-          <CertificationsSection />
-          <ProjectsSection />
-          <CommunitySection />
-          <BrandPresenceSection />
-          <ContactSection />
+          {numbered(pageLayout.sections).map(({ section, number }) => {
+            const Body = pageBodyOf(section.body);
+
+            // A band with a heading is one of the numbered run and is
+            // wrapped here; the hero, the quote and the contact form
+            // render their own element, as they always did.
+            return "title" in section ? (
+              <PageSection
+                key={section.body}
+                id={section.id}
+                number={number}
+                title={section.title}
+              >
+                <Body />
+              </PageSection>
+            ) : (
+              <Body key={section.body} />
+            );
+          })}
         </main>
 
         {/* Footer */}

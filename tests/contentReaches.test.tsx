@@ -45,14 +45,16 @@ vi.mock("../src/components/ParticleBackground", () => ({ ParticleBackground: () 
 const contentDir = resolve(__dirname, "../src/content");
 
 /**
- * Keys whose value is not text a visitor reads: the name of the section
- * shape the printed CV draws, an icon's name, an accent's, a link's
- * address, the portrait's path and its pixel dimensions. Everything else in a content file is prose, and this list
+ * Keys whose value is not text a visitor reads: the name of the shape a
+ * band draws, the anchor the navigation scrolls to, an icon's name, an
+ * accent's, a link's address, the portrait's path and its pixel
+ * dimensions. Everything else in a content file is prose, and this list
  * is the whole of the exception — there is no per-string exemption list
  * here, because the moment there is one it grows.
  */
 const NOT_READ = new Set([
   "body",
+  "id",
   "icon",
   "accent",
   "tone",
