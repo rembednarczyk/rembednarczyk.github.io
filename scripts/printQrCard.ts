@@ -79,11 +79,23 @@ export interface CardText {
  * address has to find the modules to read them, and a second copy of these
  * numbers in the test would be a second thing to keep in step.
  */
-export const QR_BOX = { x: 96, y: 125, side: 380 };
+export const QR_BOX = { x: 88, y: 90, side: 450 };
+
+/**
+ * The gradient frame around the tile, in device pixels.
+ *
+ * Outside the tile and therefore outside the quiet zone, which is what
+ * makes it safe: the scanner reads contrast between the code and the white
+ * around it, and nothing coloured comes near that. The card is small
+ * wherever it actually gets used — 345px across in a LinkedIn featured
+ * tile, measured — so this is the only thing on it that says whose site the
+ * code belongs to at a glance.
+ */
+export const RING = 7;
 
 /** Where the text column starts and how much room it has. */
 const TEXT = {
-  left: QR_BOX.x + QR_BOX.side + 64,
+  left: QR_BOX.x + QR_BOX.side + RING + 52,
   right: CARD.width - 48 - 48,
 };
 
@@ -110,8 +122,34 @@ function drawCode(context: SKRSContext2D, value: string): void {
   const matrix = qrMatrix(value);
   const side = moduleSide(matrix.length);
 
+  // The frame first, and the glow with it, so the tile is laid over both
+  // and nothing coloured survives inside the quiet zone.
+  context.save();
+  context.shadowColor = "rgba(34, 211, 238, 0.45)";
+  context.shadowBlur = 44;
+  const ring = context.createLinearGradient(
+    QR_BOX.x - RING,
+    QR_BOX.y - RING,
+    QR_BOX.x + QR_BOX.side + RING,
+    QR_BOX.y + QR_BOX.side + RING,
+  );
+  ring.addColorStop(0, INK.cyan600);
+  ring.addColorStop(1, INK.purple);
+  context.fillStyle = ring;
+  roundedRect(
+    context,
+    QR_BOX.x - RING,
+    QR_BOX.y - RING,
+    QR_BOX.side + RING * 2,
+    QR_BOX.side + RING * 2,
+    22,
+  );
+  context.fill();
+  context.restore();
+
   context.fillStyle = INK.white;
-  context.fillRect(QR_BOX.x, QR_BOX.y, QR_BOX.side, QR_BOX.side);
+  roundedRect(context, QR_BOX.x, QR_BOX.y, QR_BOX.side, QR_BOX.side, 14);
+  context.fill();
 
   context.fillStyle = "#000000";
   matrix.forEach((cells, row) => {
@@ -193,13 +231,13 @@ export function drawPrintQrCard(url: string, text: CardText): Buffer {
   // numbers that happen to look right: the name is the tallest line and its
   // size is decided above, so anything below it that was positioned by hand
   // would move the moment a longer name shrank it.
-  const rows = [26, nameSize, 32, 3, 24];
-  const gaps = [30, 22, 30, 30];
+  const rows = [28, nameSize, 34, 4];
+  const gaps = [32, 24, 34];
   const height = rows.reduce((a, b) => a + b, 0) + gaps.reduce((a, b) => a + b, 0);
   let y = QR_BOX.y + QR_BOX.side / 2 - height / 2;
 
   context.fillStyle = INK.cyan;
-  context.font = "500 26px monospace";
+  context.font = "500 28px monospace";
   y += rows[0];
   context.fillText(text.lead, left, y);
 
@@ -209,21 +247,19 @@ export function drawPrintQrCard(url: string, text: CardText): Buffer {
   context.fillText(text.name, left, y);
 
   context.fillStyle = INK.slate400;
-  context.font = "400 32px sans-serif";
+  context.font = "400 34px sans-serif";
   y += gaps[1] + rows[2];
   context.fillText(text.title, left, y);
 
+  // No address line. LinkedIn prints the URL under the card itself, so a
+  // second copy inside the picture was the smallest type on the smallest
+  // thing on the page, saying what the page already said.
   y += gaps[2];
-  const rule = context.createLinearGradient(left, 0, left + 220, 0);
+  const rule = context.createLinearGradient(left, 0, left + 240, 0);
   rule.addColorStop(0, INK.cyan);
   rule.addColorStop(1, INK.purple);
   context.fillStyle = rule;
-  context.fillRect(left, y, 220, rows[3]);
-
-  context.fillStyle = INK.slate300;
-  context.font = "400 24px monospace";
-  y += gaps[3] + rows[4];
-  context.fillText(new URL(url).host, left, y);
+  context.fillRect(left, y, 240, rows[3]);
 
   return canvas.toBuffer("image/png");
 }

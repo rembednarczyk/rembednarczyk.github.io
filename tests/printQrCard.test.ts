@@ -5,6 +5,7 @@ import {
   CARD,
   QR_BOX,
   QUIET_ZONE,
+  RING,
   moduleCentre,
   moduleSide,
   printQrCard,
@@ -97,6 +98,32 @@ describe("the card served at /cv-qr-code.png", () => {
     expect(QUIET_ZONE).toBeGreaterThanOrEqual(4);
   });
 
+  it("frames the code in the site's gradient", () => {
+    // The one thing on the card that says whose site the code belongs to,
+    // and the reason this design was chosen over the plain tile. Nothing
+    // asserted it when the frame was added: taking RING to 0 left every
+    // other check here green.
+    //
+    // Sampled inside the band rather than outside it, because the glow
+    // spreads the same colours over the panel for another forty pixels and
+    // a probe out there would pass on the glow alone.
+    const png = card();
+    const middle = QR_BOX.y + QR_BOX.side / 2;
+    const left = pixelAt(png, QR_BOX.x - RING / 2, middle);
+    const right = pixelAt(png, QR_BOX.x + QR_BOX.side + RING / 2, middle);
+
+    for (const [side, pixel] of [["left", left], ["right", right]] as const) {
+      const saturation = Math.max(...pixel) - Math.min(...pixel);
+      expect(saturation, `the ${side} of the frame is not a colour`).toBeGreaterThan(60);
+    }
+
+    // And running the way the site's gradient runs, cyan into purple, so a
+    // frame painted one flat colour is not the same as this one.
+    expect(left[2] - left[0], "the left of the frame is not the cyan end").toBeGreaterThan(
+      right[2] - right[0],
+    );
+  });
+
   it("keeps the text inside the card", () => {
     // Drawing text does not refuse to overflow: at a fixed 58px this name
     // ran off the right edge of the panel and the card rendered anyway.
@@ -146,7 +173,7 @@ describe("the card served at /cv-qr-code.png", () => {
       if (luminance([png.data[i], png.data[i + 1], png.data[i + 2]]) > 200) light += 1;
     }
 
-    // The white tile alone is 380x380 of a 1200x630 card, which is a fifth.
+    // The white tile alone is 450x450 of a 1200x630 card, which is a quarter.
     expect(light / (png.data.length / 4)).toBeGreaterThan(0.1);
   });
 });
