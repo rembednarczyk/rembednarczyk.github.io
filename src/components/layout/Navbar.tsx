@@ -110,13 +110,36 @@ export function Navbar() {
         The banner's own `z-[90]` does not save it. It is trapped inside the
         footer's stacking context, which is `z-10`, so against this menu at
         `z-50` it loses — the same trap App.tsx documents for the
-        scroll-to-top button. Reserving the space is what fixes it; the menu
-        already scrolls internally, so nothing becomes unreachable.
+        scroll-to-top button.
+
+        The floor is the other half, and it was missing. Subtracting the
+        band's whole height with nothing to stop it reaching zero is fine
+        while the banner is a row and cruel once it is a stack: at 568x320
+        the banner claims 191 of 320 pixels and the menu computed to 33px,
+        which is its own padding and no rows at all. Measured before the
+        floor: 0 of 7 items visible at 320x320, 480x320 and 568x320, where
+        the rule this replaced showed 4. An empty menu is worse than the
+        defect the reservation was added for.
+
+        7.5rem is measured, and measured twice. The first attempt was 9.5rem,
+        chosen against the distance to the banner's Accept button — at least
+        171px below the menu's top edge at every viewport — with a comment
+        claiming the floor gave up only explanatory text and none of the
+        banner's three controls. check:focus refused it: at 480x320 and
+        320x320 a 152px menu covered "Read the privacy policy", which sits
+        132px down, well above Accept. The binding constraint was the control
+        nobody thought to measure, and the gate is what said so.
+
+        So the floor is 120px, ending 12px clear of that link, and it shows
+        two rows rather than three. Two is what the screen has room for once
+        the banner has been answered honestly; the menu scrolls, so all seven
+        stay reachable. Where there is room the subtraction still wins and
+        nothing changes.
       */}
       {isMobileMenuOpen && (
         <div
           ref={menuRef}
-          className="lg:hidden absolute top-20 right-4 w-56 sm:w-64 max-h-[calc(100vh-6rem-var(--fixed-bar-space,0px))] overflow-y-auto bg-[#020617]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-5 flex flex-col gap-3 text-sm font-medium origin-top-right animate-in fade-in slide-in-from-top-4 duration-200 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+          className="lg:hidden absolute top-20 right-4 w-56 sm:w-64 max-h-[max(7.5rem,calc(100vh-6rem-var(--fixed-bar-space,0px)))] overflow-y-auto bg-[#020617]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-4 px-5 flex flex-col gap-3 text-sm font-medium origin-top-right animate-in fade-in slide-in-from-top-4 duration-200 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
         >
           {NAV_ITEMS.map((item) => (
             <button

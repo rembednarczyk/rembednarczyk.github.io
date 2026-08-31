@@ -67,8 +67,8 @@ const BANNER_WIDTHS = [1280, 768];
  * Two widths at one comfortable height proved nothing about a short one.
  * The navigation's mobile menu grows downward until 16px from the foot of
  * the viewport, so on a short screen it covered Accept and Decline whole —
- * measured 100% at all three viewports below — and a tap on Accept went to
- * a nav button instead: the page scrolled away and no choice was recorded.
+ * measured 100% at the first three below — and a tap on Accept went to a
+ * nav button instead: the page scrolled away and no choice was recorded.
  *
  * This is the second time two things pinned to the same corner have found
  * each other here. The first was the scroll-to-top button over Accept at
@@ -79,7 +79,25 @@ const SHORT_VIEWPORTS = [
   { width: 812, height: 375 },
   { width: 740, height: 360 },
   { width: 768, height: 500 },
+  // Narrow as well as short. The three above are all 640px wide or more,
+  // where the banner lays its buttons out in a row and takes 136 to 168
+  // pixels. Below that it stacks them and takes 191 to 236 — most of a short
+  // screen — and the menu's reservation, with no floor, computed to its own
+  // padding and no rows. Zero of seven items were visible and no gate could
+  // see it, because this list stopped at the widths the fix was measured on.
+  { width: 568, height: 320 },
+  { width: 480, height: 320 },
+  { width: 320, height: 320 },
 ];
+
+/**
+ * How many of the mobile menu's rows have to survive being shortened.
+ *
+ * The sweep asked only whether the banner's own buttons were covered, which
+ * is one half of what two things sharing a screen can do to each other. The
+ * other half is a menu squeezed into nothing, which is what happened.
+ */
+const MENU_ROWS_THAT_MUST_SURVIVE = 2;
 
 /** Long enough for a `transition-all` control to finish fading its ring in. */
 const SETTLE_MS = 450;
@@ -464,6 +482,26 @@ async function main() {
         );
       }
       await page.waitForTimeout(400);
+
+      // The menu has to survive the space it just gave up.
+      const rows = await page.evaluate(() => {
+        const menu = [...document.querySelectorAll("nav div")].find(
+          (d) =>
+            d.className.includes("lg:hidden") && d.className.includes("absolute"),
+        );
+        if (!menu) return -1;
+        const box = menu.getBoundingClientRect();
+        return [...menu.querySelectorAll("button")].filter((item) => {
+          const r = item.getBoundingClientRect();
+          return r.height > 0 && r.top >= box.top - 0.5 && r.bottom <= box.bottom + 0.5;
+        }).length;
+      });
+
+      if (rows < MENU_ROWS_THAT_MUST_SURVIVE) {
+        throw new Error(
+          `at ${viewport.width}x${viewport.height} the mobile menu shows ${rows === -1 ? "no menu at all" : `${rows} of its rows`} — reserving the banner's height left it too short to use. The reservation needs a floor; an empty menu is worse than the overlap it avoids.`,
+        );
+      }
 
       const own = await bannerOwnControls(page);
       if (own.length < 3) {
