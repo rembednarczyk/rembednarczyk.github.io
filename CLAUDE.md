@@ -84,31 +84,30 @@ depends on someone remembering it across a hundred turns against a per-turn
 instruction is not a rule yet; it is a wish. The hook is the same answer the
 authorship problem got, for the same reason.
 
-It is registered now, as a `PreToolUse` entry on `Bash` in
-`.claude/settings.json`, and it runs before every shell command.
+**It was registered, it ran, and it is not registered any more.** So the rule
+above is held by attention, and that is the whole of its enforcement.
 
-Two things to know about what that bought, because a guard oversold is worse
-than none. It refuses redirection, `sed -i`, `tee`, `truncate` and a path
-given to `git checkout` or `git restore`. It does **not** see a file written
-from inside an interpreter — `python3 -c`, a `python3` heredoc, `node -e` —
-and measured on the day it was registered, that was the form nearly every
-violation actually took. Telling a script that computes from one that writes
-means reading the script, and refusing on doubt would block the measuring
-this repository runs on. So the rule above is enforced for one family of
-commands and held by attention for the other, and knowing which is which is
-the difference between a rule and a comforting sentence.
+What running it taught is worth more than the guard was. It refused ordinary
+work four times in about two hours: a branch made in a compound command, a
+commit message containing an apostrophe, a scratchpad path held in a shell
+variable, and a `grep` whose pattern contained a `>` inside quotes. Three
+were fixed. The fourth made the pattern plain rather than adding a fourth
+patch — every one was the same defect, the script parsing shell text with
+regular expressions where the shell parses it with a shell. Two adversarial
+audits had read that file and found none of them.
 
-The first thing it did on going live was refuse the command that registered
-it: its git rule read every token after the first `git` in a compound
-command, so a path named on a later line read as a path handed to
-`git checkout`. The second thing it did was refuse the commit, because one
-apostrophe in a message is an unbalanced quote to `shlex` and a heredoc's
-body is not shell at all. Both are fixed and tested; both would have made
-the guard unusable within a minute of ordinary work.
+Also measured while it ran, and the reason it was never going to pay for
+itself: it saw redirection, `sed -i`, `tee`, `truncate` and a path given to
+`git checkout`, and it did **not** see a file written from inside
+`python3 -c`, a `python3` heredoc or `node -e` — which is the form nearly
+every violation actually took. Telling a script that computes from one that
+writes means reading the script, and refusing on doubt would block the
+measuring this repository runs on.
 
-Two adversarial audits read this file and found neither. That is the
-argument for registering rather than reasoning about: a guard that has never
-run is a guard nobody has tested against the work.
+The file and its tests stay, unregistered and named as such in
+`tests/hookRegistration.test.ts`, because the record of what it cost and
+what it caught is worth keeping and `docs/BACKLOG.md` draws the general
+lesson. What does not stay is any sentence claiming this rule is enforced.
 
 ### Parallel read-only passes
 

@@ -47,7 +47,10 @@ const isRegistered = (script: string) => commands.some((c) => c.includes(script)
  * the reason. It may shrink and may not grow: an entry here is a guard that
  * is not guarding, so it is a debt, not a design.
  */
-const NOT_REGISTERED: Record<string, string> = {};
+const NOT_REGISTERED: Record<string, string> = {
+  "no-shell-edits.sh":
+    "registered, run in anger, and switched off by the owner after it refused ordinary work four times in two hours — a branch made in a compound command, a commit message with an apostrophe, a scratchpad path held in a shell variable, and a grep whose pattern contained a `>` inside quotes. Three were fixed; the fourth made the pattern plain, since each was the same defect: the script parses shell text with regular expressions and the shell does not. The rule it enforces still stands in CLAUDE.md and is held by attention, which the documents say rather than imply.",
+};
 
 /** The documents that describe the hooks to the next contributor. */
 const DOCUMENTS = ["README.md", "CLAUDE.md"];
