@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { withoutComments } from "../scripts/withoutComments";
 
@@ -147,6 +147,13 @@ const allEntries = SEARCHED_ROOTS.flatMap((dir) => [
   .concat([
     resolve(root, "package.json"),
     resolve(root, "vite.config.ts"),
+    // The document a visitor actually receives. Two of the guards written
+    // down in the README hold it to something — the analytics tag it must
+    // not fetch before the banner is answered, and the consent key it reads
+    // in plain JavaScript because the app's copy cannot reach it in time —
+    // so both entries name it, and without this the README would have been
+    // reported as pointing at a file this repository does not have.
+    resolve(root, "index.html"),
     // The two documents that live at the root. Without them the backlog
     // naming CLAUDE.md was reported as naming a file the repository does
     // not have — while the check was reading that very file two lines
@@ -512,6 +519,59 @@ describe("the backlog", () => {
     expect(
       missing,
       `the backlog describes these, and nothing in the code is called that:\n  ${missing.join("\n  ")}`,
+    ).toEqual([]);
+  });
+});
+
+/**
+ * Every ratchet is written down somewhere, which two documents already
+ * claimed and nothing checked.
+ *
+ * CLAUDE.md says the README's list is the current one and casts it as this
+ * repository's decisions log; AI_INSTRUCTIONS.md says the same. Thirteen of
+ * the twenty-eight files in `tests/` were named in none of the three — among
+ * them the guard on this README's own banner dimensions, the one holding
+ * `index.html` to the sentence in the served privacy policy, and the one
+ * holding the profile crawlers read to the data the page renders. So the gap
+ * was in the memory and not only in a README: what broke, why the guard
+ * exists and what was rejected is exactly what a list like that is for, and
+ * for those thirteen it lived in a doc comment nobody would think to open.
+ *
+ * `tests/` is the right unit to hold to this. It is where this repository
+ * puts the checks that hold a shipped artifact against a source of truth,
+ * as opposed to the unit tests that sit beside their subject under `src/`.
+ * There is no exemption list, deliberately: a fast half of a browser gate
+ * belongs in the entry for that gate, which is where the four of them are
+ * named now, and a list of files that need not be written down is the
+ * beginning of the same drift.
+ */
+describe("the claim that every ratchet is written down", () => {
+  const documents = [
+    "README.md",
+    "docs/guidelines/AI_INSTRUCTIONS.md",
+    "CLAUDE.md",
+  ].map((file) => readFileSync(resolve(root, file), "utf8"));
+
+  const guards = allEntries
+    .map((file) => relative(root, file).replace(/\\/g, "/"))
+    .filter((file) => /^tests\/.+\.tsx?$/.test(file) && file.includes(".test."));
+
+  it("finds the guards it is checking, so this cannot pass vacuously", () => {
+    expect(guards.length).toBeGreaterThan(20);
+  });
+
+  it("holds for every check in tests/", () => {
+    const unwritten = guards.filter(
+      (file) => !documents.some((text) => text.includes(file)),
+    );
+
+    expect(
+      unwritten,
+      `these hold something to something and no document says so:\n  ${unwritten.join("\n  ")}\n\n` +
+        `Add an entry to the README's list under Development Guidelines and Guardrails saying what ` +
+        `broke, why the guard exists and what was rejected — or name the file inside the entry for ` +
+        `the gate it is the fast half of. CLAUDE.md calls that list this repository's decisions log, ` +
+        `so a guard missing from it is a decision nobody recorded.`,
     ).toEqual([]);
   });
 });

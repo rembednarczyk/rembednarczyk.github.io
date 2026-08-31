@@ -16,7 +16,16 @@ copy of a rule is a second thing to go stale:
   commit format.
 
 The README lists every ratchet, under *Development Guidelines and Guardrails*.
-That list is the current one.
+That list is the current one, and `tests/repository-docs.test.ts` is what makes
+that sentence true rather than hopeful: a check in `tests/` that these three
+documents do not name fails the build.
+
+It failed thirteen of twenty-eight the day it was written — among them the
+guard on the README's own banner dimensions, the one holding `index.html` to
+a sentence in the privacy policy this site serves, and the one holding the
+profile crawlers read to the data the page renders. The claim above had been
+made by two documents and checked by none, which is the shape this file keeps
+warning about: a rule you cannot enforce automatically is a wish.
 
 It is also this repository's decisions log, in the sense *Ways of Working*
 Part 2 means: every entry says what broke, why the guard exists and what was
