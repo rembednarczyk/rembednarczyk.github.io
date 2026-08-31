@@ -81,6 +81,13 @@ export function Modal({
   // was the only one without it. Printed while open, it landed on all six
   // sheets of the CV: a fixed element repeats on every page, and its
   // backdrop left 96% of each sheet dark.
+  //
+  // On the container and not on the panel, which is not a detail: the
+  // backdrop is a sibling inside it, so hiding only the panel takes the
+  // dialog's words off paper and leaves its backdrop on — 61% of every
+  // sheet, measured. Nothing about that is visible in extracted text, and
+  // for one merge nothing looked at anything else. `check:print` rasterises
+  // both prints now and compares the ink.
   return createPortal(
     <AnimatePresence>
       {isOpen && (

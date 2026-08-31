@@ -5,6 +5,7 @@ import {
   blankShareOf,
   layoutDrift,
   readsAsACv,
+  sheetsWhoseInkIsNotPlausible,
   type PrintedPage,
 } from "../scripts/printedCv";
 
@@ -24,6 +25,10 @@ const sheet = (number: number, blankShare: number, text = ["Bednarczyk"]): Print
   height: 842,
   lowestText: blankShare * 842,
   text,
+  // What these checks look at is geometry; ink is the dialog comparison's,
+  // and is held in tests/dialogOnPaper.test.ts. Measured on the real CV,
+  // where a sheet runs 1.9 to 4.0 points of mean darkness.
+  ink: 0.04,
 });
 
 /** The recorded layout, reproduced exactly. */
@@ -123,5 +128,36 @@ describe("whether the extraction found anything at all", () => {
 
   it("refuses a document that is somebody else's", () => {
     expect(readsAsACv([sheet(1, 0.1, ["Lorem ipsum"])], "Bednarczyk")).toBe(false);
+  });
+});
+
+/**
+ * The dialog check holds one print against the other, which is exactly why
+ * it cannot report a rasteriser that has stopped reading the page: the same
+ * wrong number on both sides is agreement. Both ways of getting it wrong are
+ * one line, and neither changes a word of extracted text.
+ */
+describe("whether the rasteriser read the sheet at all", () => {
+  const inked = (ink: number): PrintedPage => ({ ...sheet(1, 0.1), ink });
+
+  it("accepts the ink a sheet of this CV actually carries", () => {
+    // The six, measured: 1.9, 2.5, 2.8, 2.9, 3.6, 4.0 percent.
+    expect(
+      sheetsWhoseInkIsNotPlausible([0.019, 0.025, 0.028, 0.029, 0.036, 0.04].map(inked)),
+    ).toEqual([]);
+  });
+
+  it("refuses a sheet that came back blank, which is a render that did nothing", () => {
+    expect(sheetsWhoseInkIsNotPlausible([inked(0)])).toHaveLength(1);
+  });
+
+  it("refuses a sheet that came back solid, which is a canvas nobody put paper on", () => {
+    // A fresh canvas is transparent black, so a sheet drawn on one reads 1
+    // — in both documents, which is agreement. Today pdfjs paints white
+    // before it draws and the rasteriser's own fill is redundant, measured;
+    // that is a default it can change, and this is what would notice.
+    const [problem] = sheetsWhoseInkIsNotPlausible([inked(1)]);
+
+    expect(problem).toContain("100.0% ink");
   });
 });
