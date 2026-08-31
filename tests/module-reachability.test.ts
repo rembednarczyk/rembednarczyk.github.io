@@ -67,8 +67,20 @@ describe("static assets", () => {
     const assets = listAll(publicDir);
     expect(assets.length).toBeGreaterThan(3);
 
+    // The content files are in the haystack because the content is no
+    // longer in the source. Moving the portrait's address out of a .ts
+    // module and into src/content/about.json took it out of reach of a
+    // scanner that read .ts and .tsx, and this check reported the portrait
+    // — which every visitor sees — as an asset nothing points at. The
+    // false positive was the cheap version of the failure; the expensive
+    // one is the next asset named only from content, deleted as unused.
+    const contentFiles = readdirSync(resolve(srcDir, "content")).map((entry) =>
+      resolve(srcDir, "content", entry),
+    );
+
     const haystack = [
       ...listSourceFiles(srcDir),
+      ...contentFiles,
       resolve(root, "index.html"),
       ...assets.filter((f) => /\.(txt|xml|html)$/.test(f)),
     ]

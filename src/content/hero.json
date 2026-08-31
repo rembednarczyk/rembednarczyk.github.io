@@ -1,0 +1,32 @@
+{
+  "name": "Remigiusz Bednarczyk.",
+  "subtitle": "Quality engineering for high-risk systems.",
+  "description": "Quality engineering professional with {{yearsOfExperience}}+ years of experience in software testing and test leadership. I specialize in test management, quality engineering practices, and building testing processes for regulated environments such as pharmaceutical and GxP systems.",
+  "metrics": [
+    {
+      "value": "{{yearsOfExperience}}+",
+      "label": "Years Experience"
+    },
+    {
+      "value": "500+",
+      "label": "Testers Trained"
+    },
+    {
+      "value": "300+",
+      "label": "Technical Assessments Conducted"
+    },
+    {
+      "value": "10+",
+      "label": "GxP Projects Delivered"
+    }
+  ],
+  "tags": [
+    "Test Management",
+    "Quality Engineering",
+    "GxP / Computerised System Validation",
+    "Technical Assessment",
+    "AI",
+    "ISTQB",
+    "Mentoring"
+  ]
+}
