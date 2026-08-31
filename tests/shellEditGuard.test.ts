@@ -169,6 +169,71 @@ describe("writing to a file of this repository through the shell", () => {
     expect(run(command).status).toBe(BLOCKED);
   });
 
+  /**
+   * What registering it found, in the first seconds it ever ran.
+   *
+   * The git rule read every token after the first `git` anywhere in the
+   * command — across pipes, `&&` and newlines alike — so any path named
+   * later in a compound command was treated as a path handed to
+   * `git checkout`. The command it refused was the one registering it:
+   * `git checkout -B claude/x origin/main`, then a `cat` of the settings
+   * file on the next line.
+   *
+   * That is not a small false positive here. Every branch in this
+   * repository is `claude/<name>`, every session starts by making one, and
+   * they are made in compound commands, so the guard would have refused the
+   * first thing anyone did. A guard that blocks ordinary work gets turned
+   * off, and then it guards nothing.
+   *
+   * The rule was right and its reach was not, which is the fourth check in
+   * this repository to have paid for that distinction.
+   */
+  it.each([
+    ["a branch made, then a file read on the next line", "git checkout -B claude/x origin/main\ncat README.md"],
+    ["a branch made, then a file named after &&", "git checkout -b claude/x && wc -l README.md"],
+    ["a branch switched", "git checkout main"],
+    ["a file named after an unrelated git", "git status --short && grep -n foo README.md"],
+  ])("allows %s", (_case, command) => {
+    expect(run(command).status).toBe(ALLOWED);
+  });
+
+  /**
+   * The second thing registering it found, one command after the first.
+   *
+   * A heredoc's body is data — the shell does not parse it as shell — but
+   * `shlex` did, and one apostrophe in a commit message is an unbalanced
+   * quote to it. The hook fails closed, correctly, so it refused the commit.
+   * Nearly every commit message in this repository contains an apostrophe,
+   * which made this the same shape of defect as the git rule above: right
+   * rule, wrong reach, and fatal to ordinary work rather than to a corner
+   * case.
+   *
+   * Nothing is given up for it. What the rules look for on a heredoc line is
+   * the redirection on the line, not the body, and a `> file` inside a body
+   * is text that never runs — both directions are below.
+   */
+  it.each([
+    ["a commit message with apostrophes", "git commit -F - <<'MSG'\nthe owner's rule, and what it doesn't catch\nMSG"],
+    ["an unquoted heredoc carrying prose", "git commit -F - <<MSG\nthe repository's memory\nMSG"],
+    ["a body that merely mentions a redirect", "git commit -F - <<'MSG'\nthis was cat > src/App.tsx and is now Edit\nMSG"],
+  ])("allows %s", (_case, command) => {
+    expect(run(command).status).toBe(ALLOWED);
+  });
+
+  it.each([
+    ["a heredoc that really does write a file", "cat > src/App.tsx <<'EOF'\nx\nEOF"],
+    ["an append through a heredoc", "cat >> README.md <<'EOF'\nx\nEOF"],
+    ["an unbalanced quote outside any heredoc", "echo 'unterminated > README.md"],
+  ])("still refuses %s", (_case, command) => {
+    expect(run(command).status).toBe(BLOCKED);
+  });
+
+  it("still refuses a path given to a git later in the same command", () => {
+    // The other direction of the same fix: scoping to each git's own
+    // arguments must not lose the second one.
+    expect(run("git status && git checkout README.md").status).toBe(BLOCKED);
+  });
+
   it("says it cannot resolve the path, and names no file", () => {
     // Naming one would be false precision: splitting on spaces cannot tell
     // `App.tsx` from `s/a/b/`, and after a cd it cannot resolve either. The

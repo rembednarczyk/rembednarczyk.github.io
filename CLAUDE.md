@@ -84,12 +84,31 @@ depends on someone remembering it across a hundred turns against a per-turn
 instruction is not a rule yet; it is a wish. The hook is the same answer the
 authorship problem got, for the same reason.
 
-**It is not registered, so today it is still a wish.** Registering it means
-a `PreToolUse` entry in `.claude/settings.json`, and writing one edits the
-agent's own permission surface — which the permission classifier refuses,
-correctly. The owner adds that entry by hand; the README says what it looks
-like. Until then the rule above is held by attention alone, and knowing that
-is the difference between a rule and a comforting sentence.
+It is registered now, as a `PreToolUse` entry on `Bash` in
+`.claude/settings.json`, and it runs before every shell command.
+
+Two things to know about what that bought, because a guard oversold is worse
+than none. It refuses redirection, `sed -i`, `tee`, `truncate` and a path
+given to `git checkout` or `git restore`. It does **not** see a file written
+from inside an interpreter — `python3 -c`, a `python3` heredoc, `node -e` —
+and measured on the day it was registered, that was the form nearly every
+violation actually took. Telling a script that computes from one that writes
+means reading the script, and refusing on doubt would block the measuring
+this repository runs on. So the rule above is enforced for one family of
+commands and held by attention for the other, and knowing which is which is
+the difference between a rule and a comforting sentence.
+
+The first thing it did on going live was refuse the command that registered
+it: its git rule read every token after the first `git` in a compound
+command, so a path named on a later line read as a path handed to
+`git checkout`. The second thing it did was refuse the commit, because one
+apostrophe in a message is an unbalanced quote to `shlex` and a heredoc's
+body is not shell at all. Both are fixed and tested; both would have made
+the guard unusable within a minute of ordinary work.
+
+Two adversarial audits read this file and found neither. That is the
+argument for registering rather than reasoning about: a guard that has never
+run is a guard nobody has tested against the work.
 
 ### Parallel read-only passes
 

@@ -6,32 +6,70 @@ decided against — not when it is forgotten.
 
 ---
 
-## Register the shell-edit hook
+## Weigh a guard on the work against a guard on the page
 
-`.claude/hooks/no-shell-edits.sh` exists, carries its own test suite and was
-mutation-tested. Nothing invokes it. A `PreToolUse` entry edits the agent's
-own permission surface, and the permission classifier refuses to write one —
-correctly, since that is not a thing an agent should be able to do to itself
-unattended.
+Written after the shell-edit hook was registered, because the honest reading
+of that episode is not flattering and is worth keeping.
+
+That hook is 525 lines of script and tests, seven mentions across three
+documents, two adversarial audits and a rewrite of its deciding into Python.
+The whole target-size gate — which found 58 controls a visitor cannot
+comfortably tap and fixed every one — is 397. The hook guards against a
+class whose worst recorded outcome is redoing an edit that git still has.
+
+The doctrine it was built on is sound: *a rule you cannot enforce
+automatically is a wish*. What was missed is that the sentence has a second
+branch. When enforcement is expensive and the violation is cheap, the honest
+move is not a cleverer guard — it is to demote the rule to a preference and
+stop writing it in three documents as though it were more.
+
+So, before the next guard: ask whether it holds the page or the process. A
+guard on the page earns its keep against what a visitor gets. A guard on the
+process is paid for out of the same budget and returns less, so it has to be
+cheap or it should not exist.
+
+---
+
+## Register the shell-edit hook — done
+
+Registered, on the owner's say-so, as a `PreToolUse` entry on `Bash`. The
+permission classifier had refused this before and was right to: an agent
+that decides for itself what it may intercept has nobody above it. Asked
+for directly, it went through.
 
 This paragraph said "tested twenty-one ways" until a later sweep counted
-them: 43 today, 28 the day the sentence was written, never 21. The number
+them: 43 that day, 28 the day the sentence was written, never 21. The number
 was invented and then repeated in three places. It says no number now,
 because a count in prose is the thing Part 2 tells you not to write down —
 and `npx vitest run tests/shellEditGuard.test.ts` prints the current one.
 
-- [ ] Add to `.claude/settings.json`, beside the existing `SessionStart`
-      array, a `PreToolUse` array with one entry: `matcher` `"Bash"`, and one
-      hook of type `command` running
-      `$CLAUDE_PROJECT_DIR/.claude/hooks/no-shell-edits.sh`.
-- [ ] Then remove `no-shell-edits.sh` from `NOT_REGISTERED` in
-      `tests/hookRegistration.test.ts`, and take the "not registered" caveat
-      out of the README and CLAUDE.md. The test fails until all three agree,
-      in both directions.
-Two audits found fifteen ways past the hook between them and all are closed;
-the deciding moved to Python for it, since nearly every one was a shell
-command taken apart with regular expressions and word splitting. Registering
-it is the only thing left, and it is the owner's.
+What running it taught in its first two commands, which reading it had not
+taught in two audits:
+
+Its git rule read every token after the first `git` anywhere in a compound
+command, so any path named later read as a path handed to `git checkout`. It
+refused the command that was registering it. Every branch here is
+`claude/<name>` and every session starts by making one, so the guard would
+have blocked the first thing anyone did.
+
+Then it refused the commit. A heredoc's body is data the shell never parses
+as shell, but `shlex` parses it, and one apostrophe in a message is an
+unbalanced quote — at which point a guard that fails closed refuses. Nearly
+every commit message here has one.
+
+Both are the same shape: right rule, wrong reach, and fatal to ordinary work
+rather than to a corner case. A guard that blocks ordinary work gets
+switched off, after which it guards nothing.
+
+Also measured that day, and written into `CLAUDE.md` rather than glossed:
+it refuses redirection, `sed -i`, `tee`, `truncate` and a path given to
+`git checkout` or `git restore`, and it does **not** see a file written from
+inside `python3 -c`, a `python3` heredoc or `node -e`. That was the form
+nearly every violation in that session actually took. Telling a script that
+computes from one that writes means reading the script, and refusing on
+doubt would block the measuring this repository runs on — so the rule is
+enforced for one family and held by attention for the other. Not worth
+closing at the price; see the entry above this one.
 
 ---
 
