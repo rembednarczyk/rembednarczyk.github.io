@@ -70,6 +70,13 @@ jobs:
       - name: Focus indicator
         run: npm run check:focus
 
+      # How big the things you tap are is geometry after layout at a real
+      # width, so it needs a browser for the same reason the two above do.
+      # Nothing measured it, and eight icon links were 28x28 while the
+      # control that opens the navigation on a phone was 32x32.
+      - name: Target size
+        run: npm run check:targets
+
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3

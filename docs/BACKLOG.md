@@ -250,18 +250,22 @@ controls sit in the region an iPhone reserves for the home indicator.
 - [ ] **`oklch`** — Tailwind 4 emits colours in `oklch`, which Safari has
       supported since 15.4. On anything older the palette has no fallback.
       Confirm the page is not monochrome on the oldest iOS worth supporting.
-- [ ] **`backdrop-blur`** — used thirteen times, including the navbar over the
-      particle canvas and both modal panels. Safari needs
-      `-webkit-backdrop-filter`; Tailwind should emit it. Confirm the navbar is
-      readable rather than transparent over moving particles.
+- [x] **`backdrop-blur`** — the prefix question is answered from the build
+      and needed no device: Tailwind 4 emits `-webkit-backdrop-filter` five
+      times alongside `backdrop-filter` five times in the built CSS. What
+      remains is only the visual confirmation that the navbar is readable
+      rather than transparent over moving particles, which is a matter of
+      taste on a real screen rather than a suspected defect.
 
 ### Touch, motion and print
 
-- [ ] **Target sizes** — the page holds itself to AAA on focus (SC 2.4.12), so
-      the consistent bar for targets is SC 2.5.5 Target Size (Enhanced) at
-      44×44 CSS pixels, not the AA minimum of 24×24. Nothing measures this
-      today. The icon links on project and certification cards are the likely
-      failures.
+- [x] **Target sizes** — closed, and it never needed the handset: a tap area
+      is geometry after layout, which Chromium reports as well as Safari
+      does. `scripts/runTargetSize.ts` measures all 79 targets against SC
+      2.5.5 and `check:targets` runs it in CI. The icon links were indeed
+      among the failures, at 28×28 — but so were 50 others, including the
+      control that opens the navigation on a phone and both consent
+      buttons. All fixed with padding, so nothing on screen changed size.
 - [ ] **Reduce Motion** — turn it on in iOS Settings and confirm
       `MotionProvider`'s `reducedMotion="user"` reaches the reveals and the
       particle canvas. `check:motion` proves this in Chromium only.

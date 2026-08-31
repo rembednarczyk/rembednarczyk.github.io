@@ -18,11 +18,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ghost: "bg-transparent hover:bg-slate-800 text-slate-200",
     };
 
+    // Every size clears 44x44, which is WCAG 2.2 SC 2.5.5. The scale used
+    // to start at 32 and reach 44 only at `lg`, so the two buttons a
+    // visitor has to hit to answer the consent banner — the smallest ones
+    // on the site, pinned into the corner an iPhone reserves for its home
+    // indicator — were 32 tall. The type and the padding still separate the
+    // sizes; the height no longer goes below the bar to do it.
     const sizes = {
-      sm: "h-8 px-3 text-xs",
-      md: "h-10 px-4 py-2 text-sm",
-      lg: "h-12 px-8 text-base",
-      icon: "h-10 w-10",
+      sm: "min-h-11 px-3 py-2 text-xs",
+      md: "min-h-11 px-4 py-2 text-sm",
+      lg: "min-h-12 px-8 py-3 text-base",
+      icon: "h-11 w-11",
     };
 
     const classes = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;

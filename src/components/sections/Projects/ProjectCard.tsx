@@ -9,7 +9,11 @@ export const ProjectCard: React.FC<{ project: KeyProject }> = ({ project }) => {
         <div className="text-cyan-400">
           {project.mainIcon}
         </div>
-        <div className="flex gap-3">
+        {/* The icons keep their size and the padding grows around them, so
+            the tap area reaches 44x44 (WCAG 2.2 SC 2.5.5) without anything
+            on screen changing size. The row's gap comes off to pay for it:
+            what a person sees between two glyphs was 20px and is 24px. */}
+        <div className="flex">
           {project.links?.map((link, lIdx) => (
             <a
               key={lIdx}
@@ -17,7 +21,7 @@ export const ProjectCard: React.FC<{ project: KeyProject }> = ({ project }) => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Link to ${project.title}`}
-              className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 transition-all p-1 rounded focus-ring"
+              className="text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-90 transition-all p-3 rounded focus-ring"
             >
               {link.icon}
             </a>
