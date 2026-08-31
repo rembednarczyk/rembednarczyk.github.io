@@ -83,8 +83,16 @@ describe("when the page fails to render", () => {
   it("reads those details from the same data the page does", () => {
     // A second copy typed into the fallback would be wrong the day the
     // first one changed, and nobody looks at a page that never breaks.
+    //
+    // Asked of the link's accessible name rather than of a text node. The
+    // address is rendered in fragments so a harvester reading text does not
+    // find it whole, which is the point — this used to assert the whole
+    // string and so asserted the absence of that protection.
     renderFailing();
-    expect(screen.getByText(cvData.header.email.display.join(""))).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("link", { name: cvData.header.email.display.join("") }),
+    ).toBeInTheDocument();
   });
 
   it("offers a way to try again", async () => {

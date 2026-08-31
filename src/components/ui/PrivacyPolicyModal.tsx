@@ -1,4 +1,5 @@
 import { Shield } from "lucide-react";
+import { ContactParts } from "./ContactParts";
 import { cvData } from "../../data/portfolioFacts";
 import { Modal } from "./Modal";
 import { CONSENT_STORAGE_KEY } from "../../hooks/useCookieConsent";
@@ -45,9 +46,7 @@ export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: Privacy
           <p>
             Email:{" "}
             <span className="inline-flex">
-              {cvData.header.email.display.map((part, i) => (
-                <span key={i}>{part}</span>
-              ))}
+              <ContactParts detail={cvData.header.email} />
             </span>
           </p>
         </div>

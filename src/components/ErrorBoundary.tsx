@@ -1,5 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from "react";
 import { cvData } from "../data/portfolioFacts";
+import { ContactParts } from "./ui/ContactParts";
 import { reportError } from "../lib/reportError";
 
 /**
@@ -66,12 +67,12 @@ export class ErrorBoundary extends Component<
           <ul className="space-y-3 text-lg">
             <li>
               <a className={LINK_CLASS} href={`mailto:${email.href}`}>
-                {email.display.join("")}
+                <ContactParts detail={email} />
               </a>
             </li>
             <li>
               <a className={LINK_CLASS} href={`tel:${phone.href}`}>
-                {phone.display.join("")}
+                <ContactParts detail={phone} />
               </a>
             </li>
             <li>
