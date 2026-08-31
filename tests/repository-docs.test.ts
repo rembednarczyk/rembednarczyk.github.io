@@ -241,13 +241,25 @@ function pathsThatDoNotExist(named: string[]): string[] {
 
 const quotedPaths = pathsNamedIn(readme);
 
-/** Backticked camelCase names: a lower-case start with a capital inside. */
+/**
+ * Backticked camelCase names, and the constants written in capitals.
+ *
+ * The second half was missing, and it went missing for a reason worth
+ * recording: the way to stop quoting a count in prose is to name the
+ * constant that holds it instead, so this is the form the README reaches
+ * for exactly when a number has been taken out of it. The motion entry said
+ * a section moves through thirty-two positions — three runs of one build
+ * measured 23, 26 and 24 — and the honest replacement names `SLIDING` and
+ * `ARRIVING_AT_ONCE`. Unchecked, that trades a number that is wrong for a
+ * name that can quietly stop existing, which is the worse of the two.
+ */
 const quotedIdentifiers = [
-  ...new Set(
-    [...readme.matchAll(/`([a-z][a-zA-Z0-9]*)`/g)]
+  ...new Set([
+    ...[...readme.matchAll(/`([a-z][a-zA-Z0-9]*)`/g)]
       .map((m) => m[1])
       .filter((name) => /[A-Z]/.test(name)),
-  ),
+    ...[...readme.matchAll(/`([A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*)`/g)].map((m) => m[1]),
+  ]),
 ];
 
 /**
@@ -354,6 +366,11 @@ describe("things the README names", () => {
     );
 
     expect(quotedIdentifiers.length).toBeGreaterThan(5);
+    // Both forms, asserted separately: the camelCase half alone clears the
+    // count above, so losing the constants would leave this green while the
+    // names that replaced the README's quoted numbers went unchecked.
+    expect(quotedIdentifiers.some((name) => /^[a-z]/.test(name))).toBe(true);
+    expect(quotedIdentifiers.some((name) => /^[A-Z][A-Z0-9_]+$/.test(name))).toBe(true);
     expect(
       missing,
       `the README describes these, and the code no longer defines them:\n  ${missing.join("\n  ")}`,
