@@ -98,21 +98,19 @@ One part is left, and it is a judgement rather than a defect:
       with reasons, the way the other exemption lists here work. Worth doing;
       not worth doing carelessly.
 
-## 7. The print gate measures text and not ink
+## 7. Closed
 
-`whatADialogAddedToThePrint` compares sets of strings per sheet. It has no
-emptiness guard on the second document, so a print that came back textless
-reports "the same document"; the check `readsAsACv` exists to prevent
-exactly that and is applied only to the first. It is also one-sided — text
-removed by an open dialog is invisible at equal sheet count — and set-based,
-so a repeated string is invisible too.
+The print gate measured text and not ink. It compares both now, per sheet,
+in both directions, counted rather than as a set, with the same emptiness
+guard on each document. The mutation it was written for — `print:hidden`
+moved from the dialog's shell to its panel — takes every word of the dialog
+off paper and leaves its backdrop on: measured at 61% of all six sheets,
+with not one string changed, which is why nothing saw it before.
 
-Worse, the recorded defect had two halves and this measures one. Moving
-`print:hidden` from the shell container to the panel leaves the text off
-paper and the backdrop on it: 100% of the sheet dark, gate green.
-
-- [ ] Guard the second document the way the first is guarded, and measure
-      ink as well as text.
+The rasteriser reads the number back through `PLAUSIBLE_INK`, because a
+comparison between two prints cannot report an instrument that has stopped
+reading the page: the same wrong number on both sides is agreement, and the
+log prints it as a passing figure.
 
 ## 8. The claim that the README lists every ratchet is not true
 

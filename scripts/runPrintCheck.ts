@@ -1,16 +1,19 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { chromium } from "playwright";
+import { createCanvas } from "@napi-rs/canvas";
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
-import type { TextItem } from "pdfjs-dist/types/src/display/api.js";
+import type { PDFPageProxy, TextItem } from "pdfjs-dist/types/src/display/api.js";
 import { serveDirectory } from "./staticServer.ts";
 import {
   DRIFT_TOLERANCE,
   EXPECTED_LAYOUT,
+  INK_TOLERANCE,
   blankShareOf,
   layoutDrift,
   readsAsACv,
-  whatADialogAddedToThePrint,
+  sheetsWhoseInkIsNotPlausible,
+  whatADialogDidToThePrint,
   type PrintedPage,
 } from "./printedCv.ts";
 
@@ -41,6 +44,51 @@ function nameTheBuildDeclares(): string {
   return person[1];
 }
 
+/**
+ * How dark a sheet is once it is pixels, 0 for blank paper and 1 for solid
+ * black.
+ *
+ * Rendered at a quarter scale, which is roughly 150x210 pixels for A4: too
+ * coarse to read, which does not matter, and far more than enough to see a
+ * panel laid across the page, which is the thing extracted text cannot
+ * report.
+ *
+ * The white fill is the paper. A PDF page declares no background of its own
+ * and a fresh canvas is transparent black, which would read as solid ink —
+ * except that pdfjs paints white before it draws, so removing this line
+ * changes nothing, measured. It stays because that default is pdfjs's to
+ * change and this is the line the whole number rests on, and because a
+ * measurement should not depend on a default it never states. What holds
+ * the number honest is not this line but PLAUSIBLE_INK, which reads the
+ * result and refuses a sheet that is blank or solid.
+ */
+async function inkOn(page: PDFPageProxy): Promise<number> {
+  const viewport = page.getViewport({ scale: 0.25 });
+  const canvas = createCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height));
+  const context = canvas.getContext("2d");
+
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  // @napi-rs/canvas and pdfjs describe the same 2D context through two
+  // unrelated sets of types, so the handoff is asserted rather than checked.
+  await page.render({
+    canvas: canvas as unknown as HTMLCanvasElement,
+    canvasContext: context as unknown as CanvasRenderingContext2D,
+    viewport,
+  }).promise;
+
+  const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+  let darkness = 0;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const luminance = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+    darkness += 1 - luminance / 255;
+  }
+
+  return darkness / (data.length / 4);
+}
+
 async function sheetsOf(pdf: Uint8Array): Promise<PrintedPage[]> {
   const doc = await getDocument({ data: pdf, useSystemFonts: true }).promise;
   const pages: PrintedPage[] = [];
@@ -63,6 +111,7 @@ async function sheetsOf(pdf: Uint8Array): Promise<PrintedPage[]> {
         ? Math.min(...items.map((i) => Number(i.transform[5])))
         : height,
       text: items.map((i) => i.str),
+      ink: await inkOn(page),
     });
   }
 
@@ -123,7 +172,9 @@ async function main() {
     const share = blankShareOf(page);
     const want = EXPECTED_LAYOUT[page.number - 1];
     const note = want === undefined ? " (no recorded value)" : ` (recorded ${Math.round(want * 100)}%)`;
-    console.log(`  sheet ${page.number}: ${Math.round(share * 100)}% blank at the foot${note}`);
+    console.log(
+      `  sheet ${page.number}: ${Math.round(share * 100)}% blank at the foot${note}, ${Math.round(page.ink * 100)}% ink`,
+    );
   }
 
   const problems: string[] = [];
@@ -132,6 +183,27 @@ async function main() {
   if (!readsAsACv(pages, name)) {
     problems.push(
       `no text came back from the PDF, or it does not carry "${name}" — everything below would pass on an empty document`,
+    );
+  }
+
+  // And that the rasteriser read the page, which the comparison below cannot
+  // tell: it holds one print against the other, so an instrument returning
+  // the same wrong number for both satisfies it forever.
+  //
+  // Thrown here rather than added to `problems`, and before anything else
+  // runs, because everything below reports a page that changed and this
+  // reports an instrument that stopped reading. Collected with the rest, it
+  // printed six blind sheets under a heading about break-inside-avoid,
+  // which sends whoever reads it to the wrong file.
+  const blind = sheetsWhoseInkIsNotPlausible(pages);
+
+  if (blind.length > 0) {
+    throw new Error(
+      `The rasteriser is not reading the printed sheets:\n  ${blind.join("\n  ")}\n\n` +
+        `Nothing above this line is wrong with the CV. inkOn in this file renders each sheet ` +
+        `and averages its darkness, and the dialog check compares that number between two prints ` +
+        `— so an instrument returning the same wrong number for both agrees with itself forever. ` +
+        `That is what this refuses.`,
     );
   }
 
@@ -151,11 +223,11 @@ async function main() {
     );
   }
 
-  const leaked = whatADialogAddedToThePrint(pages, withDialog);
+  const leaked = whatADialogDidToThePrint(pages, withDialog, name);
 
   console.log(
     leaked.length === 0
-      ? "printing with the privacy dialog open produces the same document"
+      ? `printing with the privacy dialog open produces the same document: same sheets, same strings, and no sheet more than ${(INK_TOLERANCE * 100).toFixed(1)}% different in ink`
       : "printing with the privacy dialog open does NOT produce the same document",
   );
 
@@ -164,7 +236,8 @@ async function main() {
       `An open dialog reaches the printed CV:\n  ${leaked.join("\n  ")}\n\n` +
         `The dialog shell portals into document.body, which puts it outside the print:hidden ` +
         `wrapper in App.tsx, so it needs the rule on itself the way the consent banner and the ` +
-        `scroll-to-top button already carry it. A fixed element repeats on every printed page.`,
+        `scroll-to-top button already carry it — on the shell, which is what the backdrop is ` +
+        `inside, and not only on the panel. A fixed element repeats on every printed page.`,
     );
   }
 
