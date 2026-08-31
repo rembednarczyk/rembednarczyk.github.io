@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "text": "Vice President of the Polish Testing Board (SJSI)",
+      "icon": "Award"
+    },
+    {
+      "text": "Conference host and speaker at TestWarez and Na Podbój IT",
+      "icon": "Users"
+    },
+    {
+      "text": "Trainer and mentor for 500+ software testers",
+      "icon": "Users"
+    },
+    {
+      "text": "Author of technical articles on software testing and QA practices",
+      "icon": "BookOpen"
+    },
+    {
+      "text": "Lead Technical Assessor responsible for evaluating testing professionals",
+      "icon": "ShieldCheck"
+    }
+  ]
+}

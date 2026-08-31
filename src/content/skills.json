@@ -1,0 +1,54 @@
+{
+  "categories": [
+    {
+      "name": "Quality Engineering",
+      "icon": "Cpu",
+      "accent": "cyan",
+      "skills": [
+        "Test Strategy",
+        "Risk-based Testing",
+        "Quality Governance",
+        "Test Process Design",
+        "Exploratory Testing"
+      ]
+    },
+    {
+      "name": "Regulated Systems",
+      "icon": "Database",
+      "accent": "purple",
+      "skills": [
+        "Computerised System Validation (CSV)",
+        "GxP Environments",
+        "Validation Documentation",
+        "Requirements Traceability (RTM)",
+        "Audit-ready Testing"
+      ]
+    },
+    {
+      "name": "Delivery & Leadership",
+      "icon": "Users",
+      "accent": "emerald",
+      "skills": [
+        "Test Leadership",
+        "Stakeholder Management",
+        "SAFe / Agile Delivery",
+        "ITIL",
+        "AgilePM",
+        "Quality Governance at Scale"
+      ]
+    },
+    {
+      "name": "Technical & Data Background",
+      "icon": "CodeXml",
+      "accent": "orange",
+      "skills": [
+        "API Testing",
+        "SQL / Data Validation",
+        "ETL & Data Pipelines",
+        "Frontend Testing",
+        "CI/CD Awareness",
+        "AI-assisted Testing"
+      ]
+    }
+  ]
+}

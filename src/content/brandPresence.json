@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "title": "Brand Ambassador",
+      "desc": "Featured in nationwide campaigns (billboards, online)",
+      "icon": "Megaphone",
+      "accent": "cyan"
+    },
+    {
+      "title": "#UnstoppableSii",
+      "desc": "Represented on city murals across Poland",
+      "icon": "Image",
+      "accent": "purple"
+    },
+    {
+      "title": "Great Place to Work 2018",
+      "desc": "Part of large-scale employer branding campaign",
+      "icon": "Heart",
+      "accent": "emerald"
+    },
+    {
+      "title": "Sii Calendar",
+      "desc": "Selected company representative (2019–2020)",
+      "icon": "Calendar",
+      "accent": "orange"
+    }
+  ]
+}
