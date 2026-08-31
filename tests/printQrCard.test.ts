@@ -45,6 +45,20 @@ function pixelAt(png: PNG, x: number, y: number): [number, number, number] {
 const luminance = ([r, g, b]: [number, number, number]) =>
   0.2126 * r + 0.7152 * g + 0.0722 * b;
 
+const span = (from: number, to: number) =>
+  Array.from({ length: Math.round(to - from) }, (_, i) => Math.round(from) + i);
+
+/**
+ * The rows the one line of text occupies, ascenders and descenders in.
+ *
+ * Derived from where the card puts the baseline rather than typed, so the
+ * check follows the layout instead of having to be remembered when it moves.
+ */
+const CAPTION_BAND = {
+  top: QR_BOX.y + QR_BOX.side + RING,
+  bottom: CARD.height,
+};
+
 describe("the card served at /cv-qr-code.png", () => {
   it("is the size the platforms crop a shared link to", () => {
     // The literal, not CARD. Comparing the drawing to the constant that
@@ -124,19 +138,25 @@ describe("the card served at /cv-qr-code.png", () => {
     );
   });
 
-  it("keeps the text inside the card", () => {
-    // Drawing text does not refuse to overflow: at a fixed 58px this name
-    // ran off the right edge of the panel and the card rendered anyway.
-    // The size is fitted to the column now, and this reads the strip the
-    // name would spill into rather than trusting that it fitted.
+  it("keeps the caption inside the card", () => {
+    // Drawing text does not refuse to overflow. When the card carried a
+    // name it ran off the right edge at a fixed 58px and rendered anyway;
+    // the caption is fitted to the width now, and this reads the margins it
+    // would spill into rather than trusting that it fitted.
+    //
+    // Scanned across the caption's own band on both sides. The version of
+    // this check written for the old layout watched a strip on the right
+    // between y=120 and y=510, which is where a name beside the code used
+    // to sit — with a centred caption it caught an overflow only because a
+    // 120px glyph happens to reach up into that band, which is luck rather
+    // than a check.
     const png = card();
-    const edge = CARD.width - 48;
 
-    for (let x = edge - 40; x < edge; x += 1) {
-      for (let y = 120; y < 510; y += 1) {
+    for (const x of [...span(8, 88), ...span(CARD.width - 88, CARD.width - 8)]) {
+      for (const y of span(CAPTION_BAND.top, CAPTION_BAND.bottom)) {
         expect(
           luminance(pixelAt(png, x, y)),
-          `something is drawn at ${x},${y}, which is past the panel's padding`,
+          `something is drawn at ${x},${y}, which is in the card's margin`,
         ).toBeLessThan(60);
       }
     }
