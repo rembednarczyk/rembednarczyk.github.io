@@ -1,6 +1,7 @@
 import { Mail, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm, BadgeCheck, BrainCircuit, BookOpen } from "lucide-react";
 import { CvSection } from "./CvSection";
 import { LinkedinIcon } from "./ui/BrandIcon";
+import { ContactParts } from "./ui/ContactParts";
 import { fullCertificationsList, cvData, experienceData } from "../data/portfolioFacts";
 import { LINKEDIN_QR } from "../data/linkedinQr";
 
@@ -38,9 +39,7 @@ export const CVTemplate = () => {
               href={`tel:${cvData.header.phone.href}`}
               className="underline underline-offset-2 decoration-slate-300 hover:decoration-slate-400"
             >
-              {cvData.header.phone.display.map((part, i) => (
-                <span key={i}>{part}</span>
-              ))}
+              <ContactParts detail={cvData.header.phone} />
             </a>
           </div>
           <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
@@ -52,9 +51,7 @@ export const CVTemplate = () => {
                 window.location.href = `mail${"to"}:${cvData.header.email.href}`;
               }}
             >
-              {cvData.header.email.display.map((part, i) => (
-                <span key={i}>{part}</span>
-              ))}
+              <ContactParts detail={cvData.header.email} />
             </button>
           </div>
           <div className="flex items-center gap-1.5 before:content-['•'] before:mx-2 before:text-slate-400">
