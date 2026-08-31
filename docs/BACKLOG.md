@@ -30,7 +30,7 @@ cheap or it should not exist.
 
 ---
 
-## Register the shell-edit hook — done
+## Register the shell-edit hook — tried, and switched off again
 
 Registered, on the owner's say-so, as a `PreToolUse` entry on `Bash`. The
 permission classifier had refused this before and was right to: an agent
@@ -57,9 +57,29 @@ as shell, but `shlex` parses it, and one apostrophe in a message is an
 unbalanced quote — at which point a guard that fails closed refuses. Nearly
 every commit message here has one.
 
-Both are the same shape: right rule, wrong reach, and fatal to ordinary work
-rather than to a corner case. A guard that blocks ordinary work gets
-switched off, after which it guards nothing.
+Then a scratchpad path held in a shell variable, which it could not expand
+and so refused — defensibly, since a guard that cannot resolve a path should
+not guess. Then a `grep` whose pattern contained a `>` inside quotes: an
+ordinary read, refused as a redirection, because the shell never parses that
+`>` and the hook does.
+
+Four refusals of ordinary work in about two hours, three of them fixed. At
+the fourth the owner switched it off, and that was the right call rather
+than a fifth patch. Every one was the same defect wearing a different
+sleeve: the script parses shell text with regular expressions where a shell
+parses it with a shell. Two adversarial audits had read that file and found
+none of them.
+
+The rule it enforces still stands in `CLAUDE.md`, held by attention, and
+all three documents say so rather than implying otherwise. The file and its
+65 tests stay unregistered: what it cost and what it caught is the record,
+and the entry above this one is the lesson.
+
+The sharpest part of that lesson is the sequence. Reading the file twice,
+adversarially, found nothing. Running it found four in two hours. And what
+running it found was not that the rule was wrong — it was that the reach was
+wrong every single time, which is a thing you cannot see by reading a guard
+and can only see by living under it.
 
 Also measured that day, and written into `CLAUDE.md` rather than glossed:
 it refuses redirection, `sed -i`, `tee`, `truncate` and a path given to

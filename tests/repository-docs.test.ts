@@ -234,6 +234,9 @@ const codeWithoutComments = [
  * a string — reported both. Neither was removed by anyone remembering to.
  */
 const NAMED_ONLY_IN_STRINGS: Record<string, string> = {
+  Bash: "the tool the shell-edit hook would match on, which reaches it only as a string in a payload now that the matcher naming it is out of .claude/settings.json",
+  PreToolUse:
+    "the settings entry that would register the shell-edit hook. It was one for two hours and is not one now; the README names it because a caveat saying a hook is off without saying where the switch is leaves the next reader to work out a settings file from scratch. The day it goes back into .claude/settings.json this entry fails as unnecessary, which is how it came off the list the first time",
   domMax:
     "the motion feature set tests/animationFeatures.test.ts forbids, named as the string the bundle would contain if it came back",
   Edit: "the tool the same hook tells you to use instead, named in the payloads its tests feed it",
