@@ -5,6 +5,7 @@ import {
   CARD,
   QR_BOX,
   QUIET_ZONE,
+  RING,
   moduleCentre,
   moduleSide,
   printQrCard,
@@ -43,6 +44,20 @@ function pixelAt(png: PNG, x: number, y: number): [number, number, number] {
 
 const luminance = ([r, g, b]: [number, number, number]) =>
   0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+const span = (from: number, to: number) =>
+  Array.from({ length: Math.round(to - from) }, (_, i) => Math.round(from) + i);
+
+/**
+ * The rows the one line of text occupies, ascenders and descenders in.
+ *
+ * Derived from where the card puts the baseline rather than typed, so the
+ * check follows the layout instead of having to be remembered when it moves.
+ */
+const CAPTION_BAND = {
+  top: QR_BOX.y + QR_BOX.side + RING,
+  bottom: CARD.height,
+};
 
 describe("the card served at /cv-qr-code.png", () => {
   it("is the size the platforms crop a shared link to", () => {
@@ -97,19 +112,51 @@ describe("the card served at /cv-qr-code.png", () => {
     expect(QUIET_ZONE).toBeGreaterThanOrEqual(4);
   });
 
-  it("keeps the text inside the card", () => {
-    // Drawing text does not refuse to overflow: at a fixed 58px this name
-    // ran off the right edge of the panel and the card rendered anyway.
-    // The size is fitted to the column now, and this reads the strip the
-    // name would spill into rather than trusting that it fitted.
+  it("frames the code in the site's gradient", () => {
+    // The one thing on the card that says whose site the code belongs to,
+    // and the reason this design was chosen over the plain tile. Nothing
+    // asserted it when the frame was added: taking RING to 0 left every
+    // other check here green.
+    //
+    // Sampled inside the band rather than outside it, because the glow
+    // spreads the same colours over the panel for another forty pixels and
+    // a probe out there would pass on the glow alone.
     const png = card();
-    const edge = CARD.width - 48;
+    const middle = QR_BOX.y + QR_BOX.side / 2;
+    const left = pixelAt(png, QR_BOX.x - RING / 2, middle);
+    const right = pixelAt(png, QR_BOX.x + QR_BOX.side + RING / 2, middle);
 
-    for (let x = edge - 40; x < edge; x += 1) {
-      for (let y = 120; y < 510; y += 1) {
+    for (const [side, pixel] of [["left", left], ["right", right]] as const) {
+      const saturation = Math.max(...pixel) - Math.min(...pixel);
+      expect(saturation, `the ${side} of the frame is not a colour`).toBeGreaterThan(60);
+    }
+
+    // And running the way the site's gradient runs, cyan into purple, so a
+    // frame painted one flat colour is not the same as this one.
+    expect(left[2] - left[0], "the left of the frame is not the cyan end").toBeGreaterThan(
+      right[2] - right[0],
+    );
+  });
+
+  it("keeps the caption inside the card", () => {
+    // Drawing text does not refuse to overflow. When the card carried a
+    // name it ran off the right edge at a fixed 58px and rendered anyway;
+    // the caption is fitted to the width now, and this reads the margins it
+    // would spill into rather than trusting that it fitted.
+    //
+    // Scanned across the caption's own band on both sides. The version of
+    // this check written for the old layout watched a strip on the right
+    // between y=120 and y=510, which is where a name beside the code used
+    // to sit — with a centred caption it caught an overflow only because a
+    // 120px glyph happens to reach up into that band, which is luck rather
+    // than a check.
+    const png = card();
+
+    for (const x of [...span(8, 88), ...span(CARD.width - 88, CARD.width - 8)]) {
+      for (const y of span(CAPTION_BAND.top, CAPTION_BAND.bottom)) {
         expect(
           luminance(pixelAt(png, x, y)),
-          `something is drawn at ${x},${y}, which is past the panel's padding`,
+          `something is drawn at ${x},${y}, which is in the card's margin`,
         ).toBeLessThan(60);
       }
     }
@@ -146,7 +193,7 @@ describe("the card served at /cv-qr-code.png", () => {
       if (luminance([png.data[i], png.data[i + 1], png.data[i + 2]]) > 200) light += 1;
     }
 
-    // The white tile alone is 380x380 of a 1200x630 card, which is a fifth.
+    // The white tile alone is 450x450 of a 1200x630 card, which is a quarter.
     expect(light / (png.data.length / 4)).toBeGreaterThan(0.1);
   });
 });
