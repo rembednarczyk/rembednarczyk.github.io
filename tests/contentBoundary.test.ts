@@ -1,5 +1,5 @@
-import { readFileSync, readdirSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import * as cards from "../src/data/portfolioData";
 import * as facts from "../src/data/portfolioFacts";
@@ -31,6 +31,15 @@ import { fillPlaceholders } from "../src/data/placeholders";
  */
 
 const root = resolve(__dirname, "..");
+
+/** Every source file under a directory, so "unread" means unread by anything. */
+function listSources(dir: string): string[] {
+  return readdirSync(dir).flatMap((entry) => {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) return listSources(full);
+    return /\.tsx?$/.test(entry) ? [full] : [];
+  });
+}
 const contentDir = resolve(root, "src/content");
 
 const contentFiles = readdirSync(contentDir).filter((entry) => entry.endsWith(".json"));
@@ -81,8 +90,12 @@ const handedOut = stringsIn([...Object.values(facts), ...Object.values(cards)]);
 
 describe("the content tree", () => {
   it("has a file for each thing the site says, and the modules read them all", () => {
-    const modules = ["src/data/portfolioFacts.ts", "src/data/portfolioData.tsx"]
-      .map((file) => readFileSync(resolve(root, file), "utf8"))
+    // Every source file, not the two assembly modules: the printed CV's
+    // layout is read by the template that draws it, which is where a
+    // layout belongs, and a check that knew about only two readers would
+    // have called that file an orphan.
+    const modules = listSources(resolve(root, "src"))
+      .map((file) => readFileSync(file, "utf8"))
       .join("\n");
 
     const unread = contentFiles.filter((file) => !modules.includes(`../content/${file}`));

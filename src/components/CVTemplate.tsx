@@ -1,9 +1,15 @@
-import { Mail, Globe, MapPin, Phone, IdCard, BrainCog, MonitorCog, UsersRound, Award, ShieldCheck, TreePalm, BadgeCheck, BrainCircuit, BookOpen } from "lucide-react";
+// The header's own icons are not named by content: they label a phone
+// number, an address and a location, which are the header's structure
+// rather than anything an owner arranges.
+import { Mail, Globe, MapPin, Phone } from "lucide-react";
 import { CvSection } from "./CvSection";
 import { LinkedinIcon } from "./ui/BrandIcon";
 import { ContactParts } from "./ui/ContactParts";
-import { fullCertificationsList, cvData, experienceData } from "../data/portfolioFacts";
+import { iconOf } from "../data/icons";
+import { bodyOf } from "./CvBodies";
+import { cvData } from "../data/portfolioFacts";
 import { LINKEDIN_QR } from "../data/linkedinQr";
+import cvLayout from "../content/cvLayout.json" with { type: "json" };
 
 export const CVTemplate = () => {
   return (
@@ -95,139 +101,16 @@ export const CVTemplate = () => {
         </div>
       </header>
 
-      {/* Summary */}
-      <CvSection icon={IdCard} title="Summary">
-        <p className="text-slate-700 text-justify">
-          {cvData.summary}
-        </p>
-      </CvSection>
+      {cvLayout.sections.map((section) => {
+        const Icon = iconOf(section.icon);
+        const Body = bodyOf(section.body);
 
-      {/* Skills */}
-      <CvSection icon={BrainCog} title="Core Competencies & Skills">
-        <div className="grid grid-cols-1 gap-2 text-sm text-slate-700">
-          {cvData.skills.map((skill, idx) => (
-            <div key={idx}>
-              <span className="font-bold text-slate-900">{skill.category}:</span>{" "}
-              {skill.items}
-            </div>
-          ))}
-        </div>
-      </CvSection>
-
-      {/* Experience */}
-      <CvSection icon={MonitorCog} title="Professional Experience">
-
-        <div className="border-l-2 border-slate-200 ml-2">
-          {experienceData.map((job, idx) => (
-            <div key={idx} className="relative pl-5 mb-5 print:break-inside-avoid">
-              <div className="absolute w-3 h-3 bg-slate-400 border-2 border-white rounded-full -left-[7px] top-1.5"></div>
-              <div className="flex justify-between items-baseline mb-1">
-                <h4 className="text-[17px] font-bold text-slate-900">
-                  {job.role}{" "}
-                  <span className="text-slate-500 font-normal">| {job.company}</span>
-                </h4>
-                <span className="text-sm font-medium text-slate-500">
-                  {job.period}
-                </span>
-              </div>
-              {job.desc && (
-                <p className="text-sm text-slate-700 mb-2 italic">
-                  {job.desc}
-                </p>
-              )}
-              {job.bullets && (
-                <ul className={`list-disc list-outside ml-4 text-sm text-slate-700 space-y-1 ${job.projects ? 'mb-3' : ''}`}>
-                  {job.bullets.map((bullet, bulletIdx) => (
-                    <li key={bulletIdx}>{bullet}</li>
-                  ))}
-                </ul>
-              )}
-
-              {job.projects && job.projects.map((project, projectIdx) => (
-                <div key={projectIdx} className="ml-4 print:break-inside-avoid mt-3">
-                  <div className="flex justify-between items-baseline mb-1">
-                    <h5 className="text-sm font-bold text-slate-800">
-                      {project.role}
-                    </h5>
-                    <span className="text-xs font-medium text-slate-500">
-                      {project.period}
-                    </span>
-                  </div>
-                  <ul className="list-[circle] list-outside ml-4 text-sm text-slate-700 space-y-1">
-                    {project.bullets.map((bullet, bulletIdx) => (
-                      <li key={bulletIdx}>{bullet}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </CvSection>
-
-      {/* Community & Leadership */}
-      <CvSection icon={UsersRound} title="Community & Leadership">
-        <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
-          {cvData.community.map((item, idx) => (
-            <li key={idx}>
-              <strong>{item.title}</strong> {item.desc}
-            </li>
-          ))}
-        </ul>
-      </CvSection>
-
-      {/* Recognition & Brand Presence */}
-      <CvSection icon={Award} title="Recognition & Brand Presence">
-        <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
-          {cvData.recognition.map((item, idx) => (
-            <li key={idx}>
-              <strong>{item.title}</strong>{" "}
-              {item.desc}
-            </li>
-          ))}
-        </ul>
-      </CvSection>
-      
-      {/* Certifications & Credentials */}
-      <CvSection icon={ShieldCheck} title="Certifications & Credentials">
-        <div className="space-y-6">
-          {fullCertificationsList.map((category, catIdx) => (
-            <div key={catIdx}>
-              <h4 className="text-[15px] font-bold text-slate-800 mb-3 pb-1.5 border-b border-slate-200 flex items-center gap-2">
-                {category.category === "Core certifications" && <BadgeCheck size={16} className="text-slate-400/80" aria-hidden="true" />}
-                {category.category === "AI & Emerging Tech Certifications" && <BrainCircuit size={16} className="text-slate-400/80" aria-hidden="true" />}
-                {category.category === "Additional Training" && <BookOpen size={16} className="text-slate-400/80" aria-hidden="true" />}
-                {category.category}
-              </h4>
-              <div className="space-y-3">
-                {category.items.map((cert, idx) => (
-                  <div key={idx} className="flex justify-between items-start gap-4">
-                    <div className="text-sm">
-                      <div className="font-bold text-slate-800 leading-snug">{cert.name}</div>
-                      <div className="text-slate-600 text-[13px] mt-0.5">
-                        {cert.issuer}
-                        {cert.id && <span className="text-slate-500 ml-2">ID: {cert.id}</span>}
-                      </div>
-                    </div>
-                    <div className="text-sm font-medium text-slate-500 whitespace-nowrap shrink-0 text-right">
-                      {cert.date}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </CvSection>
-
-      {/* Passions & Hobbies */}
-      <CvSection icon={TreePalm} title="Passions & Hobbies">
-        <ul className="list-disc list-outside ml-4 text-sm text-slate-700 space-y-1.5">
-          {cvData.passions.map((passion, idx) => (
-            <li key={idx}>{passion}</li>
-          ))}
-        </ul>
-      </CvSection>
+        return (
+          <CvSection key={section.body} icon={Icon} title={section.title}>
+            <Body />
+          </CvSection>
+        );
+      })}
     </div>
   );
 };
