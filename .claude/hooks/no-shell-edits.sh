@@ -14,221 +14,259 @@ set -uo pipefail
 # tools" — at the top of every single turn, while CLAUDE.md is read once when
 # a session starts. Repetition beats recall, and it will keep beating it.
 #
-# This repository already knew that. It is why `session-start.sh` sets the
-# commit author instead of asking anyone to remember who it should be. The
-# same treatment applies here: the rule is enforced rather than recalled, so
-# a blocked call comes back with the reason attached and no one has to hold
-# anything in mind.
+# The deciding is done in Python, and that is a correction rather than a
+# preference. Two sweeps found sixteen ways past the bash version between
+# them, and most of them were the same mistake: a shell command was being
+# taken apart with regular expressions and word splitting. `shlex` splits it
+# the way a shell does, so a quoted path with a space in it is one token
+# rather than two, which is what let `git checkout "src/My File.tsx"`
+# through. Reading the payload with `json` rather than `jq` also removes the
+# dependency whose absence used to make this hook allow everything.
+#
+# It fails closed. A guard that cannot read its input has to refuse: the
+# alternative is what this file did until now, which is to allow every shell
+# edit on a machine without `jq` and report nothing.
 
 root="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 
-payload=$(cat)
-tool=$(printf '%s' "$payload" | jq -r '.tool_name // ""')
-[ "$tool" = "Bash" ] || exit 0
+if ! command -v python3 >/dev/null 2>&1; then
+  # printf and not `cat`: this is the path taken when the environment is
+  # broken, and it reached for an external command to say so. With an empty
+  # PATH the message never printed and the hook exited 0 — the failure it
+  # was written to report, in the code reporting it.
+  printf '%s\n' \
+    'Refused by .claude/hooks/no-shell-edits.sh.' \
+    '' \
+    'python3 is not on PATH, so this hook cannot read what it was asked to' \
+    'judge. A guard that cannot see refuses rather than reporting that there' \
+    'is nothing to see. Use Edit and Write for file changes, which is what' \
+    'the rule asks for anyway.' >&2
+  exit 2
+fi
 
-command=$(printf '%s' "$payload" | jq -r '.tool_input.command // ""')
-[ -n "$command" ] || exit 0
+# Read with the shell's own redirection rather than `cat`, so that nothing
+# outside bash is needed before the check above. A hook whose refusal path
+# depends on an external command has the failure it is refusing.
+IFS= read -r -d '' payload || true
 
-# Build output goes through the shell all the time and none of it is source.
-IGNORED_DIRECTORIES=(
-  dist
-  node_modules
-  storybook-static
-  coverage
-  playwright-report
-  test-results
-  .git
-)
+PAYLOAD="$payload" ROOT="$root" python3 - <<'DECIDE'
+import json
+import os
+import re
+import shlex
+import sys
 
-# A path as written in the command, made absolute without requiring it to
-# exist — the point is to judge a write before it happens.
-absolute() {
-  case "$1" in
-    /* | ~*) printf '%s' "$1" ;;
-    ./*) printf '%s/%s' "$root" "${1#./}" ;;
-    *) printf '%s/%s' "$root" "$1" ;;
-  esac
-}
-
-# One place that takes the quotes off, because there were two and they
-# diverged. `first_protected_token` stripped them and the git-checkout loop
-# below was a hand-rolled copy of it that did not, so `git checkout
-# "src/App.tsx"` went through while the unquoted form was refused.
-unquoted() {
-  local raw="$1"
-  raw="${raw%\"}"; raw="${raw#\"}"
-  raw="${raw%\'}"; raw="${raw#\'}"
-  printf '%s' "$raw"
-}
-
-# Whether writing to this path is the thing the rule is about: a file of this
-# repository's own, rather than a scratch file, a device or a build artefact.
-protected() {
-  local raw
-  raw=$(unquoted "$1")
-  [ -n "$raw" ] || return 1
-
-  case "$raw" in
-    /dev/* | /tmp/* | /proc/* | /sys/* | /var/*) return 1 ;;
-  esac
-
-  # A bare word is almost always prose that happened to sit next to a `>`
-  # ("echo a > b"), not a target. Requiring a directory, an extension or an
-  # existing file keeps the guard off ordinary greps and echoes.
-  case "$raw" in
-    */*) ;;
-    *.[A-Za-z0-9]*) ;;
-    *) [ -e "$raw" ] || return 1 ;;
-  esac
-
-  local abs
-  abs=$(absolute "$raw")
-  case "$abs" in
-    "$root"/*) ;;
-    *) return 1 ;;
-  esac
-
-  local ignored
-  for ignored in "${IGNORED_DIRECTORIES[@]}"; do
-    case "$abs" in
-      "$root/$ignored" | "$root/$ignored"/*) return 1 ;;
-    esac
-  done
-
-  return 0
-}
-
-refuse() {
-  cat >&2 <<REASON
-Refused by .claude/hooks/no-shell-edits.sh.
-
-$1
-
+ROOT = os.environ["ROOT"].rstrip("/")
+REASON_TAIL = """
 CLAUDE.md, under Tools: prefer Edit and Write over shell redirection for file
 changes. A heredoc that rewrites a file leaves no reviewable diff of intent,
 and twice in this repository's history it has clobbered work that Edit would
-have refused. \`git checkout <path>\` discards uncommitted work and does
+have refused. `git checkout <path>` discards uncommitted work and does
 nothing at all for an untracked file; both have cost real edits here.
 
 Use Read to see the file, then Edit or Write to change it. If the file is
 genuinely outside the repository, or is build output, write it under /tmp or
 the session scratchpad instead.
-REASON
-  exit 2
-}
+"""
 
-# Every token of the command, for the checks that take a file argument rather
-# than a redirection.
-read -r -a tokens <<<"$(printf '%s' "$command" | tr '\n' ' ')"
 
-# The file argument, which has to be a file that exists. Splitting on spaces
-# alone cannot tell `src/App.tsx` from `'s/a/b/'` — both are just tokens with
-# a slash in them — and an in-place edit is by definition of something that
-# is already there, so existence is what separates the two.
-first_protected_token() {
-  local token
-  for token in "${tokens[@]}"; do
-    case "$token" in
-      -*) continue ;;
-    esac
-    token=$(unquoted "$token")
-    # Existence is asked of the path the repository would have, not of the
-    # one the hook's own working directory would resolve. The two differ,
-    # and asking the wrong one let `cd src && sed -i … App.tsx` through.
-    if [ -f "$(absolute "$token")" ] && protected "$token"; then
-      printf '%s' "$token"
-      return 0
-    fi
-  done
-  return 1
-}
+def refuse(what: str) -> None:
+    sys.stderr.write(
+        f"Refused by .claude/hooks/no-shell-edits.sh.\n\n{what}\n{REASON_TAIL}"
+    )
+    sys.exit(2)
 
-# 1. Redirection, which is the form the rule names.
-#
-# The `>` has to be a redirection rather than an arrow: `->` and `=>` appear
-# in every other grep run against this codebase, so the character before it
-# decides. A file descriptor may precede it, and `2>&1` is not a write
-# because `&` is excluded from what can follow.
-#
-# Quotes are part of what a target may look like and are taken off after the
-# match, not excluded from it. Excluding them meant a quoted target produced
-# no match at all, so `cat > "src/App.tsx" <<'EOF'` — the first row of this
-# hook's own test table with two characters added — went straight through.
-# `>|` is the same write with the shell's clobber override on it.
-targets=$(
-  printf '%s' "$command" |
-    grep -oE '(^|[[:space:];&|(])[0-9]?>>?\|?[[:space:]]*["'\'']?[^[:space:]&|;<>()"'\'']+' |
-    sed -E 's/^.*>>?\|?[[:space:]]*//' || true
+
+# Build output goes through the shell all the time and none of it is source.
+IGNORED = (
+    "dist",
+    "node_modules",
+    "storybook-static",
+    "coverage",
+    "playwright-report",
+    "test-results",
+    ".git",
 )
 
-while IFS= read -r target; do
-  [ -n "$target" ] || continue
-  if protected "$target"; then
-    refuse "This writes to $target through the shell."
-  fi
-done <<<"$targets"
+GLOB = re.compile(r"[*?\[]")
+HAS_EXTENSION = re.compile(r"\.[A-Za-z0-9]+$")
 
-# 2. In-place editors, which take the file as an argument instead.
-if printf '%s' "$command" | grep -qE '(^|[[:space:]])sed[[:space:]]+(-[a-zA-Z]*i|--in-place)'; then
-  if path=$(first_protected_token); then
-    refuse "This rewrites $path in place with sed -i."
-  fi
-fi
 
-if printf '%s' "$command" | grep -qE '(^|[[:space:]])perl[[:space:]]+-[a-zA-Z]*i'; then
-  if path=$(first_protected_token); then
-    refuse "This rewrites $path in place with perl -i."
-  fi
-fi
+def absolute(path: str) -> str:
+    if path.startswith(("/", "~")):
+        return path
+    return os.path.normpath(os.path.join(ROOT, path))
 
-if printf '%s' "$command" | grep -qE '(^|[[:space:]])(tee|truncate)([[:space:]]|$)'; then
-  if path=$(first_protected_token); then
-    refuse "This writes to $path through the shell."
-  fi
-fi
 
-# 3. The other command CLAUDE.md names, for the other reason: it destroys
-# rather than writes. `git checkout main` and `git checkout -b <branch>` are
-# how the work gets done and are left alone; a path argument is the case that
-# has cost edits here.
-if printf '%s' "$command" | grep -qE '(^|[[:space:]])git[[:space:]]+(checkout|restore)([[:space:]]|$)'; then
-  if path=$(first_protected_token); then
-    refuse "This discards uncommitted changes to $path."
-  fi
-fi
+def protected(path: str) -> bool:
+    """Whether this names a file of this repository's own."""
+    if not path or path.startswith(("/dev/", "/tmp/", "/proc/", "/sys/", "/var/")):
+        return False
 
-# 4. A command that changes directory before writing, where the path cannot
+    absolute_path = absolute(path)
+    if not (absolute_path == ROOT or absolute_path.startswith(ROOT + "/")):
+        return False
+
+    relative = absolute_path[len(ROOT) + 1 :]
+    return not any(relative == d or relative.startswith(d + "/") for d in IGNORED)
+
+
+def names_a_file(token: str) -> bool:
+    """
+    Whether a token names a file rather than doing something else.
+
+    An extension, a glob or a file that exists. Deliberately not "contains a
+    slash": a sed script is `s/old/new/`, which has two, and accepting that
+    made the refusal name the expression as the file being written — the
+    same false precision this branch was fixed for once already. A glob does
+    count, because `sed -i s/a/b/ src/*.tsx` is the ordinary way to run one
+    substitution across a directory and no single file answers to it.
+    """
+    return (
+        bool(HAS_EXTENSION.search(token))
+        or bool(GLOB.search(token))
+        or os.path.exists(absolute(token))
+    )
+
+
+def looks_like_a_redirect_target(token: str) -> bool:
+    """
+    The same question for the right of a `>`, where a directory counts too.
+
+    A bare word there is almost always prose rather than a target — the
+    `b` in `echo "a > b"` — and requiring one of these is what keeps the
+    guard off ordinary shell use.
+    """
+    return "/" in token or names_a_file(token)
+
+
+try:
+    payload = json.loads(os.environ["PAYLOAD"])
+except Exception:
+    refuse("The payload could not be read as JSON, so what this would do is unknown.")
+
+if payload.get("tool_name") != "Bash":
+    sys.exit(0)
+
+command = (payload.get("tool_input") or {}).get("command") or ""
+if not command.strip():
+    sys.exit(0)
+
+try:
+    tokens = shlex.split(command, comments=False, posix=True)
+except ValueError:
+    refuse(
+        "The command could not be split the way a shell would split it — an "
+        "unbalanced quote, most likely — so what it would touch is unknown."
+    )
+
+# 1. A command that changes directory before writing, where the path cannot
 # be resolved at all.
 #
-# Everything above judges a path against this repository's root. A command
+# Checked before anything else, because everything below judges a path
+# against this repository's root and would name the wrong file. A command
 # that cds first means the shell will resolve a relative path against
-# somewhere else, and the hook has no way to know where: `cd src && sed -i
-# s/a/b/ App.tsx` names a file that does not exist at the root, so every
-# check above found nothing to object to and let a rewrite of
-# src/App.tsx through.
-#
-# Refusing is the only honest answer, because the alternative is a guard
-# that reports "nothing to see" precisely when it cannot see. An absolute
-# path is still resolvable and is still judged on its merits above, so the
-# way through is to name the file in full, or to use Edit and Write, which
-# is what the rule is asking for anyway.
-if
-  printf '%s' "$command" | grep -qE '(^|[[:space:];&|(])cd[[:space:]]' &&
-    printf '%s' "$command" |
-      grep -qE '(^|[[:space:];&|(])[0-9]?>>?\|?[[:space:]]|(^|[[:space:]])(sed[[:space:]]+(-[a-zA-Z]*i|--in-place)|perl[[:space:]]+-[a-zA-Z]*i|tee|truncate|git[[:space:]]+(checkout|restore))([[:space:]]|$)'
-then
-  for token in "${tokens[@]}"; do
-    case "$(unquoted "$token")" in
-      -* | /* | "~"*) continue ;;
-      */* | *.[A-Za-z0-9]*)
-        # Deliberately names no file. Splitting on spaces cannot tell
-        # `App.tsx` from `s/a/b/`, and after a cd it cannot resolve either
-        # of them — so claiming which one would be the same false precision
-        # the sed branch was already fixed for once.
-        refuse "This changes directory and then writes to a relative path, which cannot be resolved from here — so whether it touches a file of this repository cannot be decided, and a guard that cannot see refuses rather than reporting nothing to see. An absolute path is judged on its merits."
-        ;;
-    esac
-  done
-fi
+# somewhere else, and the hook has no way to know where. Refusing is the only
+# honest answer, because the alternative is a guard that reports "nothing to
+# see" precisely when it cannot see. An absolute path is still resolvable and
+# is still judged on its merits above.
+WRITES = re.compile(
+    r"""(?:^|[^-=&|<>])[0-9]?>>?\|?[ \t]"""
+    r"""|(?:^|\s)(sed\s+[^|;]*(-[a-zA-Z]*i|--in-place)"""
+    r"""|perl\s+-[a-zA-Z]*i|tee|truncate|git\s+([^|;]*\s)?(checkout|restore))(\s|$)"""
+)
 
-exit 0
+if re.search(r"(?:^|[\s;&|(])cd\s", command) and WRITES.search(command):
+    after_cd = tokens.index("cd") + 1 if "cd" in tokens else -1
+    for index, token in enumerate(tokens):
+        # Never the directory the cd was given: `cd src && … > /tmp/out.txt`
+        # writes outside the repository and the cd target is not a write.
+        if index == after_cd or token.startswith(("-", "/", "~")):
+            continue
+        if names_a_file(token):
+            # Deliberately names no file. Splitting cannot tell App.tsx from
+            # s/a/b/, and after a cd it cannot resolve either.
+            refuse(
+                "This changes directory and then writes to a relative path, "
+                "which cannot be resolved from here — so whether it touches a "
+                "file of this repository cannot be decided, and a guard that "
+                "cannot see refuses rather than reporting nothing to see. An "
+                "absolute path is judged on its merits."
+            )
+
+# 2. Redirection, which is the form the rule names.
+#
+# The `>` has to be a redirection rather than an arrow. Requiring a delimiter
+# before it was the first answer and it was wrong twice over: it let
+# `echo x>src/App.tsx` through, one character from a row in this hook's own
+# test table. What actually separates them is the character immediately
+# before: `-` and `=` make an arrow, anything else makes a redirection. A
+# file descriptor may precede it, `>|` is the same write with the clobber
+# override on, and `2>&1` is not a write because `&` cannot follow.
+REDIRECT = re.compile(
+    r"""(?:^|[^-=&|<>])[0-9]?>>?\|?[ \t]*("[^"]*"|'[^']*'|[^\s&|;<>()]+)"""
+)
+
+for match in REDIRECT.finditer(command):
+    target = match.group(1).strip("\"'")
+    if looks_like_a_redirect_target(target) and protected(target):
+        refuse(f"This writes to {target} through the shell.")
+
+# 3. In-place editors, which take the file as an argument instead.
+#
+# `-i` is looked for anywhere in the flags rather than only first, because
+# `sed -e s/a/b/ -i src/App.tsx` rewrites the file just as thoroughly and
+# went through untouched.
+IN_PLACE_SED = re.compile(r"^(--in-place(=.*)?|-[a-zA-Z]*i[a-zA-Z]*)$")
+
+
+def file_arguments() -> list:
+    """
+    The tokens that name files rather than flags or expressions.
+
+    Splitting on spaces cannot tell `src/App.tsx` from `s/a/b/` — both are
+    tokens with a slash in them — so a sed script is excluded by shape: it
+    has no extension, matches no file, and carries no glob.
+    """
+    return [
+        token
+        for token in tokens[1:]
+        if not token.startswith("-") and names_a_file(token) and protected(token)
+    ]
+
+
+def uses(program: str, flag: re.Pattern | None = None) -> bool:
+    if program not in tokens:
+        return False
+    if flag is None:
+        return True
+    after = tokens[tokens.index(program) + 1 :]
+    return any(flag.match(token) for token in after)
+
+
+if uses("sed", IN_PLACE_SED) or uses("perl", re.compile(r"^-[a-zA-Z]*i[a-zA-Z]*$")):
+    for path in file_arguments():
+        refuse(f"This rewrites {path} in place.")
+
+if uses("tee") or uses("truncate"):
+    for path in file_arguments():
+        refuse(f"This writes to {path} through the shell.")
+
+# 4. The other command CLAUDE.md names, for the other reason: it destroys
+# rather than writes. `git checkout main` and `git checkout -b <branch>` are
+# how the work gets done and are left alone; a path argument is the case that
+# has cost edits here. The subcommand is looked for anywhere after `git`,
+# because `git -C . checkout src/App.tsx` is the same command.
+if "git" in tokens:
+    after_git = tokens[tokens.index("git") + 1 :]
+    if "checkout" in after_git or "restore" in after_git:
+        for token in after_git:
+            if token.startswith("-"):
+                continue
+            # Existence separates a path from a branch name: `claude/foo` and
+            # `main` are not files, `src/App.tsx` is.
+            if os.path.isfile(absolute(token)) and protected(token):
+                refuse(f"This discards uncommitted changes to {token}.")
+
+sys.exit(0)
+DECIDE
