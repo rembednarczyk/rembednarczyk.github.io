@@ -2,6 +2,7 @@
   "groups": [
     {
       "category": "Core certifications",
+      "icon": "BadgeCheck",
       "items": [
         {
           "name": "ISTQB Accredited Trainer - CTFL 4.0 + Agile Tester Accreditation Extension",
@@ -34,12 +35,12 @@
           "id": "10262/FLCT/2018"
         },
         {
-          "name": "Certified SAFe® 6 Agilist",
+          "name": "Certified SAFe\u00ae 6 Agilist",
           "issuer": "SAFe by Scaled Agile, Inc.",
           "date": "Jun 2023"
         },
         {
-          "name": "AgilePM® Foundation",
+          "name": "AgilePM\u00ae Foundation",
           "issuer": "APMG International",
           "date": "Oct 2019",
           "id": "2000913818 / 04303830-01-FEDM"
@@ -48,6 +49,7 @@
     },
     {
       "category": "AI & Emerging Tech Certifications",
+      "icon": "BrainCircuit",
       "items": [
         {
           "name": "AI_devs 3 Agents",
@@ -64,6 +66,7 @@
     },
     {
       "category": "Additional Training",
+      "icon": "BookOpen",
       "items": [
         {
           "name": "Reasoning About Asynchronous JavaScript",
@@ -79,7 +82,7 @@
         },
         {
           "name": "Szkolenie Trenerskie",
-          "issuer": "Barbara Smoczyńska Usługi Rozwojowe",
+          "issuer": "Barbara Smoczy\u0144ska Us\u0142ugi Rozwojowe",
           "date": "Jun 2019"
         },
         {
@@ -167,17 +170,17 @@
         },
         {
           "name": "Microsoft SQL Server 2012",
-          "issuer": "Wyższa Szkoła Przedsiębiorczości i Administracji w Lublinie",
+          "issuer": "Wy\u017csza Szko\u0142a Przedsi\u0119biorczo\u015bci i Administracji w Lublinie",
           "date": "Apr 2014"
         },
         {
           "name": "Bazy danych - podstawy projektowania relacyjnych baz danych",
-          "issuer": "Polsko-Japońska Akademia Technik Komputerowych w Warszawie",
+          "issuer": "Polsko-Japo\u0144ska Akademia Technik Komputerowych w Warszawie",
           "date": "Mar 2014"
         },
         {
-          "name": "Programista stron z obsługą bazy danych",
-          "issuer": "Centrum Szkoleń i Innowacji",
+          "name": "Programista stron z obs\u0142ug\u0105 bazy danych",
+          "issuer": "Centrum Szkole\u0144 i Innowacji",
           "date": "Aug 2013",
           "id": "40/CSI/MEN/2013"
         }

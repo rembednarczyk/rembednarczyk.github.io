@@ -1,6 +1,9 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { CVTemplate } from "../src/components/CVTemplate";
+import cvLayout from "../src/content/cvLayout.json" with { type: "json" };
 
 /**
  * The printed CV wrote out seven headed sections, and all seven were
@@ -23,9 +26,17 @@ const shell = readFileSync(resolve(root, "src/components/CvSection.tsx"), "utf8"
 
 describe("the printed CV's headed sections", () => {
   it("are all built by the one shell", () => {
-    const built = [...template.matchAll(/<CvSection\b/g)].length;
+    // Counted in the rendered document rather than in the source. The
+    // sections used to be seven `<CvSection>` calls written out, and this
+    // counted the calls; they are one call in a loop over
+    // src/content/cvLayout.json now, so counting the source would report
+    // one section and pass on a template that drew nothing. What the check
+    // always meant was "every headed section comes from the shell", and
+    // rendering is the only way to say that once the count is data.
+    const { container } = render(<CVTemplate />);
 
-    expect(built, "the CV has seven headed sections").toBe(7);
+    expect(container.querySelectorAll("section")).toHaveLength(cvLayout.sections.length);
+    expect(cvLayout.sections.length, "the CV has seven headed sections").toBe(7);
     expect(template).not.toMatch(/<section\b/);
   });
 
@@ -49,11 +60,16 @@ describe("the printed CV's headed sections", () => {
   });
 
   it("gives every section a heading and an icon", () => {
-    const withoutBoth = [...template.matchAll(/<CvSection([^>]*)>/g)]
-      .map((m) => m[1])
-      .filter((props) => !props.includes("icon=") || !props.includes("title="));
+    // Asked of the layout, which is where the answer is now. The template
+    // passes both through from each entry, so a section with neither is a
+    // content file missing a key rather than a call missing a prop.
+    const withoutBoth = cvLayout.sections.filter(
+      (section) => section.title.trim() === "" || section.icon.trim() === "",
+    );
 
     expect(withoutBoth).toEqual([]);
+    expect(template).toMatch(/icon=\{Icon\}/);
+    expect(template).toMatch(/title=\{section\.title\}/);
   });
 
   it("keeps the heading itself in one place", () => {

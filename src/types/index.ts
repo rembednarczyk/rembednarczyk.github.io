@@ -118,6 +118,15 @@ export interface CredentialRecord {
 
 export interface CredentialGroup {
   category: string;
+  /**
+   * Named by the group rather than chosen by matching its heading text.
+   * The printed CV used to compare `category` against three string
+   * literals to pick this, so renaming a group in content dropped its icon
+   * silently — measured: one capital letter, and tsc plus 595 tests stayed
+   * green. Resolved through src/data/icons.ts, which throws on a name it
+   * does not have.
+   */
+  icon: string;
   items: CredentialRecord[];
 }
 

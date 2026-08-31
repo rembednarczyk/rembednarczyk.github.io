@@ -1,7 +1,9 @@
 import {
   Award,
+  BadgeCheck,
   BookOpen,
   BrainCircuit,
+  BrainCog,
   Calendar,
   Code,
   CodeXml,
@@ -9,14 +11,18 @@ import {
   Database,
   Globe,
   Heart,
+  IdCard,
   Image,
   Layers,
   Lightbulb,
   Megaphone,
+  MonitorCog,
   Rss,
   ShieldCheck,
   Terminal,
+  TreePalm,
   Users,
+  UsersRound,
 } from "lucide-react";
 import type { ElementType } from "react";
 
@@ -48,8 +54,10 @@ import type { ElementType } from "react";
  */
 export const ICONS = {
   Award,
+  BadgeCheck,
   BookOpen,
   BrainCircuit,
+  BrainCog,
   Calendar,
   Code,
   CodeXml,
@@ -57,14 +65,18 @@ export const ICONS = {
   Database,
   Globe,
   Heart,
+  IdCard,
   Image,
   Layers,
   Lightbulb,
   Megaphone,
+  MonitorCog,
   Rss,
   ShieldCheck,
   Terminal,
+  TreePalm,
   Users,
+  UsersRound,
 } satisfies Record<string, ElementType>;
 
 export function iconOf(name: string): ElementType {
