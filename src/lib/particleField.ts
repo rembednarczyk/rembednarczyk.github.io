@@ -6,7 +6,7 @@ export const MOUSE_DISTANCE = 180;
  * Link opacities are rounded into this many buckets so each bucket can be
  * drawn as a single path instead of one stroke per pair.
  */
-export const ALPHA_BUCKETS = 8;
+const ALPHA_BUCKETS = 8;
 
 /** One particle per this many square pixels, up to the cap. */
 const AREA_PER_PARTICLE = 12000;

@@ -219,23 +219,35 @@ Both reachability ratchets work at the level of a module, and that module is
 reached, by the runner and by its own tests. An export inside a reached
 module that nobody calls is invisible to them.
 
-- [ ] A check that an exported symbol has a consumer outside the tests.
-      What is known before writing one: a regex over named imports reports
-      most of this repository's exports as unconsumed, and nearly all of
-      those are legitimate — prop types used as annotations rather than
-      imported by name, component exports the entry point renders rather
-      than imports by name, and constants a test pins on purpose
-      (`scrollLockHolders` says so in its own doc comment). So it needs the
-      TypeScript compiler's own view of references, not a text scan, and an
-      exemption list with reasons.
-      This bullet used to state that count in bold with no method recorded.
-      Rebuilding a plausible one did not reproduce it — near it, not it —
-      which is the whole argument for the rule against quoting a count in
-      prose, made against this file. The number is gone rather than
-      corrected: a second unverifiable figure is not an improvement on the
-      first, and the sentence never needed one.
-- [ ] Until then this class is held by reading, which is what Ways of Working
-      Part 5 means by being honest where only discipline holds.
+- [x] A check exists, and it answers a narrower question than this entry
+      asked — deliberately, and the numbers are why. Of 231 exports, 85 have
+      no consumer outside the file that declares them, and almost every one
+      is legitimate: 37 are types, 32 are units a module split out so a test
+      could reach them and then calls two lines down, and 9 are gate logic or
+      test infrastructure whose consumers are gates and tests by
+      construction. Gating that would mean an exemption list of 78 nobody
+      would maintain, which this entry predicted.
+      `tests/exportUse.test.ts` reports the remainder: a value carrying
+      `export` that no other file ever names. Seven, and each was a keyword
+      that could go.
+      The compiler rather than a regex, exactly as this entry asked, and it
+      paid for itself on the first measurement: `grep -rl PLAUSIBLE_INK`
+      named `scripts/runPrintCheck.ts` as a consumer of a constant it
+      mentions only in a comment.
+- [x] The exemption list is empty, which is the part worth noting. This
+      entry assumed one would be needed and it is not, because the narrowing
+      above removed the false positives structurally instead of listing
+      them. A list of 78 reasons and a list of none are the two honest
+      answers; the middle would have been a list nobody reads.
+
+- [ ] What is still held by reading, and will stay that way: the helper this
+      entry opens with had four tests, so something referred to it and the
+      check above would not have reported it. Telling "tested and used by
+      the gate" from "tested and used by nothing" needs to know whether a
+      runner calls it — and `scripts/focusIndicator.ts` exports three
+      constants that no runner calls and that are entirely legitimate. There
+      is no structural line there. Ways of Working Part 5 asks for honesty
+      where only discipline holds, and this is one of those places.
 
 ---
 
