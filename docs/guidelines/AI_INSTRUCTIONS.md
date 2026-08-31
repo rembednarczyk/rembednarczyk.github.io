@@ -101,7 +101,7 @@ STEP 7: FINAL CHECK
 
 ## Non-Negotiable
 
-- ALWAYS separate data from components: facts into `src/data/portfolioFacts.ts`, the JSX that presents them into `src/data/portfolioData.tsx`
+- ALWAYS separate data from components: words into `src/content/*.json`, the typed shapes they become into `src/data/portfolioFacts.ts`, the JSX that presents them into `src/data/portfolioData.tsx`
 - NEVER use global state unless absolutely necessary
 - ALWAYS extract reusable logic into hooks or utils
 
@@ -109,7 +109,7 @@ STEP 7: FINAL CHECK
 
 When adding a feature:
 
-1. Static facts -> `src/data/portfolioFacts.ts`, which carries no JSX so the build can read it (`llm.txt`, the JSON-LD and the sitemap are generated from it)
+1. Static facts -> the words into `src/content/*.json`, the shape into `src/data/portfolioFacts.ts`, which carries no JSX so the build can read it (`llm.txt`, the JSON-LD and the sitemap are generated from it). A sentence a reader sees belongs in the JSON; a computation, a union of names, or anything the type system has to check belongs in the module that assembles it
 2. Reusable logic -> `hooks/`
 3. Reusable UI -> `components/ui/`
 4. Complex component -> split into smaller parts
@@ -122,6 +122,9 @@ src/
 │   ├── layout/
 │   ├── sections/
 │   └── ui/
+├── content/  every word the site says, as JSON and nothing else — no types,
+│             no logic, nothing an editor outside this repository would have
+│             to understand to rewrite a paragraph
 ├── data/
 ├── hooks/
 ├── lib/      React-free logic: the canvas simulation, the form transport,

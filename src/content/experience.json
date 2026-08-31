@@ -1,0 +1,118 @@
+{
+  "jobs": [
+    {
+      "role": "Test Manager",
+      "company": "Sii Poland",
+      "period": "2021 - Present",
+      "desc": "Leading quality engineering and testing strategy across regulated pharmaceutical projects while also contributing to internal consulting, discovery phases, and QA offerings within the Sii Testing Competency Center.",
+      "bullets": [
+        "Contributed to discovery phases for new projects by assessing testing maturity, risks, and delivery models.",
+        "Supported pre-sales activities, including solution design, testing strategy proposals, and estimation.",
+        "Participated in the creation and evolution of testing offerings within the Sii Testing Competency Center.",
+        "Took part in focus groups and internal initiatives shaping quality engineering practices across the organization."
+      ],
+      "tags": [
+        "Consulting",
+        "Pre-Sales",
+        "Discovery",
+        "Quality Engineering",
+        "Test Strategy"
+      ],
+      "projects": [
+        {
+          "role": "Test Manager / GxP Projects",
+          "period": "2021 - Present",
+          "bullets": [
+            "Managed testing teams across multiple concurrent GxP-regulated projects within a distributed international environment, collaborating daily with global cross-functional stakeholders (USA, Switzerland, UK, Malaysia).",
+            "Ensured predictable delivery by owning end-to-end test management, including defining and approving Test Strategies and Test Plans aligned with business goals, regulatory requirements, and project constraints.",
+            "Ensured testing compliance within a validated GxP/CSV environment, taking full accountability for testing activities, validation alignment, and formal documentation (RTMs, Release Test Plans, Test Reports).",
+            "Established QA processes from scratch by conducting discovery phases, assessing existing workflows, and implementing governance, entry/exit criteria, and best practices.",
+            "Successfully delivered and rolled out a digitalized testing and documentation process used across regulated IRT workflows, transitioning from paper-based to digital test documentation (Jira with Xray).",
+            "Enabled regulatory compliance of the pharmaceutical supply chain by leading the implementation of the EU Module in TraceLink.",
+            "Acted as Validation Lead, with decision authority over validation approach, documentation scope, and lifecycle coverage.",
+            "Implemented time-optimizing solutions, such as Unscripted Testing and alternative automation approaches, to increase team efficiency under tight timelines.",
+            "Resolved conflicts between delivery timelines, quality expectations, and compliance requirements by aligning multiple stakeholders across business, QA, and project management."
+          ],
+          "tags": [
+            "Test Management",
+            "Risk Analysis",
+            "Process Implementation",
+            "Digital Transformation",
+            "Jira",
+            "Xray",
+            "Agile/Scrum",
+            "SAFe",
+            "GxP",
+            "CSV"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "Senior Test & Analysis Engineer / Acxiom",
+      "company": "Sii Poland",
+      "period": "2018 - 2021",
+      "bullets": [
+        "Conducted comprehensive API, GUI, and web services testing to ensure robust application functionality and seamless integration.",
+        "Led cloud testing initiatives across AWS, HDFS, Hue, Kafka, Spark, Qubole, and S3, ensuring data integrity within Data Warehouses and Data Lakes.",
+        "Analyzed business requirements to prepare detailed test documentation, including comprehensive test plans and test cases.",
+        "Implemented and executed both manual and automated tests, continuously improving the test framework and introducing innovative testing strategies.",
+        "Enhanced the regression test suite and integrated it into the Continuous Integration (CI) pipeline to accelerate delivery cycles.",
+        "Validated complex data structures and performed extensive database testing using relational (Oracle, MSSQL, MySQL) and non-relational (NoSQL, MongoDB, Hadoop) databases.",
+        "Collaborated within cross-functional, international teams (USA, UK, Poland) using UNIX/Linux environments and Git/SVN version control systems."
+      ],
+      "tags": [
+        "API Testing",
+        "Cloud Testing",
+        "Big Data",
+        "Test Automation",
+        "CI/CD",
+        "SQL / NoSQL",
+        "AWS",
+        "Agile/Scrum"
+      ]
+    },
+    {
+      "role": "Test & Analysis Engineer / Acxiom",
+      "company": "Sii Poland",
+      "period": "2017 - 2018",
+      "bullets": [
+        "Performed manual and automated testing for Data Warehouses and web services, ensuring data accuracy and system reliability.",
+        "Created and maintained comprehensive test documentation, including test plans and test cases based on business requirements.",
+        "Contributed to the continuous improvement of the test framework and integrated regression test suites into the CI pipeline.",
+        "Executed database testing across relational (Oracle, MSSQL, MySQL) and non-relational (NoSQL, MongoDB, Hadoop) environments.",
+        "Worked effectively within international, cross-functional teams utilizing UNIX/Linux systems and Git/SVN version control."
+      ],
+      "tags": [
+        "Data Warehouse",
+        "Web Services",
+        "Test Automation",
+        "SQL / NoSQL",
+        "UNIX/Linux",
+        "Agile/Scrum"
+      ]
+    },
+    {
+      "role": "Application Tester / Simple S.A. (Bazus)",
+      "company": "Simple S.A.",
+      "period": "2014 - 2017",
+      "bullets": [
+        "Tested the Bazus ERP application dedicated to higher education institutions, ensuring system reliability across various modules and customer production environments.",
+        "Actively participated in an Agile (Scrum) development team, contributing to release planning, test estimation, and SLA-driven backlog management.",
+        "Performed end-to-end system, module, and operational testing, applying techniques like equivalence partitioning and boundary value analysis.",
+        "Conducted build verification tests (BVT) and managed build releases via internal deployment systems to Git repositories within a Continuous Integration (CI) pipeline.",
+        "Created and maintained manual test cases and automated testware using Selenium IDE, while comprehensively analyzing functional requirements.",
+        "Developed and administered technical documentation using single-source publishing tools, and conducted internal training sessions for team members."
+      ],
+      "tags": [
+        "Agile/Scrum",
+        "Selenium",
+        "Jenkins",
+        "Git",
+        "Requirements Analysis",
+        "GUI Testing",
+        "Technical Documentation"
+      ]
+    }
+  ]
+}

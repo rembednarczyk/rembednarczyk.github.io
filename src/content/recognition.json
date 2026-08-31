@@ -1,0 +1,32 @@
+{
+  "awards": [
+    {
+      "title": "League of Honor – The Star",
+      "company": "Sii Poland",
+      "issued": "2023",
+      "desc": "Highest distinction awarded to top contributors shaping company growth and strategic direction.",
+      "tone": "gold"
+    },
+    {
+      "title": "Top Gun – Leadership Award",
+      "company": "Sii Poland",
+      "issued": "2022",
+      "desc": "Recognized as a role model and impactful leader in the organization.",
+      "tone": "cyan"
+    },
+    {
+      "title": "Sii Star – Employee of the Year",
+      "company": "Sii Poland",
+      "issued": "2022",
+      "desc": "Awarded for outstanding performance and measurable impact",
+      "tone": "purple"
+    },
+    {
+      "title": "Sii Star – Employee of the Year",
+      "company": "Sii Poland",
+      "issued": "2018",
+      "desc": "Awarded for outstanding performance and measurable impact",
+      "tone": "purple"
+    }
+  ]
+}
