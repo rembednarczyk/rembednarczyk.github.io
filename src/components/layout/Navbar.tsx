@@ -36,7 +36,7 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#020617]/80 backdrop-blur-md border-b border-white/10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <button
-          className="flex items-center gap-2 cursor-pointer group focus-ring rounded-lg p-1 -ml-1 transition-transform active:scale-95"
+          className="flex items-center gap-2 cursor-pointer group focus-ring rounded-lg p-2.5 -ml-2.5 transition-transform active:scale-95"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           <ShieldCheck
@@ -54,12 +54,12 @@ export function Navbar() {
 
         <div className="flex items-center gap-3 lg:gap-4">
           {/* Desktop Links */}
-          <div className="hidden lg:flex items-center space-x-6 text-sm font-medium">
+          <div className="hidden lg:flex items-center space-x-3 text-sm font-medium">
             {NAV_ITEMS.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleScrollToSection(item.id)}
-                className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-ring rounded px-1 ${activeSection === item.id ? "text-cyan-400" : "text-slate-200"}`}
+                className={`hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all focus-ring rounded px-2 py-3 ${activeSection === item.id ? "text-cyan-400" : "text-slate-200"}`}
               >
                 {item.label}
               </button>
@@ -69,7 +69,7 @@ export function Navbar() {
           {/* Always visible CV Button */}
           <button
             onClick={() => window.print()}
-            className="px-3 py-2 xl:px-5 xl:py-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 active:from-cyan-400 active:to-purple-400 active:scale-95 text-white font-semibold rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-cyan-500/20 text-sm xl:text-base focus-ring"
+            className="px-3 py-3 xl:px-5 xl:py-3 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 active:from-cyan-400 active:to-purple-400 active:scale-95 text-white font-semibold rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-cyan-500/20 text-sm xl:text-base focus-ring"
           >
             <Download
               aria-hidden="true"
@@ -83,7 +83,7 @@ export function Navbar() {
           {/* Mobile Menu Toggle */}
           <button
             ref={buttonRef}
-            className="lg:hidden text-slate-300 hover:text-white active:text-white active:scale-90 transition-all p-1 focus-ring rounded"
+            className="lg:hidden text-slate-300 hover:text-white active:text-white active:scale-90 transition-all p-2.5 focus-ring rounded"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle mobile menu"
             aria-expanded={isMobileMenuOpen}
@@ -145,7 +145,7 @@ export function Navbar() {
             <button
               key={item.id}
               onClick={() => handleScrollToSection(item.id)}
-              className={`text-left py-2 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === item.id ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
+              className={`text-left py-3 px-3 rounded-lg hover:bg-white/5 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all ${activeSection === item.id ? "text-cyan-400 bg-white/5" : "text-slate-200"}`}
             >
               {item.label}
             </button>

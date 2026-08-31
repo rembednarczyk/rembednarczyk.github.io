@@ -17,7 +17,8 @@
     "test-storybook": "test-storybook",
     "check:print": "node --experimental-strip-types scripts/runPrintCheck.ts",
     "check:motion": "node --experimental-strip-types scripts/runRevealMotion.ts",
-    "check:focus": "node --experimental-strip-types scripts/runFocusIndicator.ts"
+    "check:focus": "node --experimental-strip-types scripts/runFocusIndicator.ts",
+    "check:targets": "node --experimental-strip-types scripts/runTargetSize.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

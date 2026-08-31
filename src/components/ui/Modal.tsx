@@ -121,7 +121,11 @@ export function Modal({
               <button
                 ref={closeButtonRef}
                 onClick={onClose}
-                className="text-slate-400 hover:text-white transition-colors focus-ring rounded-md p-1"
+                // p-2.5 rather than p-1: the icon stays 24px and the tap
+                // area reaches 44x44 (SC 2.5.5). It was 32x32 — the way out
+                // of a dialog for anyone using a pointer, and the smallest
+                // control in it.
+                className="text-slate-400 hover:text-white transition-colors focus-ring rounded-md p-2.5 -m-1"
                 aria-label={closeLabel}
               >
                 <X size={24} aria-hidden="true" />
