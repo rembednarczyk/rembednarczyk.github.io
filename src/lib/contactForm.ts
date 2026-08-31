@@ -48,7 +48,7 @@ export type ContactResult =
  * Fifteen seconds is longer than this request has ever taken and short
  * enough that somebody is still watching the screen when it gives up.
  */
-export const REQUEST_TIMEOUT = 15000;
+const REQUEST_TIMEOUT = 15000;
 
 export interface SubmitOptions {
   /** Overridden in tests, which cannot wait fifteen seconds. */

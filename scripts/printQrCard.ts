@@ -36,7 +36,7 @@ import { qrMatrix } from "./qrCode.ts";
 export const PRINT_QR_CARD_FILE = "cv-qr-code.png";
 
 /** The one line on the card, saying what the code is for. */
-export const PRINT_QR_CARD_LEAD = "Scan to open the CV";
+const PRINT_QR_CARD_LEAD = "Scan to open the CV";
 
 /** The proportions the platforms crop a shared link to. */
 export const CARD = { width: 1200, height: 630 };
@@ -202,7 +202,7 @@ function roundedRect(
  * The gradient never enters the code's white margin, where it would cost
  * the scanner the contrast the code is made of.
  */
-export function drawPrintQrCard(url: string, lead: string): Buffer {
+function drawPrintQrCard(url: string, lead: string): Buffer {
   const canvas = createCanvas(CARD.width, CARD.height);
   const context = canvas.getContext("2d");
 

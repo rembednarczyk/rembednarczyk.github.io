@@ -8,10 +8,10 @@
  */
 
 /** The query parameter the printed code carries. */
-export const PRINT_PARAM = "print";
+const PRINT_PARAM = "print";
 
 /** The value that means it: nothing else counts. */
-export const PRINT_VALUE = "true";
+const PRINT_VALUE = "true";
 
 /** The address printed on the QR code, in full. */
 export const PRINT_URL = `https://remigiuszbednarczyk.com/?${PRINT_PARAM}=${PRINT_VALUE}`;

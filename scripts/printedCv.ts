@@ -139,7 +139,7 @@ export const INK_TOLERANCE = 0.005;
  * is wide enough that redesigning the CV does not fail a build and narrow
  * enough that neither blind reading is inside it.
  */
-export const PLAUSIBLE_INK = { least: 0.005, most: 0.2 };
+const PLAUSIBLE_INK = { least: 0.005, most: 0.2 };
 
 /** Sheets whose ink says the rasteriser is not reading the page. */
 export function sheetsWhoseInkIsNotPlausible(pages: PrintedPage[]): string[] {
