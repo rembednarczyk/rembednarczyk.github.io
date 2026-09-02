@@ -134,6 +134,48 @@ src/
 └── utils/    pure helpers that run without React
 ```
 
+## Reading map
+
+Separating content from presentation cost something, and it is worth naming
+rather than discovering: one band of the page used to be one file. Opening
+`ExpertiseSection.tsx` told you its heading, its number, its anchor and its
+shape at once. It is nine files now, and the capability bought with them is
+that somebody outside this repository can change what the site says.
+
+Fewer files would mean taking that back. A map does not.
+
+Follow one band of the page, from the words to the pixels:
+
+1. `src/content/expertise.json` — what it says, and the name of each icon
+2. `src/data/icons.ts` — that name resolved to a component, throwing if it is not one on offer
+3. `src/data/portfolioData.tsx` — the words plus the icons, as the typed shape a card reads
+4. `src/components/sections/Expertise/ExpertiseSection.tsx` — the arrangement, and nothing else
+5. `src/components/sections/Expertise/ExpertiseCard.tsx` — one entry drawn
+6. `src/content/pageLayout.json` — whether the band appears, where, and under what heading
+7. `src/components/PageBodies.tsx` — the band's name resolved to that component
+8. `src/lib/pageLayout.ts` — its number, counted from its position rather than written down
+9. `src/App.tsx` — the loop that reads the layout, and `src/components/ui/PageSection.tsx`, the wrapper it puts round each numbered band
+
+The printed CV is the same shape with fewer steps:
+
+1. `src/content/cv.json` and the files beside it — what it says
+2. `src/data/placeholders.ts` — `{{yearsOfExperience}}` filled in, throwing on a name nothing offers
+3. `src/data/portfolioFacts.ts` — the typed shapes, and the one module a Vite plugin can load
+4. `src/content/cvLayout.json` — which sections, in what order, under what heading, with which icon
+5. `src/components/CvBodies.tsx` — what any one section draws
+6. `src/components/CVTemplate.tsx` — the loop, and `src/components/CvSection.tsx`, the wrapper
+
+Two rules fall out of the map, and they are the ones to apply when adding
+anything:
+
+- A **word** goes in `src/content/`. Never in a component, never in the
+  modules that assemble it — `tests/contentBoundary.test.ts` fails on a
+  sentence stated in an assembly module, and `tests/contentReaches.test.tsx`
+  fails on a sentence in content that no reader ever sees.
+- A **shape** goes in code, named by content rather than chosen by matching
+  its text. Matching text is how the printed CV lost an icon to a renamed
+  heading, which is written up under the ratchets in the README.
+
 ---
 
 # 5. LIGHTHOUSE & PERFORMANCE GUARDRAILS
