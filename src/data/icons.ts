@@ -25,6 +25,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import type { ElementType } from "react";
+import type { AccentName, IconName } from "./vocabulary";
 
 /**
  * The icons content is allowed to name, and the accents it is allowed to
@@ -36,12 +37,14 @@ import type { ElementType } from "react";
  * anything that could not evaluate JSX, which is every editor that is not
  * this repository.
  *
- * So content names an icon and this resolves the name. The narrowing is the
- * point: lucide-react exports about fifteen hundred icons and only these
- * eighteen are on offer, which means the list an editor can choose from is
- * a list somebody decided on rather than a search box over an icon set.
- * `tests/icons.test.ts` fails on an entry here that no content file uses,
- * so the list shrinks when a card stops needing one.
+ * So content names an icon and this resolves the name. Which names exist is
+ * not decided here: `src/data/vocabulary.ts` holds them, because the editor
+ * has to read them and cannot compile TypeScript. `satisfies Record<IconName,
+ * …>` holds this registry to that list in both directions — measured, a
+ * missing entry is TS1360 and an extra one TS2353 — so the two cannot
+ * disagree without the build saying so, and neither is a copy of the other.
+ * `tests/icons.test.ts` fails on a name no content file uses, so the list
+ * shrinks when a card stops needing one.
  *
  * Both lookups throw on a name they do not have. JSON reaches no type
  * system, and the alternative to throwing is a card that renders with a
@@ -77,7 +80,7 @@ export const ICONS = {
   TreePalm,
   Users,
   UsersRound,
-} satisfies Record<string, ElementType>;
+} satisfies Record<IconName, ElementType>;
 
 export function iconOf(name: string): ElementType {
   const icon = (ICONS as Record<string, ElementType>)[name];
@@ -106,7 +109,7 @@ export const ACCENTS = {
   purple: "text-purple-400",
   emerald: "text-emerald-400",
   orange: "text-orange-400",
-} as const;
+} as const satisfies Record<AccentName, string>;
 
 export type AccentTone = keyof typeof ACCENTS;
 

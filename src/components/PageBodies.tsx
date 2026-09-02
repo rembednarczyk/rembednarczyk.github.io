@@ -12,6 +12,7 @@ import { ProjectsSection } from "./sections/Projects/ProjectsSection";
 import { RecognitionSection } from "./sections/Recognition/RecognitionSection";
 import { SkillsSection } from "./sections/Skills/SkillsSection";
 import { ThinkingSection } from "./sections/ThinkingSection";
+import { PAGE_BODY_NAMES, type PageBodyName } from "../data/vocabulary";
 
 /**
  * What each of the page's bands draws, by the name content calls it.
@@ -29,7 +30,7 @@ import { ThinkingSection } from "./sections/ThinkingSection";
  * heading they do not have to satisfy a uniform shape would put words on
  * the page that nobody asked for.
  */
-const BODIES: Record<string, ComponentType> = {
+const BODIES = {
   hero: HeroSection,
   expertise: ExpertiseSection,
   about: AboutSection,
@@ -43,19 +44,16 @@ const BODIES: Record<string, ComponentType> = {
   community: CommunitySection,
   brand: BrandPresenceSection,
   contact: ContactSection,
-};
+} satisfies Record<PageBodyName, ComponentType>;
 
 export function pageBodyOf(name: string): ComponentType {
-  const body = BODIES[name];
+  const body = (BODIES as Record<string, ComponentType>)[name];
 
   if (body === undefined) {
     throw new Error(
-      `the page layout asks for a ${name} band, and the ones that exist are ${Object.keys(BODIES).join(", ")}`,
+      `the page layout asks for a ${name} band, and the ones that exist are ${PAGE_BODY_NAMES.join(", ")}`,
     );
   }
 
   return body;
 }
-
-/** Every band this page knows how to draw, for the guard to read. */
-export const PAGE_BODIES = Object.keys(BODIES);

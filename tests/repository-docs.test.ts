@@ -268,8 +268,28 @@ function pathsNamedIn(document: string): string[] {
  * Matched as a suffix, since the documents abbreviate some paths
  * ("utils/domain.ts") and generalise others (".stories.tsx").
  */
+/**
+ * Addresses the build serves, which the repository deliberately does not
+ * hold.
+ *
+ * Both are written into `dist/` by a plugin and never committed, because a
+ * generated file checked in is free to drift from what generated it. The
+ * documents name them as addresses — what a scanner fetches, what the
+ * content editor reads — so the check above reads them as paths and finds
+ * nothing.
+ *
+ * `/cv-qr-code.png` was never reported, and not because anything decided
+ * it should not be: `png` is simply not in the extension list above, so it
+ * has been passing on luck since the day it was written. Naming both here
+ * says the same thing about both, and the day one stops being emitted this
+ * entry is what has to be removed by hand.
+ */
+const SERVED_BY_THE_BUILD = ["/vocabulary.json", "/cv-qr-code.png"];
+
 function pathsThatDoNotExist(named: string[]): string[] {
   return named.filter((quoted) => {
+    if (SERVED_BY_THE_BUILD.includes(quoted)) return false;
+
     const trimmed = quoted.replace(/\/$/, "");
 
     // A leading dot with no separator is an extension pattern rather than
@@ -285,6 +305,41 @@ function pathsThatDoNotExist(named: string[]): string[] {
 }
 
 const quotedPaths = pathsNamedIn(readme);
+
+describe("the addresses the build serves rather than commits", () => {
+  it("are each written by a plugin, so the exemption cannot outlive the file", () => {
+    // An exemption list is a place where a claim goes stale quietly. Each
+    // entry has to be a file something still writes: the day a plugin stops
+    // emitting one, this fails and the entry comes off rather than going on
+    // excusing an address that answers 404.
+    //
+    // Comments stripped, and mutation is why twice over. The config's doc
+    // comments name both addresses in prose, so renaming the constant that
+    // writes one left this green on the sentence describing it — the same
+    // tautology `tests/dependencies.test.ts` records, which is why that
+    // helper exists. And stripping them then reported the QR card as
+    // unwritten, correctly: its address is a constant in `scripts/`, and
+    // the config only ever mentioned it in a comment. So the reach is the
+    // build's own sources rather than the config alone.
+    const buildSources = [
+      resolve(root, "vite.config.ts"),
+      ...readdirSync(resolve(root, "scripts"))
+        .filter((entry) => entry.endsWith(".ts"))
+        .map((entry) => resolve(root, "scripts", entry)),
+    ]
+      .map((file) => withoutComments(readFileSync(file, "utf8")))
+      .join("\n");
+
+    const unwritten = SERVED_BY_THE_BUILD.filter(
+      (address) => !buildSources.includes(address.replace(/^\//, "")),
+    );
+
+    expect(
+      unwritten,
+      `these are exempt as build output and nothing the build runs writes them:\n  ${unwritten.join("\n  ")}`,
+    ).toEqual([]);
+  });
+});
 
 /**
  * Backticked camelCase names, and the constants written in capitals.

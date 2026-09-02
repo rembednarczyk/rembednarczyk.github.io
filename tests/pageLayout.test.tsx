@@ -2,7 +2,8 @@ import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { Portfolio } from "../src/App";
 import { MotionProvider } from "../src/components/MotionProvider";
-import { PAGE_BODIES, pageBodyOf } from "../src/components/PageBodies";
+import { pageBodyOf } from "../src/components/PageBodies";
+import { PAGE_BODY_NAMES } from "../src/data/vocabulary";
 import { NAV_ITEMS } from "../src/data/navigation";
 import { numbered } from "../src/lib/pageLayout";
 import pageLayout from "../src/content/pageLayout.json" with { type: "json" };
@@ -42,13 +43,13 @@ const page = () =>
 describe("the layout the page is drawn from", () => {
   it("names bands to check, so nothing below passes vacuously", () => {
     expect(pageLayout.sections.length).toBe(13);
-    expect(PAGE_BODIES.length).toBe(13);
+    expect(PAGE_BODY_NAMES.length).toBe(13);
   });
 
   it("asks only for bands the page can draw", () => {
     const undrawable = pageLayout.sections
       .map((section) => section.body)
-      .filter((body) => !PAGE_BODIES.includes(body));
+      .filter((body) => !(PAGE_BODY_NAMES as readonly string[]).includes(body));
 
     expect(
       undrawable,
@@ -58,7 +59,7 @@ describe("the layout the page is drawn from", () => {
 
   it("leaves no band the page can draw that the layout never asks for", () => {
     // Invisible to lint, which sees the registry using every import.
-    const unused = PAGE_BODIES.filter(
+    const unused = (PAGE_BODY_NAMES as readonly string[]).filter(
       (body) => !pageLayout.sections.some((section) => section.body === body),
     );
 

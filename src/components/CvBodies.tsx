@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { iconOf } from "../data/icons";
 import { fullCertificationsList, cvData, experienceData } from "../data/portfolioFacts";
+import { CV_BODY_NAMES, type CvBodyName } from "../data/vocabulary";
 
 /**
  * What each section draws.
@@ -16,7 +17,7 @@ import { fullCertificationsList, cvData, experienceData } from "../data/portfoli
  * for the same reason: a section that silently renders nothing is a page
  * nobody re-reads.
  */
-const BODIES: Record<string, () => ReactNode> = {
+const BODIES = {
   summary: () => <p className="text-slate-700 text-justify">{cvData.summary}</p>,
 
   skills: () => (
@@ -133,19 +134,16 @@ const BODIES: Record<string, () => ReactNode> = {
       ))}
     </ul>
   ),
-};
+} satisfies Record<CvBodyName, () => ReactNode>;
 
 export function bodyOf(name: string): () => ReactNode {
-  const body = BODIES[name];
+  const body = (BODIES as Record<string, () => ReactNode>)[name];
 
   if (body === undefined) {
     throw new Error(
-      `the CV layout asks for a ${name} section, and the ones that exist are ${Object.keys(BODIES).join(", ")}`,
+      `the CV layout asks for a ${name} section, and the ones that exist are ${CV_BODY_NAMES.join(", ")}`,
     );
   }
 
   return body;
 }
-
-/** Every section this template knows how to draw, for the guard to read. */
-export const CV_BODIES = Object.keys(BODIES);
