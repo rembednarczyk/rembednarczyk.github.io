@@ -4,6 +4,16 @@ import { heroData } from "../../data/portfolioFacts";
 import { useScrollToSection } from "../../hooks/useScrollToSection";
 import { Tag } from "../ui/Tag";
 
+/**
+ * The `hero` band, which renders its own element.
+ *
+ * It is not one of the numbered run and takes no heading or anchor — it
+ * never had one, and giving it one to match the others would put words on
+ * the page nobody asked for. Whether it appears, and where, is
+ * src/content/pageLayout.json.
+ *
+ * src/components/PageBodies.tsx is what maps the name to this component.
+ */
 export function HeroSection() {
   const scrollToSection = useScrollToSection();
 
