@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { AWARD_TONES } from "../data/vocabulary";
 
 export interface Metric {
   value: string;
@@ -17,7 +18,7 @@ export interface SkillCategory {
  * decides what that looks like. The class strings used to sit in the data
  * module, which is why it could not be read by anything but a component.
  */
-export type AwardTone = "gold" | "cyan" | "purple";
+export type AwardTone = (typeof AWARD_TONES)[number];
 
 export interface AwardRecord {
   title: string;

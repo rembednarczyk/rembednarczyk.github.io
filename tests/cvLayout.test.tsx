@@ -1,7 +1,8 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { CVTemplate } from "../src/components/CVTemplate";
-import { CV_BODIES, bodyOf } from "../src/components/CvBodies";
+import { bodyOf } from "../src/components/CvBodies";
+import { CV_BODY_NAMES } from "../src/data/vocabulary";
 import cvLayout from "../src/content/cvLayout.json" with { type: "json" };
 
 /**
@@ -33,13 +34,13 @@ import cvLayout from "../src/content/cvLayout.json" with { type: "json" };
 describe("the layout the printed CV is drawn from", () => {
   it("names sections to check, so nothing below passes vacuously", () => {
     expect(cvLayout.sections.length).toBe(7);
-    expect(CV_BODIES.length).toBeGreaterThan(5);
+    expect(CV_BODY_NAMES.length).toBe(7);
   });
 
   it("asks only for shapes the template can draw", () => {
     const undrawable = cvLayout.sections
       .map((section) => section.body)
-      .filter((body) => !CV_BODIES.includes(body));
+      .filter((body) => !(CV_BODY_NAMES as readonly string[]).includes(body));
 
     expect(
       undrawable,
@@ -51,7 +52,7 @@ describe("the layout the printed CV is drawn from", () => {
     // The other direction, which nothing else can see: a body left behind
     // after a section was dropped is unreachable code that lint calls used,
     // because the record that holds it is used.
-    const unused = CV_BODIES.filter(
+    const unused = (CV_BODY_NAMES as readonly string[]).filter(
       (body) => !cvLayout.sections.some((section) => section.body === body),
     );
 

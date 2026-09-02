@@ -6,6 +6,7 @@ import { defineConfig, type Plugin } from "vite";
 import { PRINT_QR_CARD_FILE, printQrCard } from "./scripts/printQrCard";
 import { countLastmod, stampSitemap } from "./scripts/sitemap";
 import { injectPersonSchema } from "./scripts/structuredData";
+import { VOCABULARY } from "./src/data/vocabulary";
 
 /** Dates the sitemap from the build, so it cannot fall behind the content. */
 function stampSitemapPlugin(): Plugin {
@@ -62,6 +63,43 @@ function printQrCardPlugin(): Plugin {
 }
 
 /**
+ * Serves the names an editor is allowed to choose from, at /vocabulary.json.
+ *
+ * The content editor is a separate program in a separate repository. It has
+ * to offer an icon for a new card and a shape for a new section, and the
+ * lists live in TypeScript, which it never compiles. Its alternatives were
+ * a second copy of every list — the failure this repository has a ratchet
+ * for, `declaredDomain`, because one address once lived in eight places —
+ * or nothing, and a free-text field that lets an owner type a name the site
+ * will throw on.
+ *
+ * Emitted rather than committed, like the print QR card and for the same
+ * reason: a generated file checked in is free to drift from what generated
+ * it. This one is written from src/data/vocabulary.ts on every deploy, and
+ * the three registries are held to that module by the compiler, so what
+ * the editor is told and what the site accepts cannot disagree.
+ */
+export const VOCABULARY_FILE = "vocabulary.json";
+
+function vocabularyPlugin(): Plugin {
+  return {
+    name: "serve-vocabulary",
+    apply: "build",
+    closeBundle() {
+      // Storybook builds through this same config and has no dist/ of the
+      // site's shape to write into.
+      const dist = path.resolve(__dirname, "dist");
+      if (!fs.existsSync(path.resolve(dist, "index.html"))) return;
+
+      fs.writeFileSync(
+        path.resolve(dist, VOCABULARY_FILE),
+        `${JSON.stringify(VOCABULARY, null, 2)}\n`,
+      );
+    },
+  };
+}
+
+/**
  * Writes the schema.org Person from the data the page renders.
  *
  * It was typed out by hand beside the same facts in the data module, with
@@ -96,6 +134,7 @@ export default defineConfig(() => {
       structuredDataPlugin(),
       stampSitemapPlugin(),
       printQrCardPlugin(),
+      vocabularyPlugin(),
     ],
     build: {
       /**

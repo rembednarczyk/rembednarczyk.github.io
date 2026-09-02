@@ -10,6 +10,7 @@ import {
 } from "../types";
 import { getYearsOfExperience } from "../utils/domain";
 import { fillPlaceholders } from "./placeholders";
+import { AWARD_TONES } from "./vocabulary";
 // The attributes are not decoration. Vite 8 loads this module into its own
 // config to build the JSON-LD, and warns on a JSON import without them:
 // what a specifier resolves to stops being inferred from its extension.
@@ -66,12 +67,14 @@ const VALUES = { yearsOfExperience: String(yearsOfExperience) };
 /**
  * The three card colours, named in the data and drawn by AwardCard.
  *
- * `satisfies` catches a fourth name added here; the throw catches one added
- * in the JSON, where no type reaches. JSON cannot express a union, so
- * without this the tone would be a bare string cast into place and a
- * misspelt one would reach the card as an undefined lookup.
+ * The list is in vocabulary.ts because the editor has to offer it and
+ * cannot compile TypeScript; `AwardTone` is derived from it, so the type
+ * and the list are one thing rather than two that agree. The throw below
+ * catches a name added in the JSON, where no type reaches — JSON cannot
+ * express a union, so without it the tone would be a bare string cast into
+ * place and a misspelt one would reach the card as an undefined lookup.
  */
-const TONES = ["gold", "cyan", "purple"] as const satisfies readonly AwardTone[];
+const TONES = AWARD_TONES;
 
 function toneOf(value: string, title: string): AwardTone {
   const tone = TONES.find((known) => known === value);
