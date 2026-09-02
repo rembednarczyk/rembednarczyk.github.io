@@ -1,6 +1,15 @@
 import { aboutData } from "../../../data/portfolioFacts";
 import { AboutImage } from "./AboutImage";
 
+/**
+ * The `about` band, one of the page's numbered run.
+ *
+ * Its heading, its number and its anchor are not here: they are in
+ * src/content/pageLayout.json, and src/App.tsx wraps this in `PageSection`
+ * with them. What is here is the arrangement and nothing else.
+ *
+ * src/components/PageBodies.tsx is what maps the name to this component.
+ */
 export function AboutSection() {
   return (
     <div className="grid md:grid-cols-2 gap-12 items-center print:grid-cols-1 print:gap-4">

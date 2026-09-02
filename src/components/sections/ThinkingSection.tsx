@@ -2,6 +2,16 @@ import { Quote } from "lucide-react";
 import { thinkingQuote } from "../../data/portfolioFacts";
 import { Reveal } from "../ui/Reveal";
 
+/**
+ * The `thinking` band, which renders its own element.
+ *
+ * It is not one of the numbered run and takes no heading or anchor — it
+ * never had one, and giving it one to match the others would put words on
+ * the page nobody asked for. Whether it appears, and where, is
+ * src/content/pageLayout.json.
+ *
+ * src/components/PageBodies.tsx is what maps the name to this component.
+ */
 export function ThinkingSection() {
   return (
     <section className="py-24 print:hidden relative overflow-hidden">
