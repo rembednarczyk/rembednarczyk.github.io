@@ -95,33 +95,85 @@ function contactOf({ display, href }: { display: string[]; href: string[] }): Cv
   return { display, href: href.join("") };
 }
 
-export const heroData: HeroData = fillPlaceholders(heroContent, VALUES);
+/** The raw content the facts are built from — one JSON document per key. */
+export interface FactsRaw {
+  hero: typeof heroContent;
+  about: typeof aboutContent;
+  thinking: typeof thinkingContent;
+  achievements: typeof achievementsContent;
+  recognition: typeof recognitionContent;
+  experience: typeof experienceContent;
+  cv: typeof cvContent;
+  certifications: typeof certificationsContent;
+}
 
-export const aboutData: AboutData = fillPlaceholders(aboutContent, VALUES);
+/** Everything this module turns content into, in one shape. */
+interface Facts {
+  heroData: HeroData;
+  aboutData: AboutData;
+  thinkingQuote: string;
+  achievementsData: string[];
+  recognitionData: AwardRecord[];
+  experienceData: Job[];
+  cvData: CvData;
+  fullCertificationsList: CredentialGroup[];
+}
 
-export const thinkingQuote: string = fillPlaceholders(thinkingContent, VALUES).quote;
+/**
+ * The facts, built from raw content rather than read straight from the
+ * imports.
+ *
+ * The site calls this once at load with the JSON its build baked in, and
+ * exports the result below exactly as before. The preview calls it again with
+ * edited content, so the same transform — placeholders filled, the award tone
+ * checked against the three it may be, the contact rebuilt from its parts —
+ * runs on what the owner is typing. One implementation, two callers, so the
+ * preview cannot drift from what deploys.
+ */
+export function buildFacts(raw: FactsRaw): Facts {
+  const cv = fillPlaceholders(raw.cv, VALUES);
 
-export const achievementsData: string[] = fillPlaceholders(achievementsContent, VALUES).items;
+  return {
+    heroData: fillPlaceholders(raw.hero, VALUES),
+    aboutData: fillPlaceholders(raw.about, VALUES),
+    thinkingQuote: fillPlaceholders(raw.thinking, VALUES).quote,
+    achievementsData: fillPlaceholders(raw.achievements, VALUES).items,
+    recognitionData: fillPlaceholders(raw.recognition, VALUES).awards.map((award) => ({
+      ...award,
+      tone: toneOf(award.tone, award.title),
+    })),
+    experienceData: fillPlaceholders(raw.experience, VALUES).jobs,
+    cvData: {
+      ...cv,
+      header: {
+        ...cv.header,
+        phone: contactOf(cv.header.phone),
+        email: contactOf(cv.header.email),
+      },
+    },
+    fullCertificationsList: fillPlaceholders(raw.certifications, VALUES).groups,
+  };
+}
 
-export const recognitionData: AwardRecord[] = fillPlaceholders(
-  recognitionContent,
-  VALUES,
-).awards.map((award) => ({ ...award, tone: toneOf(award.tone, award.title) }));
-
-export const experienceData: Job[] = fillPlaceholders(experienceContent, VALUES).jobs;
-
-const cv = fillPlaceholders(cvContent, VALUES);
-
-export const cvData: CvData = {
-  ...cv,
-  header: {
-    ...cv.header,
-    phone: contactOf(cv.header.phone),
-    email: contactOf(cv.header.email),
-  },
+/** The build's own content, and the source of the static exports below. */
+const STATIC_FACTS_RAW: FactsRaw = {
+  hero: heroContent,
+  about: aboutContent,
+  thinking: thinkingContent,
+  achievements: achievementsContent,
+  recognition: recognitionContent,
+  experience: experienceContent,
+  cv: cvContent,
+  certifications: certificationsContent,
 };
 
-export const fullCertificationsList: CredentialGroup[] = fillPlaceholders(
-  certificationsContent,
-  VALUES,
-).groups;
+const facts = buildFacts(STATIC_FACTS_RAW);
+
+export const heroData: HeroData = facts.heroData;
+export const aboutData: AboutData = facts.aboutData;
+export const thinkingQuote: string = facts.thinkingQuote;
+export const achievementsData: string[] = facts.achievementsData;
+export const recognitionData: AwardRecord[] = facts.recognitionData;
+export const experienceData: Job[] = facts.experienceData;
+export const cvData: CvData = facts.cvData;
+export const fullCertificationsList: CredentialGroup[] = facts.fullCertificationsList;
