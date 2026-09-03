@@ -1,4 +1,4 @@
-import { certificationsData } from "../../../data/portfolioData";
+import { useContent } from "../../../data/content";
 import { CertificationCard } from "./CertificationCard";
 
 /**
@@ -11,6 +11,7 @@ import { CertificationCard } from "./CertificationCard";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function CertificationsSection() {
+  const { certificationsData } = useContent();
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {certificationsData.map((item, idx) => (

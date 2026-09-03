@@ -1,5 +1,5 @@
 import { CheckCircle } from "lucide-react";
-import { achievementsData } from "../../../data/portfolioFacts";
+import { useContent } from "../../../data/content";
 import { IconListItem } from "../../ui/IconListItem";
 
 /**
@@ -12,6 +12,7 @@ import { IconListItem } from "../../ui/IconListItem";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function AchievementsSection() {
+  const { achievementsData } = useContent();
   return (
     <ul className="grid gap-4 max-w-4xl mx-auto">
       {achievementsData.map((achievement, idx) => (

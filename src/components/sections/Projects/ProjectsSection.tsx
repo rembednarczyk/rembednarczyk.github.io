@@ -1,4 +1,4 @@
-import { keyProjectsData } from "../../../data/portfolioData";
+import { useContent } from "../../../data/content";
 import { ProjectCard } from "./ProjectCard";
 
 /**
@@ -11,6 +11,7 @@ import { ProjectCard } from "./ProjectCard";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function ProjectsSection() {
+  const { keyProjectsData } = useContent();
   return (
     <div className="grid md:grid-cols-2 gap-8">
       {keyProjectsData.map((project, idx) => (

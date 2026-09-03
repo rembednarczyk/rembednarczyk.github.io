@@ -1,4 +1,4 @@
-import { experienceData } from "../../../data/portfolioFacts";
+import { useContent } from "../../../data/content";
 import { ExperienceItem } from "./ExperienceItem";
 
 /**
@@ -11,6 +11,7 @@ import { ExperienceItem } from "./ExperienceItem";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function ExperienceSection() {
+  const { experienceData } = useContent();
   return (
     <div className="space-y-8">
       {experienceData.map((job, idx) => (
