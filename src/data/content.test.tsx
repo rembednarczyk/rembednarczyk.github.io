@@ -1,6 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { ContentProvider, STATIC_CONTENT, useContent, type SiteContent } from "./content";
+import {
+  buildContent,
+  ContentProvider,
+  STATIC_CONTENT,
+  STATIC_RAW,
+  useContent,
+  type SiteContent,
+} from "./content";
 import { heroData } from "./portfolioFacts";
 
 /**
@@ -43,5 +50,25 @@ describe("the content seam", () => {
 
     expect(screen.getByText("Someone Else Entirely")).toBeInTheDocument();
     expect(screen.queryByText(heroData.name)).not.toBeInTheDocument();
+  });
+});
+
+describe("buildContent, the transform the preview runs", () => {
+  it("reproduces the build's own content from the build's own raw", () => {
+    // The proof that the preview and the deploy cannot disagree: the same
+    // function, fed the JSON the build baked in, returns what the site ships.
+    // Break a transform and this parts from STATIC_CONTENT.
+    expect(buildContent(STATIC_RAW)).toEqual(STATIC_CONTENT);
+  });
+
+  it("runs the transform on what it is given, not the baked-in copy", () => {
+    const built = buildContent({
+      ...STATIC_RAW,
+      hero: { ...STATIC_RAW.hero, name: "Edited Live" },
+    });
+
+    expect(built.heroData.name).toBe("Edited Live");
+    // Untouched documents still come through as they were.
+    expect(built.thinkingQuote).toBe(STATIC_CONTENT.thinkingQuote);
   });
 });

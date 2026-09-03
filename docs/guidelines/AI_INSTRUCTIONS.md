@@ -129,6 +129,8 @@ src/
 ├── hooks/
 ├── lib/      React-free logic: the canvas simulation, the form transport,
 │             error reporting, routing
+├── preview/  the editor's live preview: the real page drawn from content
+│             posted over the window, and the wire that carries it
 ├── test/     helpers used by tests and by nothing that ships
 ├── types/
 └── utils/    pure helpers that run without React

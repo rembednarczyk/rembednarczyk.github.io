@@ -13,12 +13,27 @@ import { ParticleBackground } from "./components/ParticleBackground";
 import { CVTemplate } from "./components/CVTemplate";
 import { ScrollToTop } from "./components/ui/ScrollToTop";
 import { NotFound } from "./components/NotFound";
+import { PreviewApp } from "./preview/PreviewApp";
+import { PREVIEW_PATH } from "./preview/protocol";
 
-/** Chooses between the page and the 404 view. */
+/** Chooses between the page, the editor's live preview, and the 404 view. */
 export default function App() {
+  const pathname = window.location.pathname;
+
+  // The editor embeds this. It is the real page drawn from content posted
+  // over the window, not a route the site links to — reached the same way
+  // every client route here is, through the SPA's 404 fallback.
+  if (pathname === PREVIEW_PATH) {
+    return (
+      <MotionProvider>
+        <PreviewApp />
+      </MotionProvider>
+    );
+  }
+
   return (
     <MotionProvider>
-      {isKnownPath(window.location.pathname) ? (
+      {isKnownPath(pathname) ? (
         <Portfolio />
       ) : (
         <div className="min-h-screen bg-[#020617] flex items-center justify-center text-cyan-500">
