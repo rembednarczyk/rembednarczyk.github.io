@@ -17,6 +17,11 @@ permissions:
 
 env:
   NODE_VERSION: "22.x"
+  # The origin(s) the editor is served from, so the /preview entry accepts
+  # content posted from it. Read from a repository variable, comma-separated
+  # for more than one; empty when unset, which leaves only the localhost
+  # origins the preview allows by default. See src/preview/protocol.ts.
+  VITE_PREVIEW_EDITOR_ORIGIN: ${{ vars.VITE_PREVIEW_EDITOR_ORIGIN }}
 
 jobs:
   quality:
