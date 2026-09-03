@@ -1,4 +1,4 @@
-import { aboutData } from "../../../data/portfolioFacts";
+import { useContent } from "../../../data/content";
 import { AboutImage } from "./AboutImage";
 
 /**
@@ -11,6 +11,7 @@ import { AboutImage } from "./AboutImage";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function AboutSection() {
+  const { aboutData } = useContent();
   return (
     <div className="grid md:grid-cols-2 gap-12 items-center print:grid-cols-1 print:gap-4">
       <div className="space-y-4 text-slate-400 leading-relaxed">

@@ -1,4 +1,4 @@
-import { brandPresenceData } from "../../../data/portfolioData";
+import { useContent } from "../../../data/content";
 import { BrandCard } from "./BrandCard";
 
 /**
@@ -11,6 +11,7 @@ import { BrandCard } from "./BrandCard";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function BrandPresenceSection() {
+  const { brandPresenceData } = useContent();
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
       {brandPresenceData.map((item, idx) => (

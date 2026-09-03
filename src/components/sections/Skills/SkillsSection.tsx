@@ -1,4 +1,4 @@
-import { skillsData } from "../../../data/portfolioData";
+import { useContent } from "../../../data/content";
 import { SkillCategoryCard } from "./SkillCategoryCard";
 
 /**
@@ -11,6 +11,7 @@ import { SkillCategoryCard } from "./SkillCategoryCard";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function SkillsSection() {
+  const { skillsData } = useContent();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {skillsData.map((category, idx) => (

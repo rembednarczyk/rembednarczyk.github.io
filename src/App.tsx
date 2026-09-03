@@ -2,7 +2,7 @@ import { MotionProvider } from "./components/MotionProvider";
 import { PageSection } from "./components/ui/PageSection";
 import { pageBodyOf } from "./components/PageBodies";
 import { numbered } from "./lib/pageLayout";
-import pageLayout from "./content/pageLayout.json" with { type: "json" };
+import { useContent } from "./data/content";
 import { useAutoPrint } from "./hooks/useAutoPrint";
 import { useCookieConsent } from "./hooks/useCookieConsent";
 import { useHashTarget } from "./hooks/useHashTarget";
@@ -38,6 +38,8 @@ export default function App() {
  * clean, which is how the first version of that scan passed.
  */
 export function Portfolio() {
+  const { pageLayout } = useContent();
+
   // Only the page can be printed; there is nothing on a 404 worth paper.
   useAutoPrint();
 

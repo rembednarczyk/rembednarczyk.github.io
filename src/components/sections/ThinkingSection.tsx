@@ -1,5 +1,5 @@
 import { Quote } from "lucide-react";
-import { thinkingQuote } from "../../data/portfolioFacts";
+import { useContent } from "../../data/content";
 import { Reveal } from "../ui/Reveal";
 
 /**
@@ -13,6 +13,7 @@ import { Reveal } from "../ui/Reveal";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function ThinkingSection() {
+  const { thinkingQuote } = useContent();
   return (
     <section className="py-24 print:hidden relative overflow-hidden">
       <Reveal

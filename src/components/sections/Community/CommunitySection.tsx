@@ -1,4 +1,4 @@
-import { communityData } from "../../../data/portfolioData";
+import { useContent } from "../../../data/content";
 import { IconListItem } from "../../ui/IconListItem";
 
 /**
@@ -11,6 +11,7 @@ import { IconListItem } from "../../ui/IconListItem";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function CommunitySection() {
+  const { communityData } = useContent();
   return (
     <ul className="grid gap-4 max-w-4xl mx-auto">
       {communityData.map((item, idx) => (

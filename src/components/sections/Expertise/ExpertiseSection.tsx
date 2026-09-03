@@ -1,4 +1,4 @@
-import { expertiseData } from "../../../data/portfolioData";
+import { useContent } from "../../../data/content";
 import { ExpertiseCard } from "./ExpertiseCard";
 
 /**
@@ -11,6 +11,7 @@ import { ExpertiseCard } from "./ExpertiseCard";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function ExpertiseSection() {
+  const { expertiseData } = useContent();
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {expertiseData.map((item, idx) => (

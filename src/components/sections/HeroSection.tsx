@@ -1,6 +1,6 @@
 import { m } from "motion/react";
 import { Terminal } from "lucide-react";
-import { heroData } from "../../data/portfolioFacts";
+import { useContent } from "../../data/content";
 import { useScrollToSection } from "../../hooks/useScrollToSection";
 import { Tag } from "../ui/Tag";
 
@@ -15,6 +15,7 @@ import { Tag } from "../ui/Tag";
  * src/components/PageBodies.tsx is what maps the name to this component.
  */
 export function HeroSection() {
+  const { heroData } = useContent();
   const scrollToSection = useScrollToSection();
 
   return (
