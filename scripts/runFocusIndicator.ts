@@ -124,7 +124,9 @@ const SETTLE_MS = 450;
  * right response — the point is that it has to be a decision rather than
  * something that happens quietly.
  */
-const EXPECTED_KEYBOARD_STOPS = 28;
+// 29 since the TestingLab card's second edition: its report is one more link
+// on the page, at every width.
+const EXPECTED_KEYBOARD_STOPS = 29;
 
 /**
  * What one sweep under the banner covers, per width: the page's controls
@@ -137,8 +139,8 @@ const EXPECTED_KEYBOARD_STOPS = 28;
  * make expensive.
  */
 const EXPECTED_CONTROLS_UNDER_THE_BANNER: Record<number, number> = {
-  1280: 28,
-  768: 22,
+  1280: 29,
+  768: 23,
 };
 
 function countMustMatch(what: string, found: number, recorded: number): void {
