@@ -1,11 +1,39 @@
 {
   "sections": [
-    { "body": "summary", "title": "Summary", "icon": "IdCard" },
-    { "body": "skills", "title": "Core Competencies & Skills", "icon": "BrainCog" },
-    { "body": "experience", "title": "Professional Experience", "icon": "MonitorCog" },
-    { "body": "community", "title": "Community & Leadership", "icon": "UsersRound" },
-    { "body": "recognition", "title": "Recognition & Brand Presence", "icon": "Award" },
-    { "body": "certifications", "title": "Certifications & Credentials", "icon": "ShieldCheck" },
-    { "body": "passions", "title": "Passions & Hobbies", "icon": "TreePalm" }
+    {
+      "body": "summary",
+      "title": "Summary",
+      "icon": "IdCard"
+    },
+    {
+      "body": "skills",
+      "title": "Core Competencies & Skills",
+      "icon": "BrainCog"
+    },
+    {
+      "body": "experience",
+      "title": "Professional Experience",
+      "icon": "MonitorCog"
+    },
+    {
+      "body": "community",
+      "title": "Community & Leadership",
+      "icon": "UsersRound"
+    },
+    {
+      "body": "recognition",
+      "title": "Recognition & Brand Presence",
+      "icon": "Award"
+    },
+    {
+      "body": "certifications",
+      "title": "Certifications & Credentials",
+      "icon": "ShieldCheck"
+    },
+    {
+      "body": "passions",
+      "title": "Passions & Hobbies",
+      "icon": "TreePalm"
+    }
   ]
 }
