@@ -12,7 +12,7 @@
       "featured": true,
       "links": [
         {
-          "label": "Report: Testing Lab — AI Edition",
+          "label": "Report: Testing Lab - AI Edition",
           "group": "AI Testing Lab Study, part one · 04.2026",
           "url": "https://sii.pl/en/news-feed/ai-in-software-testing-sii-poland-publishes-a-breakthrough-testing-lab-ai-edition-report/",
           "icon": "Lightbulb"
@@ -24,10 +24,10 @@
           "icon": "BookOpen"
         },
         {
-          "label": "Study: exploring the AI boom in test automation",
+          "label": "Report: Testing Lab - AI is not enough",
           "group": "AI Testing Lab Study, part two · 08.2026",
           "url": "https://sii.pl/en/news-feed/ai-speeds-up-software-testing-but-does-it-help-find-the-right-bugs-sii-poland-publishes-the-second-testing-lab-report/",
-          "icon": "BookOpen"
+          "icon": "Lightbulb"
         }
       ]
     },
