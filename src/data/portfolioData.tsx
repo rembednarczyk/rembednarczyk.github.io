@@ -105,11 +105,17 @@ export function buildPresentation(raw: PresentationRaw): Presentation {
         desc: project.desc,
         tags: project.tags,
         mainIcon: <Icon size={SIZES.project} />,
+        ...("featured" in project && project.featured ? { featured: true } : {}),
         ...("links" in project
           ? {
               links: project.links.map((link) => {
                 const LinkIcon = iconOf(link.icon);
-                return { url: link.url, icon: <LinkIcon size={SIZES.projectLink} /> };
+                return {
+                  url: link.url,
+                  icon: <LinkIcon size={SIZES.projectLink} />,
+                  ...("label" in link ? { label: link.label } : {}),
+                  ...("group" in link ? { group: link.group } : {}),
+                };
               }),
             }
           : {}),

@@ -1,5 +1,6 @@
 import { useContent } from "../../../data/content";
 import { ProjectCard } from "./ProjectCard";
+import { leadWithFeatured } from "./order";
 
 /**
  * The `projects` band, one of the page's numbered run.
@@ -14,7 +15,7 @@ export function ProjectsSection() {
   const { keyProjectsData } = useContent();
   return (
     <div className="grid md:grid-cols-2 gap-8">
-      {keyProjectsData.map((project, idx) => (
+      {leadWithFeatured(keyProjectsData).map((project, idx) => (
         <ProjectCard key={idx} project={project} />
       ))}
     </div>

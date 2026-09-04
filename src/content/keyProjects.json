@@ -2,19 +2,24 @@
   "projects": [
     {
       "title": "Sii TestingLab Jury",
-      "desc": "Participated as a jury member in a Sii TestingLab research initiative aimed at evaluating selected software testing solutions. Contributed to defining the study scope, designing the testing scenarios, and establishing evaluation criteria. Performed code reviews as part of the technical assessment and co-developed the final evaluation results and report.",
+      "desc": "A recurring Sii research programme evaluating software testing tools against real scenarios. On the jury I help define the study scope, design the testing scenarios and the evaluation criteria, perform the code reviews behind the technical assessment, and co-author the final report.",
       "tags": [
         "Code Review",
         "AI-driven testing",
         "Quality Engineering"
       ],
       "icon": "CodeXml",
+      "featured": true,
       "links": [
         {
+          "label": "Report: Testing Lab — AI Edition",
+          "group": "AI Edition · 2024",
           "url": "https://sii.pl/en/news-feed/ai-in-software-testing-sii-poland-publishes-a-breakthrough-testing-lab-ai-edition-report/",
           "icon": "Lightbulb"
         },
         {
+          "label": "Study: exploring the AI boom in test automation",
+          "group": "AI Edition · 2024",
           "url": "https://sii.pl/blog/en/sii-testing-lab-study-exploring-the-ai-boom-in-test-automation/",
           "icon": "Globe"
         }
@@ -33,6 +38,7 @@
       "icon": "Users",
       "links": [
         {
+          "label": "SJSI board",
           "url": "https://sjsi.org/o-nas/zarzad/#:~:text=REMIGIUSZ%20BEDNARCZYK",
           "icon": "Globe"
         }
@@ -62,10 +68,12 @@
       "icon": "BookOpen",
       "links": [
         {
+          "label": "Become a tester — the course that can turn a career around (Sii)",
           "url": "https://sii.pl/aktualnosci/zostan-testerem-szkolenie-ktore-moze-zmienic-sciezke-kariery-o-180-stopni/",
           "icon": "Globe"
         },
         {
+          "label": "Trainer profile at Testerzy.pl",
           "url": "https://testerzy.pl/trenerzy/remigiusz-bednarczyk",
           "icon": "Globe"
         }
@@ -82,10 +90,12 @@
       "icon": "Rss",
       "links": [
         {
+          "label": "The story of the Sii blog: passion and knowledge to millions of views",
           "url": "https://sii.pl/aktualnosci/od-pasji-i-wiedzy-do-milionow-odslon-czyli-historia-bloga-sii/",
           "icon": "Globe"
         },
         {
+          "label": "All my articles on the Sii blog",
           "url": "https://sii.pl/blog/author/remigiusz-bednarczyk/",
           "icon": "Lightbulb"
         }
@@ -103,6 +113,7 @@
       "icon": "Image",
       "links": [
         {
+          "label": "Sii turns 15: eco-murals in five cities",
           "url": "https://sii.pl/en/news-feed/sii-poland-celebrates-its-15th-birthday-with-eco-murals-5-walls-absorb-as-much-smog-as-over-1-000-trees/",
           "icon": "Globe"
         }

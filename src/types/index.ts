@@ -76,6 +76,13 @@ export interface Expertise {
 export interface KeyProjectLink {
   url: string;
   icon: ReactNode;
+  /** What the link is — a report, an article, a profile — so it reads as an
+   *  output rather than an unlabelled glyph. Absent on older entries, which
+   *  still render as the icon row. */
+  label?: string;
+  /** The edition or venue the output belongs to, for grouping on a featured
+   *  card: "AI Edition · 2024". */
+  group?: string;
 }
 
 export interface KeyProject {
@@ -84,6 +91,9 @@ export interface KeyProject {
   tags: string[];
   mainIcon: ReactNode;
   links?: KeyProjectLink[];
+  /** A recurring programme with published outputs: rendered full-width at
+   *  the top of the band, its links laid out by edition. */
+  featured?: boolean;
 }
 
 /**
