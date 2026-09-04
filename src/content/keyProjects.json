@@ -13,15 +13,21 @@
       "links": [
         {
           "label": "Report: Testing Lab — AI Edition",
-          "group": "AI Edition · 2024",
+          "group": "AI Testing Lab Study, part one · 04.2026",
           "url": "https://sii.pl/en/news-feed/ai-in-software-testing-sii-poland-publishes-a-breakthrough-testing-lab-ai-edition-report/",
           "icon": "Lightbulb"
         },
         {
           "label": "Study: exploring the AI boom in test automation",
-          "group": "AI Edition · 2024",
+          "group": "AI Testing Lab Study, part one · 04.2026",
           "url": "https://sii.pl/blog/en/sii-testing-lab-study-exploring-the-ai-boom-in-test-automation/",
-          "icon": "Globe"
+          "icon": "BookOpen"
+        },
+        {
+          "label": "Study: exploring the AI boom in test automation",
+          "group": "AI Testing Lab Study, part two · 08.2026",
+          "url": "https://sii.pl/en/news-feed/ai-speeds-up-software-testing-but-does-it-help-find-the-right-bugs-sii-poland-publishes-the-second-testing-lab-report/",
+          "icon": "BookOpen"
         }
       ]
     },
