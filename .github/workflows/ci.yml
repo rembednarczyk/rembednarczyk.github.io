@@ -27,8 +27,16 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
+      # Whole history, not the default single commit: the build dates the
+      # sitemap, the footer and the printed CV from the last commit that
+      # touched src/content (scripts/contentDate.ts), and a shallow clone can
+      # only answer that when HEAD itself changed the content. Anything
+      # older would fall back to the build date — right by accident on a
+      # content deploy, wrong on every other.
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

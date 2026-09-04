@@ -3,12 +3,24 @@ import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "path";
 import { defineConfig, type Plugin } from "vite";
+import { lastContentChange, resolveContentDate } from "./scripts/contentDate";
 import { PRINT_QR_CARD_FILE, printQrCard } from "./scripts/printQrCard";
 import { countLastmod, stampSitemap } from "./scripts/sitemap";
 import { injectPersonSchema } from "./scripts/structuredData";
 import { VOCABULARY } from "./src/data/vocabulary";
 
-/** Dates the sitemap from the build, so it cannot fall behind the content. */
+/**
+ * The day the content last changed — the last commit touching src/content,
+ * or today when git cannot say (scripts/contentDate.ts). One value, read
+ * once, and given to everything that dates the site: the sitemap's lastmod,
+ * the footer, the printed CV. A build that dated those three from three
+ * clocks would be a page disagreeing with itself.
+ */
+const CONTENT_UPDATED = resolveContentDate(lastContentChange(__dirname), new Date());
+const CONTENT_UPDATED_DAY = CONTENT_UPDATED.toISOString().slice(0, 10);
+
+/** Dates the sitemap from the content's last change, so it cannot fall behind
+ *  the content — and does not run ahead of it on a code-only deploy. */
 function stampSitemapPlugin(): Plugin {
   return {
     name: "stamp-sitemap",
@@ -23,7 +35,7 @@ function stampSitemapPlugin(): Plugin {
         return;
       }
 
-      fs.writeFileSync(file, stampSitemap(xml, new Date()));
+      fs.writeFileSync(file, stampSitemap(xml, CONTENT_UPDATED));
     },
   };
 }
@@ -136,6 +148,12 @@ export default defineConfig(() => {
       printQrCardPlugin(),
       vocabularyPlugin(),
     ],
+    // The same day the sitemap is stamped with, for the page to show. Defined
+    // rather than put in the environment so it cannot be set to one thing
+    // here and another in CI.
+    define: {
+      "import.meta.env.VITE_CONTENT_UPDATED": JSON.stringify(CONTENT_UPDATED_DAY),
+    },
     build: {
       /**
        * Published, deliberately.

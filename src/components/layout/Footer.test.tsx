@@ -53,3 +53,33 @@ describe("the footer's copyright year", () => {
     expect(screen.getByText(/All rights reserved/i)).toBeInTheDocument();
   });
 });
+
+/**
+ * The content date is the build's, not the clock's: it is handed in as a
+ * day and written out as one, and a footer with no day says nothing rather
+ * than today. Both halves are asserted, because a line that renders whatever
+ * it is given would pass the first alone while showing "Content updated
+ * Invalid Date" to a dev server.
+ */
+describe("the footer's content date", () => {
+  it("writes the day it is given, in words", () => {
+    render(<Footer {...props} contentUpdated="2026-09-04" />);
+
+    expect(screen.getByText("Content updated 4 September 2026")).toBeInTheDocument();
+  });
+
+  it("does not follow the clock", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2031-12-31T12:00:00Z"));
+
+    render(<Footer {...props} contentUpdated="2026-09-04" />);
+
+    expect(screen.getByText(/Content updated/).textContent).toContain("2026");
+  });
+
+  it("says nothing when the build learned no day", () => {
+    render(<Footer {...props} contentUpdated={undefined} />);
+
+    expect(screen.queryByText(/Content updated/)).not.toBeInTheDocument();
+  });
+});

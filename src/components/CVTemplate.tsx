@@ -9,6 +9,7 @@ import { iconOf } from "../data/icons";
 import { bodyOf } from "./CvBodies";
 import { cvData } from "../data/portfolioFacts";
 import { LINKEDIN_QR } from "../data/linkedinQr";
+import { CONTENT_UPDATED, formatIsoDate } from "../data/contentDate";
 import cvLayout from "../content/cvLayout.json" with { type: "json" };
 
 export const CVTemplate = () => {
@@ -98,6 +99,13 @@ export const CVTemplate = () => {
             <path d={LINKEDIN_QR.path} fill="#000000" shapeRendering="crispEdges" />
           </svg>
           <span className="text-[9px] text-slate-500 uppercase tracking-wider font-semibold">Scan for LinkedIn</span>
+          {/* A printed CV outlives the print: the month it was current is the
+              one thing a reader of a paper copy cannot look up. */}
+          {CONTENT_UPDATED !== undefined && (
+            <span className="text-[9px] text-slate-500 uppercase tracking-wider font-semibold mt-2">
+              As of {formatIsoDate(CONTENT_UPDATED, "month")}
+            </span>
+          )}
         </div>
       </header>
 
