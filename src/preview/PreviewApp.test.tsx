@@ -52,6 +52,35 @@ describe("the preview harness", () => {
     expect(screen.getAllByText(heroData.name).length).toBeGreaterThan(0);
   });
 
+  it("warns, but does not render, on content from an origin it does not trust", () => {
+    // The dropped-in-silence failure made visible: an editor whose origin was
+    // never configured posts content and the page never moves. It is still
+    // dropped — the check is the boundary — but it says why now, naming the
+    // origin so an owner can set VITE_PREVIEW_EDITOR_ORIGIN to it.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    renderPreview();
+
+    sendContent("Should Not Appear", { origin: "https://editor.onrender.test" });
+
+    expect(screen.queryByText("Should Not Appear")).not.toBeInTheDocument();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("https://editor.onrender.test"));
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("VITE_PREVIEW_EDITOR_ORIGIN"));
+
+    warn.mockRestore();
+  });
+
+  it("does not warn when an allowed origin posts content", () => {
+    // The warning is for a real misconfiguration, not for every message; a
+    // trusted origin renders and says nothing.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    renderPreview();
+
+    sendContent("Shown", { origin: "http://localhost:3001" });
+
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
   it("answers the editor with the page's section geometry", () => {
     const postMessage = vi.fn();
     const source = { postMessage } as unknown as Window;

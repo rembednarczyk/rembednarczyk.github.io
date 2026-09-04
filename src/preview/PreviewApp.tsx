@@ -1,7 +1,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Portfolio } from "../App";
 import { buildContent, ContentProvider, STATIC_CONTENT, type SiteContent } from "../data/content";
-import { type Box, isContentMessage, originAllowed } from "./protocol";
+import {
+  allowedEditorOrigins,
+  type Box,
+  isContentMessage,
+  looksLikeContent,
+  originAllowed,
+} from "./protocol";
 
 /**
  * The site's own page, drawn from content handed to it live.
@@ -27,7 +33,24 @@ export function PreviewApp() {
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
-      if (!originAllowed(event.origin)) return;
+      if (!originAllowed(event.origin)) {
+        // The one failure that looks like nothing: an editor posting content
+        // from an origin this build was not told to trust. The message is
+        // still dropped — the origin check is the security boundary — but it
+        // is no longer dropped in silence, so an owner whose preview never
+        // moves can see why in the frame's console.
+        if (looksLikeContent(event.data)) {
+          // Worded to avoid a bare `from "…"`, which the dependency gate reads
+          // as an import specifier — the fragility README's dependency entry
+          // records.
+          console.warn(
+            `[preview] ignored an edit posted by ${event.origin} — it is not an allowed editor ` +
+              `origin. Set VITE_PREVIEW_EDITOR_ORIGIN to this exact origin at build time and ` +
+              `redeploy. Currently allowed: ${allowedEditorOrigins().join(", ")}`,
+          );
+        }
+        return;
+      }
       if (!isContentMessage(event.data)) return;
 
       if (event.source !== null) {
