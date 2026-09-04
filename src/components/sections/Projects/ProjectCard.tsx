@@ -16,7 +16,9 @@ function OutputLink({ link, project }: { link: KeyProjectLink; project: string }
       target="_blank"
       rel="noopener noreferrer"
       aria-label={link.label ? `${link.label} — ${project}` : `Link to ${project}`}
-      className="flex items-center gap-3 -mx-2 px-2 py-2 rounded text-slate-300 hover:text-cyan-400 active:text-cyan-400 transition-colors focus-ring"
+      // min-h-11 is the 44px SC 2.5.5 asks for: the row grows its tap area
+      // around the type and the icon, which stay the size they are.
+      className="flex items-center gap-3 -mx-2 px-2 py-2 min-h-11 rounded text-slate-300 hover:text-cyan-400 active:text-cyan-400 transition-colors focus-ring"
     >
       <span className="text-slate-500 group-hover/link:text-cyan-400 shrink-0">{link.icon}</span>
       <span className="text-sm leading-snug underline-offset-4 decoration-white/20 hover:underline">
