@@ -1,17 +1,63 @@
 {
   "sections": [
-    { "body": "hero" },
-    { "body": "expertise", "id": "expertise", "title": "Core Expertise" },
-    { "body": "about", "id": "about", "title": "About me" },
-    { "body": "thinking" },
-    { "body": "experience", "id": "experience", "title": "Professional Experience" },
-    { "body": "achievements", "id": "achievements", "title": "Key Achievements" },
-    { "body": "recognition", "id": "recognition", "title": "Awards & Recognition" },
-    { "body": "skills", "id": "skills", "title": "Technologies & Skills" },
-    { "body": "certifications", "id": "certifications", "title": "Certifications & Credentials" },
-    { "body": "projects", "id": "projects", "title": "Selected Initiatives" },
-    { "body": "community", "id": "community", "title": "Community & Leadership" },
-    { "body": "brand", "id": "brand", "title": "Community & Brand Presence" },
-    { "body": "contact" }
+    {
+      "body": "hero"
+    },
+    {
+      "body": "expertise",
+      "id": "expertise",
+      "title": "Core Expertise"
+    },
+    {
+      "body": "about",
+      "id": "about",
+      "title": "About me"
+    },
+    {
+      "body": "thinking"
+    },
+    {
+      "body": "experience",
+      "id": "experience",
+      "title": "Professional Experience"
+    },
+    {
+      "body": "achievements",
+      "id": "achievements",
+      "title": "Key Achievements"
+    },
+    {
+      "body": "recognition",
+      "id": "recognition",
+      "title": "Awards & Recognition"
+    },
+    {
+      "body": "skills",
+      "id": "skills",
+      "title": "Technologies & Skills"
+    },
+    {
+      "body": "certifications",
+      "id": "certifications",
+      "title": "Certifications & Credentials"
+    },
+    {
+      "body": "projects",
+      "id": "projects",
+      "title": "Selected Initiatives"
+    },
+    {
+      "body": "community",
+      "id": "community",
+      "title": "Community & Leadership"
+    },
+    {
+      "body": "brand",
+      "id": "brand",
+      "title": "Community & Brand Presence"
+    },
+    {
+      "body": "contact"
+    }
   ]
 }
