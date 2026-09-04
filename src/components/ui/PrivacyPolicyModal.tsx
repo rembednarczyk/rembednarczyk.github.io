@@ -3,6 +3,7 @@ import { ContactParts } from "./ContactParts";
 import { cvData } from "../../data/portfolioFacts";
 import { Modal } from "./Modal";
 import { CONSENT_STORAGE_KEY } from "../../hooks/useCookieConsent";
+import { formatIsoDate } from "../../data/contentDate";
 
 export interface PrivacyPolicyModalProps {
   isOpen: boolean;
@@ -15,6 +16,16 @@ export interface PrivacyPolicyModalProps {
   onChangeConsent?: (() => void) | undefined;
 }
 
+/**
+ * The day this policy's text last changed. Typed, deliberately, and moved by
+ * hand when the policy moves: it read `new Date()` before, which told every
+ * visitor the policy had been updated this month, whatever month it was — a
+ * "last updated" that is always today is not a date, and on a privacy policy
+ * it is the one line a careful reader checks. Taken from the last commit that
+ * changed this file; keep it in step when the wording below changes.
+ */
+export const POLICY_UPDATED = "2026-08-31";
+
 export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: PrivacyPolicyModalProps) {
   return (
     <Modal
@@ -26,7 +37,7 @@ export function PrivacyPolicyModal({ isOpen, onClose, onChangeConsent }: Privacy
       closeLabel="Close privacy policy"
       bodyClassName="text-slate-300 space-y-6"
     >
-      <p className="text-sm text-slate-400">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+      <p className="text-sm text-slate-400">Last updated: {formatIsoDate(POLICY_UPDATED, "month")}</p>
       
       <section className="space-y-3">
         <h3 className="text-lg font-semibold text-white">1. Data Controller</h3>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { PrivacyPolicyModal } from "../ui/PrivacyPolicyModal";
 import { CookieConsent } from "../ui/CookieConsent";
 import type { ConsentState } from "../../hooks/useCookieConsent";
+import { CONTENT_UPDATED, formatIsoDate } from "../../data/contentDate";
 
 export interface FooterProps {
   consent: ConsentState;
@@ -9,6 +10,13 @@ export interface FooterProps {
   onDecline: () => void;
   /** Clears the stored choice, which brings the banner back. */
   onReset: () => void;
+  /**
+   * The day the content last changed, `YYYY-MM-DD`, shown as a line under
+   * the copyright. Defaults to what the build learned; absent (a dev server,
+   * a test) shows nothing rather than a guess. A prop so a test can hand it
+   * a day and prove the line, and hand it nothing and prove the silence.
+   */
+  contentUpdated?: string | undefined;
 }
 
 /**
@@ -18,7 +26,13 @@ export interface FooterProps {
  * same corner: at 768px the button covered a third of Accept and took the
  * taps meant for it.
  */
-export function Footer({ consent, onAccept, onDecline, onReset }: FooterProps) {
+export function Footer({
+  consent,
+  onAccept,
+  onDecline,
+  onReset,
+  contentUpdated = CONTENT_UPDATED,
+}: FooterProps) {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   // The bottom padding keeps the floating scroll-to-top button off the
@@ -50,6 +64,14 @@ export function Footer({ consent, onAccept, onDecline, onReset }: FooterProps) {
               Privacy Policy
             </button>
           </div>
+          {/* The day the words last changed, not the day the site was built:
+              a sign the page is kept, dated by the same commit the sitemap's
+              lastmod is. */}
+          {contentUpdated !== undefined && (
+            <p className="font-mono text-xs text-center">
+              Content updated {formatIsoDate(contentUpdated, "long")}
+            </p>
+          )}
         </div>
       </div>
       <PrivacyPolicyModal
