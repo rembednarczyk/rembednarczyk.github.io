@@ -6,6 +6,54 @@ decided against — not when it is forgotten.
 
 ---
 
+## Tell the owner whether a save in the editor reached the page
+
+Written on 4 September 2026, the day of the first real edit made through
+the content editor, because what happened is the shape of every edit to
+come and nothing in either repository says so.
+
+The editor commits straight to `main`. That commit — a second edition added
+to the TestingLab card — turned `main` red twice, and neither time was the
+content wrong. First, axe: the "Recurring programme · N editions" line
+renders only from two editions on, so its 3.98:1 colour had never been on a
+page that any check looked at; the owner's edit was the first render that
+could fail it. Second, the recorded control count in
+`scripts/runFocusIndicator.ts`: one more link is one more control, and the
+count is recorded rather than bounded so that growth is a decision — which
+means a save from the editor can need a change to the code before it
+deploys. Both are as designed. What is not designed is what the owner saw:
+"Saved.", then nothing. The deploy was skipped, the words sat on `main` and
+not on the page, and the owner found out by asking an hour later.
+
+Four ways to close the gap, cheapest first, none decided:
+
+1. **No code.** GitHub mails whoever pushed when a workflow run fails, and
+   the editor's commits are made with the owner's own token, so that mail
+   may already be going out. Check the notification setting before building
+   anything; if it is on, this item may be finished already.
+2. **The editor says what happened next.** After a save, ask the Actions API
+   for the run on that commit (`GET /repos/{owner}/{repo}/actions/runs?head_sha=`)
+   through the server, which needs `actions: read` on the fine-grained token
+   it already holds, and show one line: deploying, live, or failed with a
+   link to the log. One endpoint, one status; the same shape as the sha check
+   the save already does.
+3. **Count content's controls apart from the code's.** A link the owner adds
+   through the editor and a button a developer adds in a component are
+   counted by the same number today. Counting the links the content produces
+   separately — or bounding that part and recording only the chrome — would
+   let a content save deploy without a code decision while a new control in
+   the code still needs one. Weigh it against the entry below on guards on
+   the page versus guards on the process: this one guards the page.
+4. **Lint for the contrast class of failure before saving.** Probably not:
+   that failure was the code's — a class on a line — not the content's, and
+   the editor cannot see classes. Axe in Storybook is the right place for it;
+   it caught it, one edit late.
+
+The first is a five-minute check and should come before the second; the
+third is a design question for the ratchet, not for the editor.
+
+---
+
 ## Weigh a guard on the work against a guard on the page
 
 Written after the shell-edit hook was registered, because the honest reading
