@@ -12,9 +12,13 @@ import { ProjectCard } from "./ProjectCard";
  */
 export function ProjectsSection() {
   const { keyProjectsData } = useContent();
+  // A featured programme leads the band, full-width; the rest keep their order.
+  const ordered = [...keyProjectsData].sort(
+    (a, b) => Number(b.featured ?? false) - Number(a.featured ?? false),
+  );
   return (
     <div className="grid md:grid-cols-2 gap-8">
-      {keyProjectsData.map((project, idx) => (
+      {ordered.map((project, idx) => (
         <ProjectCard key={idx} project={project} />
       ))}
     </div>
