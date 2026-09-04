@@ -28,6 +28,12 @@ function sendContent(
   });
 }
 
+function sendScroll(id: string, origin = "http://localhost:3001"): void {
+  act(() => {
+    window.dispatchEvent(new MessageEvent("message", { data: { type: "preview:scrollTo", id }, origin }));
+  });
+}
+
 describe("the preview harness", () => {
   it("opens on the build's own content, before any editor speaks", () => {
     renderPreview();
@@ -94,5 +100,35 @@ describe("the preview harness", () => {
 
     expect(geometry).toBeDefined();
     expect(Object.keys((geometry?.[0] as { boxes: object }).boxes).length).toBeGreaterThan(0);
+  });
+
+  it("scrolls the page to a section an allowed origin asks for", () => {
+    renderPreview();
+
+    // A section the real page renders with this id, the same anchor the site's
+    // navigation scrolls to. jsdom does not implement scrollIntoView, so a
+    // stand-in on the element is what proves the call was made.
+    const skills = document.getElementById("skills");
+    expect(skills).not.toBeNull();
+    const scrollIntoView = vi.fn();
+    if (skills !== null) skills.scrollIntoView = scrollIntoView;
+
+    sendScroll("skills");
+
+    expect(scrollIntoView).toHaveBeenCalled();
+  });
+
+  it("does not scroll for a section an untrusted origin asks for", () => {
+    // The origin check is the same boundary content passes: a page the owner
+    // did not open cannot move this one either.
+    renderPreview();
+
+    const skills = document.getElementById("skills");
+    const scrollIntoView = vi.fn();
+    if (skills !== null) skills.scrollIntoView = scrollIntoView;
+
+    sendScroll("skills", "https://evil.example");
+
+    expect(scrollIntoView).not.toHaveBeenCalled();
   });
 });

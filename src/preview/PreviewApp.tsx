@@ -5,6 +5,7 @@ import {
   allowedEditorOrigins,
   type Box,
   isContentMessage,
+  isScrollMessage,
   looksLikeContent,
   originAllowed,
 } from "./protocol";
@@ -51,6 +52,18 @@ export function PreviewApp() {
         }
         return;
       }
+
+      // A file opened in the editor: walk the page to that band, the same
+      // anchor the site's own navigation scrolls to. Gated by the origin check
+      // above, like content. An id that is on no page scrolls nowhere.
+      if (isScrollMessage(event.data)) {
+        const target = document.getElementById(event.data.id);
+        if (target !== null && typeof target.scrollIntoView === "function") {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        return;
+      }
+
       if (!isContentMessage(event.data)) return;
 
       if (event.source !== null) {

@@ -80,6 +80,22 @@ export function looksLikeContent(data: unknown): boolean {
   return typeof data === "object" && data !== null && (data as Record<string, unknown>)["type"] === "preview:content";
 }
 
+/**
+ * Whether a message asks the preview to scroll a section into view.
+ *
+ * The editor sends this when a file is opened, carrying the id of the page
+ * band that file feeds — the same anchor the site's own navigation scrolls to.
+ * A shape check only, and gated by the origin check like content: only a page
+ * the owner opened may move this one. An id that names no element on the page
+ * scrolls nowhere, decided where the scroll happens rather than here.
+ */
+export function isScrollMessage(data: unknown): data is ScrollMessage {
+  if (typeof data !== "object" || data === null) return false;
+
+  const message = data as Record<string, unknown>;
+  return message["type"] === "preview:scrollTo" && typeof message["id"] === "string" && message["id"] !== "";
+}
+
 /** The documents a whole page is built from — every key `buildContent` reads. */
 const RAW_KEYS: readonly (keyof RawContent)[] = [
   "hero",
@@ -110,6 +126,12 @@ export interface Box {
 export interface ContentMessage {
   type: "preview:content";
   content: RawContent;
+}
+
+/** Editor → preview: scroll this section into view. */
+export interface ScrollMessage {
+  type: "preview:scrollTo";
+  id: string;
 }
 
 /** Preview → editor: I am mounted and listening. */
