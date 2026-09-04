@@ -18,15 +18,36 @@ import type { RawContent } from "../data/content";
  *  other client route this site has. */
 export const PREVIEW_PATH = "/preview";
 
-function configuredOrigins(): string[] {
-  const raw = (import.meta.env as Record<string, string | undefined>)[
-    "VITE_PREVIEW_EDITOR_ORIGIN"
-  ];
-
+/**
+ * A comma-separated list of origins, each reduced to a bare origin.
+ *
+ * `event.origin` is always a bare origin — scheme, host, port, no path, no
+ * trailing slash — so an allowed entry has to be one too, and the common way
+ * to set `VITE_PREVIEW_EDITOR_ORIGIN` wrong is to paste the editor's URL with
+ * the trailing slash a browser shows. `https://x.onrender.com/` never equals
+ * `https://x.onrender.com`, so the match failed silently and the preview
+ * ignored every edit. `new URL(value).origin` normalises both away; a value
+ * too malformed to parse is dropped rather than crashing the module that every
+ * preview message passes through.
+ */
+export function normalizeOrigins(raw: string | undefined): string[] {
   return (raw ?? "")
     .split(",")
-    .map((origin) => origin.trim())
-    .filter((origin) => origin.length > 0);
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0)
+    .flatMap((value) => {
+      try {
+        return [new URL(value).origin];
+      } catch {
+        return [];
+      }
+    });
+}
+
+function configuredOrigins(): string[] {
+  return normalizeOrigins(
+    (import.meta.env as Record<string, string | undefined>)["VITE_PREVIEW_EDITOR_ORIGIN"],
+  );
 }
 
 const ALLOWED_EDITOR_ORIGINS: readonly string[] = [
@@ -35,8 +56,28 @@ const ALLOWED_EDITOR_ORIGINS: readonly string[] = [
   "http://localhost:5173",
 ];
 
+/** The origins the preview will take content from — for a diagnostic message
+ *  when it drops one it does not know. */
+export function allowedEditorOrigins(): readonly string[] {
+  return ALLOWED_EDITOR_ORIGINS;
+}
+
 export function originAllowed(origin: string): boolean {
   return ALLOWED_EDITOR_ORIGINS.includes(origin);
+}
+
+/**
+ * Whether a message is shaped like content, without checking whose it is.
+ *
+ * `isContentMessage` answers "should this be rendered", which requires both a
+ * trusted origin and every document present. This answers the narrower "did
+ * someone try to send content", so a message that looks like an edit but
+ * arrived from an origin the preview does not trust can be reported rather than
+ * dropped in silence — the one failure that leaves an owner typing into a
+ * preview that never moves.
+ */
+export function looksLikeContent(data: unknown): boolean {
+  return typeof data === "object" && data !== null && (data as Record<string, unknown>)["type"] === "preview:content";
 }
 
 /** The documents a whole page is built from — every key `buildContent` reads. */
