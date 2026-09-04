@@ -54,9 +54,12 @@ function FeaturedCard({ project }: { project: KeyProject }) {
         <div className="flex items-center gap-4 mb-6">
           <div className="text-cyan-400">{project.mainIcon}</div>
           {/* Counted from the groups, not typed: one edition is a programme,
-              not yet a recurring one, so the line waits for the second. */}
+              not yet a recurring one, so the line waits for the second.
+              slate-400, not 500: at 12px on the card's ground, 500 measures
+              3.98:1 and SC 1.4.3 asks 4.5:1 — found by axe the day the
+              second edition made the line appear. */}
           {editions > 1 && (
-            <span className="font-mono text-xs uppercase tracking-wider text-slate-500">
+            <span className="font-mono text-xs uppercase tracking-wider text-slate-400">
               Recurring programme · {editions} editions
             </span>
           )}
