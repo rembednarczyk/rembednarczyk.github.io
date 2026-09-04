@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   isContentMessage,
+  isScrollMessage,
   looksLikeContent,
   normalizeOrigins,
   originAllowed,
@@ -81,5 +82,22 @@ describe("isContentMessage", () => {
     const missingHero: Record<string, unknown> = { ...STATIC_RAW };
     delete missingHero["hero"];
     expect(isContentMessage({ type: "preview:content", content: missingHero })).toBe(false);
+  });
+});
+
+describe("isScrollMessage", () => {
+  it("accepts a scroll request carrying a section id", () => {
+    expect(isScrollMessage({ type: "preview:scrollTo", id: "projects" })).toBe(true);
+  });
+
+  it("refuses the wrong envelope or a missing id", () => {
+    // A content message is not a scroll, and a scroll with no id names no
+    // element — both would otherwise scroll the page nowhere in particular.
+    expect(isScrollMessage({ type: "preview:content", id: "projects" })).toBe(false);
+    expect(isScrollMessage({ type: "preview:scrollTo" })).toBe(false);
+    expect(isScrollMessage({ type: "preview:scrollTo", id: "" })).toBe(false);
+    expect(isScrollMessage({ type: "preview:scrollTo", id: 7 })).toBe(false);
+    expect(isScrollMessage("preview:scrollTo")).toBe(false);
+    expect(isScrollMessage(null)).toBe(false);
   });
 });
