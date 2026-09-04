@@ -51,9 +51,11 @@ function FeaturedCard({ project }: { project: KeyProject }) {
       <div className="flex flex-col">
         <div className="flex items-center gap-4 mb-6">
           <div className="text-cyan-400">{project.mainIcon}</div>
-          {editions > 0 && (
+          {/* Counted from the groups, not typed: one edition is a programme,
+              not yet a recurring one, so the line waits for the second. */}
+          {editions > 1 && (
             <span className="font-mono text-xs uppercase tracking-wider text-slate-500">
-              Recurring programme · {editions} {editions === 1 ? "edition" : "editions"}
+              Recurring programme · {editions} editions
             </span>
           )}
         </div>

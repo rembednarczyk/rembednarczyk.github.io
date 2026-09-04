@@ -44,11 +44,23 @@ async function expectNoOverflow(canvasElement: HTMLElement) {
     .toHaveLength(0);
 }
 
+/** The first entry is the featured programme: the full-width card with its
+ *  outputs laid out by edition. */
 export const AsRendered: Story = {
   args: { project: keyProjectsData[0]! },
   play: async ({ canvasElement }) => {
     // Established first: the checks below prove nothing if the ordinary
     // case already fails them.
+    await expectNoOverflow(canvasElement);
+    expect(await axe(canvasElement)).toHaveNoViolations();
+  },
+};
+
+/** An ordinary card as the site renders it, its link as a labelled output
+ *  rather than a bare glyph. */
+export const AsRenderedStandard: Story = {
+  args: { project: keyProjectsData[1]! },
+  play: async ({ canvasElement }) => {
     await expectNoOverflow(canvasElement);
     expect(await axe(canvasElement)).toHaveNoViolations();
   },

@@ -1,5 +1,6 @@
 import { useContent } from "../../../data/content";
 import { ProjectCard } from "./ProjectCard";
+import { leadWithFeatured } from "./order";
 
 /**
  * The `projects` band, one of the page's numbered run.
@@ -12,13 +13,9 @@ import { ProjectCard } from "./ProjectCard";
  */
 export function ProjectsSection() {
   const { keyProjectsData } = useContent();
-  // A featured programme leads the band, full-width; the rest keep their order.
-  const ordered = [...keyProjectsData].sort(
-    (a, b) => Number(b.featured ?? false) - Number(a.featured ?? false),
-  );
   return (
     <div className="grid md:grid-cols-2 gap-8">
-      {ordered.map((project, idx) => (
+      {leadWithFeatured(keyProjectsData).map((project, idx) => (
         <ProjectCard key={idx} project={project} />
       ))}
     </div>
