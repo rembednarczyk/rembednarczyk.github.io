@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { ACCENTS, ICONS, accentOf, iconOf } from "../src/data/icons";
+import { OFFERED_ICONS } from "../src/data/vocabulary";
 
 /**
  * An icon stopped being a symbol and became a string, and a string reaches
@@ -61,15 +62,28 @@ describe("the icons content names", () => {
     ).toEqual([]);
   });
 
-  it("leaves no icon in the registry that no card asks for", () => {
+  it("leaves no icon in the registry that no card asks for and nobody put on offer", () => {
     // Invisible to lint and to both reachability ratchets: the import *is*
     // used — by the registry — which is the whole reason it needs saying
     // here. A lucide icon is roughly 400 bytes in the bundle for nobody.
-    const unused = Object.keys(ICONS).filter((name) => !named.includes(name));
+    // The one licence is OFFERED_ICONS: a name the editor may offer before
+    // a card wears it, chosen and listed as such, not merely left behind.
+    const unused = Object.keys(ICONS).filter(
+      (name) => !named.includes(name) && !(OFFERED_ICONS as readonly string[]).includes(name),
+    );
 
     expect(
       unused,
-      `these are imported and registered and no content file names them:\n  ${unused.join("\n  ")}`,
+      `these are imported and registered, no content file names them and they are not on offer:\n  ${unused.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("takes an icon off the offer once a card wears it, so the offer stays what it says", () => {
+    const taken = OFFERED_ICONS.filter((name) => named.includes(name));
+
+    expect(
+      taken,
+      `content names these now, so they belong in ICON_NAMES proper, not OFFERED_ICONS:\n  ${taken.join("\n  ")}`,
     ).toEqual([]);
   });
 });
