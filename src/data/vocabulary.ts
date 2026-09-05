@@ -113,12 +113,26 @@ export type IconName = (typeof ICON_NAMES)[number];
  * carrying two vocabularies reads as one palette to anything building a
  * form from the content.
  */
-export const ACCENT_NAMES = ["cyan", "purple", "emerald", "orange"] as const;
+/**
+ * Accents on offer to the editor that no card wears yet, on the same terms
+ * as OFFERED_ICONS. Chosen by hue against the four the cards wear — cyan,
+ * emerald, orange, purple sit at 211°, 163°, 56° and 305° — so each is at
+ * least 28° from every other and reads as its own colour: rose 13°, amber
+ * 84°, lime 129°, blue 259°. Each is the 400 shade the others are, and
+ * each was measured against the card's ground at 4.5:1 or better before
+ * it was listed; `tests/accentContrast.test.ts` keeps measuring.
+ */
+export const OFFERED_ACCENTS = ["rose", "amber", "lime", "blue"] as const;
+
+export const ACCENT_NAMES = ["cyan", "purple", "emerald", "orange", ...OFFERED_ACCENTS] as const;
 
 export type AccentName = (typeof ACCENT_NAMES)[number];
 
-/** How an award card is coloured. Three, and not the four above. */
-export const AWARD_TONES = ["gold", "cyan", "purple"] as const;
+/** Award tones on offer that no award wears yet, on the same terms. */
+export const OFFERED_AWARD_TONES = ["emerald", "rose", "blue"] as const;
+
+/** How an award card is coloured: the three the awards wear, then the offer. */
+export const AWARD_TONES = ["gold", "cyan", "purple", ...OFFERED_AWARD_TONES] as const;
 
 /** Which shape draws a section of the printed CV. */
 export const CV_BODY_NAMES = [
