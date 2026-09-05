@@ -159,6 +159,13 @@ export const ACCENTS = {
   purple: "text-purple-400",
   emerald: "text-emerald-400",
   orange: "text-orange-400",
+  // On offer to the editor, not yet worn by a card: OFFERED_ACCENTS in
+  // vocabulary.ts. The 400 shade, like the four above, and each measured
+  // against the card's ground by tests/accentContrast.test.ts.
+  rose: "text-rose-400",
+  amber: "text-amber-400",
+  lime: "text-lime-400",
+  blue: "text-blue-400",
 } as const satisfies Record<AccentName, string>;
 
 export type AccentTone = keyof typeof ACCENTS;

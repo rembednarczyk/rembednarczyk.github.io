@@ -8,6 +8,8 @@ import {
   AWARD_TONES,
   CV_BODY_NAMES,
   ICON_NAMES,
+  OFFERED_ACCENTS,
+  OFFERED_AWARD_TONES,
   OFFERED_ICONS,
   PAGE_BODY_NAMES,
   VOCABULARY,
@@ -125,8 +127,6 @@ describe("a name on offer that nothing uses", () => {
    * which is the copy an owner sees.
    */
   it.each([
-    ["accents", ACCENT_NAMES, "accent"],
-    ["award tones", AWARD_TONES, "tone"],
     ["CV bodies", CV_BODY_NAMES, "body"],
     ["page bodies", PAGE_BODY_NAMES, "body"],
   ])("does not survive in %s", (_label, names, key) => {
@@ -139,16 +139,22 @@ describe("a name on offer that nothing uses", () => {
     ).toEqual([]);
   });
 
-  it("survives in icons only as the offer, and the offer is exactly what nothing uses", () => {
-    // Icons are the one list with a licence to be wider than content: an
-    // owner adding a card wants a choice, not the icons the cards already
-    // wear. The licence is OFFERED_ICONS, and it is held both ways — a
-    // spare icon has to be on it, and an icon on it has to be spare, so the
-    // offer cannot grow by accident or go stale once a card takes a name.
-    const taken = used("icon");
-    const spare = ICON_NAMES.filter((name) => !taken.has(name)).sort();
+  it.each([
+    ["icons", ICON_NAMES, "icon", OFFERED_ICONS],
+    ["accents", ACCENT_NAMES, "accent", OFFERED_ACCENTS],
+    ["award tones", AWARD_TONES, "tone", OFFERED_AWARD_TONES],
+  ])("survives in %s only as the offer, which is exactly what nothing uses", (_label, names, key, offered) => {
+    // The lists a card is coloured or marked from have a licence to be
+    // wider than content: an owner adding a card wants a choice, not the
+    // names the cards already wear. The licence is the offer, and it is
+    // held both ways — a spare name has to be on it, and a name on it has
+    // to be spare, so the offer cannot grow by accident or go stale once a
+    // card takes a name. A shape has no offer: a shape is code, and one
+    // nobody draws is unreachable code.
+    const taken = used(key);
+    const spare = names.filter((name) => !taken.has(name)).sort();
 
-    expect(spare).toEqual([...OFFERED_ICONS].sort());
+    expect(spare).toEqual([...offered].sort());
   });
 
   it("reads content that actually names things, so the above is not vacuous", () => {

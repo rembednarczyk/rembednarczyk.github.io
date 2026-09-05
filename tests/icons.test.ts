@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { ACCENTS, ICONS, accentOf, iconOf } from "../src/data/icons";
-import { OFFERED_ICONS } from "../src/data/vocabulary";
+import { OFFERED_ACCENTS, OFFERED_ICONS } from "../src/data/vocabulary";
 
 /**
  * An icon stopped being a symbol and became a string, and a string reaches
@@ -93,7 +93,7 @@ describe("the accents content asks for", () => {
     expect(accents.length).toBeGreaterThan(2);
   });
 
-  it("every one of them resolves, and none is spare", () => {
+  it("every one of them resolves, and none is spare but the offer", () => {
     // `accent` is read out of every content file rather than the three
     // that carry it today, so a fourth card type adopting accents is
     // covered by this without anyone remembering to add it.
@@ -104,8 +104,17 @@ describe("the accents content asks for", () => {
     // vocabularies under one key, which reads as a single palette to
     // anything building a form from the content, and would have offered
     // the wrong four colours in three of the places it appears.
+    //
+    // The offer is the one licence, as for icons: an accent on offer to the
+    // editor that no card wears yet, listed as such, and taken off the list
+    // once a card wears it.
     expect(accents.filter((tone) => !(tone in ACCENTS))).toEqual([]);
-    expect(Object.keys(ACCENTS).filter((tone) => !accents.includes(tone))).toEqual([]);
+    expect(
+      Object.keys(ACCENTS)
+        .filter((tone) => !accents.includes(tone))
+        .sort(),
+    ).toEqual([...OFFERED_ACCENTS].sort());
+    expect(OFFERED_ACCENTS.filter((tone) => accents.includes(tone))).toEqual([]);
   });
 });
 
