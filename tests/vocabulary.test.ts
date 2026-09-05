@@ -8,6 +8,7 @@ import {
   AWARD_TONES,
   CV_BODY_NAMES,
   ICON_NAMES,
+  OFFERED_ICONS,
   PAGE_BODY_NAMES,
   VOCABULARY,
 } from "../src/data/vocabulary";
@@ -124,7 +125,6 @@ describe("a name on offer that nothing uses", () => {
    * which is the copy an owner sees.
    */
   it.each([
-    ["icons", ICON_NAMES, "icon"],
     ["accents", ACCENT_NAMES, "accent"],
     ["award tones", AWARD_TONES, "tone"],
     ["CV bodies", CV_BODY_NAMES, "body"],
@@ -137,6 +137,18 @@ describe("a name on offer that nothing uses", () => {
       spare,
       `the editor would offer these and no content file uses any of them:\n  ${spare.join("\n  ")}`,
     ).toEqual([]);
+  });
+
+  it("survives in icons only as the offer, and the offer is exactly what nothing uses", () => {
+    // Icons are the one list with a licence to be wider than content: an
+    // owner adding a card wants a choice, not the icons the cards already
+    // wear. The licence is OFFERED_ICONS, and it is held both ways — a
+    // spare icon has to be on it, and an icon on it has to be spare, so the
+    // offer cannot grow by accident or go stale once a card takes a name.
+    const taken = used("icon");
+    const spare = ICON_NAMES.filter((name) => !taken.has(name)).sort();
+
+    expect(spare).toEqual([...OFFERED_ICONS].sort());
   });
 
   it("reads content that actually names things, so the above is not vacuous", () => {

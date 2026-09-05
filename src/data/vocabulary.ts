@@ -25,9 +25,52 @@
  */
 
 /**
+ * Icons on offer to the editor that no card names yet.
+ *
+ * The list an editor picks from should be one somebody chose, and until the
+ * editor existed the choosing was done by content: a name was on offer
+ * because a card used it, and `tests/icons.test.ts` refused any other. An
+ * editor changes what "on offer" means — the owner adding a card wants a
+ * choice, not the twenty-four icons the cards already wear — so this is
+ * the choice, made once, for this site's subjects: testing, quality,
+ * leadership, teaching, writing, the community. Each costs the bundle its
+ * few hundred bytes for nobody until a card takes it; measured, the
+ * twenty-four together cost 6.1 kB of the built page, 2.5 kB gzipped. When
+ * a card takes one, `tests/vocabulary.test.ts` says to take it off this
+ * list, so the list stays what it says it is.
+ */
+export const OFFERED_ICONS = [
+  "Bot",
+  "Briefcase",
+  "Bug",
+  "Building2",
+  "ClipboardCheck",
+  "Compass",
+  "FileCheck",
+  "FlaskConical",
+  "Gauge",
+  "GitBranch",
+  "GraduationCap",
+  "Handshake",
+  "Medal",
+  "Mic",
+  "Network",
+  "Newspaper",
+  "Presentation",
+  "Rocket",
+  "Sparkles",
+  "Star",
+  "Target",
+  "TestTube",
+  "Trophy",
+  "Workflow",
+] as const;
+
+/**
  * lucide-react ships about fifteen hundred icons and these are the ones on
- * offer. The narrowing is the point: an editor's icon picker should show a
- * list somebody chose, not a search box over an icon set.
+ * offer: the ones the cards wear, then the ones above. The narrowing is the
+ * point: an editor's icon picker should show a list somebody chose, not a
+ * search box over an icon set.
  *
  * Canonical names only. `Code2` was here as a deprecated alias whose real
  * name is `CodeXml`, and the two disagreed the moment an icon became a
@@ -58,6 +101,7 @@ export const ICON_NAMES = [
   "TreePalm",
   "Users",
   "UsersRound",
+  ...OFFERED_ICONS,
 ] as const;
 
 export type IconName = (typeof ICON_NAMES)[number];
