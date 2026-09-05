@@ -1,4 +1,5 @@
 import { useContent } from "../../../data/content";
+import { entryEdit } from "../../../preview/edit";
 import { ExpertiseCard } from "./ExpertiseCard";
 
 /**
@@ -15,7 +16,7 @@ export function ExpertiseSection() {
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {expertiseData.map((item, idx) => (
-        <ExpertiseCard key={idx} item={item} />
+        <ExpertiseCard key={idx} item={item} edit={entryEdit("expertise", "areas", idx)} />
       ))}
     </div>
   );

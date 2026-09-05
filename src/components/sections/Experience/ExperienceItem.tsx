@@ -2,9 +2,12 @@ import React from "react";
 import { Tag } from "../../ui/Tag";
 import { Job, Project } from "../../../types";
 
-export const ExperienceItem: React.FC<{ job: Job }> = ({ job }) => {
+export const ExperienceItem: React.FC<{ job: Job; edit?: string }> = ({ job, edit }) => {
   return (
-    <article className="group relative bg-[#0a1128]/80 backdrop-blur-sm border border-white/10 rounded-xl p-8 hover:-translate-y-1 active:scale-[0.98] transition-all duration-300">
+    <article
+      data-edit={edit}
+      className="group relative bg-[#0a1128]/80 backdrop-blur-sm border border-white/10 rounded-xl p-8 hover:-translate-y-1 active:scale-[0.98] transition-all duration-300"
+    >
       <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
         <div>
           <h3 className="text-2xl font-bold text-white group-hover:text-cyan-400 group-active:text-cyan-400 transition-colors">

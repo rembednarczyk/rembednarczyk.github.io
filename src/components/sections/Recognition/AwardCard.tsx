@@ -3,11 +3,12 @@ import { Terminal } from "lucide-react";
 import { AwardRecord } from "../../../types";
 import { TONES } from "./awardTones";
 
-export const AwardCard: React.FC<{ award: AwardRecord }> = ({ award }) => {
+export const AwardCard: React.FC<{ award: AwardRecord; edit?: string }> = ({ award, edit }) => {
   const tone = TONES[award.tone];
 
   return (
     <article
+      data-edit={edit}
       className={`group relative bg-[#0a1128]/80 backdrop-blur-sm border border-white/10 ${tone.border} rounded-xl p-6 hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 overflow-hidden flex flex-col h-full`}
     >
       <div

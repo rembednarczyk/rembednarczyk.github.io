@@ -20,11 +20,16 @@ export interface IconCardProps {
   icon: ReactNode;
   title: string;
   children: ReactNode;
+  /** Where this card is edited, for the live preview — see src/preview/edit.ts. */
+  edit?: string | undefined;
 }
 
-export function IconCard({ icon, title, children }: IconCardProps) {
+export function IconCard({ icon, title, children, edit }: IconCardProps) {
   return (
-    <article className="group bg-[#0a1128]/80 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-cyan-400/50 hover:-translate-y-1 active:scale-95 active:border-cyan-400/50 transition-all duration-300">
+    <article
+      data-edit={edit}
+      className="group bg-[#0a1128]/80 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-cyan-400/50 hover:-translate-y-1 active:scale-95 active:border-cyan-400/50 transition-all duration-300"
+    >
       <div
         className="w-12 h-12 rounded-lg bg-cyan-400/10 flex items-center justify-center mb-4 group-hover:scale-110 group-active:scale-110 transition-transform duration-300"
         aria-hidden="true"

@@ -59,6 +59,15 @@ html {
   scroll-padding-bottom: var(--fixed-bar-space, 0);
 }
 
+/* The card the editor's cursor is in, when this page is the live preview.
+   Set by src/preview/PreviewApp.tsx and never by the site itself, so the
+   rule is inert on the deployed page. An outline rather than a border, so
+   the card's own box does not move. */
+[data-editing] {
+  outline: 2px solid var(--color-cyan-400, #00d3f2);
+  outline-offset: 6px;
+}
+
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;

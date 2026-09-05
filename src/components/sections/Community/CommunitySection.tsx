@@ -1,4 +1,5 @@
 import { useContent } from "../../../data/content";
+import { entryEdit } from "../../../preview/edit";
 import { IconListItem } from "../../ui/IconListItem";
 
 /**
@@ -15,7 +16,7 @@ export function CommunitySection() {
   return (
     <ul className="grid gap-4 max-w-4xl mx-auto">
       {communityData.map((item, idx) => (
-        <IconListItem key={idx} icon={item.icon}>
+        <IconListItem key={idx} icon={item.icon} edit={entryEdit("community", "items", idx)}>
           {item.text}
         </IconListItem>
       ))}

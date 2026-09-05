@@ -134,6 +134,43 @@ export interface ScrollMessage {
   id: string;
 }
 
+/**
+ * Editor → preview: this entry has the cursor; light it. `file` null clears
+ * the light. `where` is the entry as the editor names it, `projects[2]`, or
+ * null for a file the page draws whole — the same two parts the cards'
+ * `data-edit` attribute carries (src/preview/edit.ts).
+ */
+export interface HighlightMessage {
+  type: "preview:highlight";
+  file: string | null;
+  where: string | null;
+}
+
+/**
+ * Preview → editor: the owner clicked here. Either an entry, named the way
+ * the highlight names one, or a section by the id the page renders for it —
+ * the same id the scroll request takes — when the click landed in a band
+ * whose cards carry no entry (the heading of one, a section drawn from code).
+ */
+export type PickMessage =
+  | { type: "preview:pick"; file: string; where: string | null }
+  | { type: "preview:pick"; id: string };
+
+/**
+ * Whether a message asks the preview to light an entry, or to clear the
+ * light. Gated by the origin check like every other request the preview
+ * takes: it changes what the page shows, if only by an outline.
+ */
+export function isHighlightMessage(data: unknown): data is HighlightMessage {
+  if (typeof data !== "object" || data === null) return false;
+
+  const message = data as Record<string, unknown>;
+  if (message["type"] !== "preview:highlight") return false;
+
+  const nullOrString = (value: unknown) => value === null || typeof value === "string";
+  return nullOrString(message["file"]) && nullOrString(message["where"]);
+}
+
 /** Preview → editor: I am mounted and listening. */
 export interface ReadyMessage {
   type: "preview:ready";
