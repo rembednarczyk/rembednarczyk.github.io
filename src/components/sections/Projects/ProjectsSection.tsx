@@ -1,4 +1,5 @@
 import { useContent } from "../../../data/content";
+import { entryEdit } from "../../../preview/edit";
 import { ProjectCard } from "./ProjectCard";
 import { leadWithFeatured } from "./order";
 
@@ -15,8 +16,8 @@ export function ProjectsSection() {
   const { keyProjectsData } = useContent();
   return (
     <div className="grid md:grid-cols-2 gap-8">
-      {leadWithFeatured(keyProjectsData).map((project, idx) => (
-        <ProjectCard key={idx} project={project} />
+      {leadWithFeatured(keyProjectsData).map(({ project, index }) => (
+        <ProjectCard key={index} project={project} edit={entryEdit("keyProjects", "projects", index)} />
       ))}
     </div>
   );

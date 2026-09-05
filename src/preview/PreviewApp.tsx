@@ -1,10 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Portfolio } from "../App";
 import { buildContent, ContentProvider, STATIC_CONTENT, type SiteContent } from "../data/content";
+import { cardFor, editOf, pickAt } from "./edit";
 import {
   allowedEditorOrigins,
   type Box,
   isContentMessage,
+  isHighlightMessage,
   isScrollMessage,
   looksLikeContent,
   originAllowed,
@@ -18,8 +20,14 @@ import {
  * inside a content provider it can change. The editor posts edited content
  * over `postMessage`; each message rebuilds the page through the site's own
  * transforms and the page redraws. Back the other way go the section
- * geometries, so the editor can scroll the preview to, and highlight, the
- * field being edited.
+ * geometries, so the editor can scroll the preview to the file being edited.
+ *
+ * And a click goes back too: every card the page draws from an entry says
+ * which entry (src/preview/edit.ts), so a click on the third job tells the
+ * editor to open `jobs[2]`, and a click in a band with no such card names the
+ * band. The editor answers in kind — which entry has the cursor — and that
+ * card is outlined and brought into view, so the two panes point at the same
+ * thing from either side.
  *
  * It opens showing the build's own content, so an editor that has not sent
  * anything yet — or is not there at all — still sees the real page rather than
@@ -31,6 +39,10 @@ export function PreviewApp() {
   // Who to answer with geometry: the window and origin of the last editor
   // message that passed the origin check.
   const editor = useRef<{ window: Window; origin: string } | null>(null);
+  // The `data-edit` value of the entry the editor says has the cursor, or
+  // null for none. State rather than a ref: the page redraws on every edit,
+  // and the outline has to land on the card that draws the entry after each.
+  const [editing, setEditing] = useState<string | null>(null);
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
@@ -61,6 +73,12 @@ export function PreviewApp() {
         if (target !== null && typeof target.scrollIntoView === "function") {
           target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
+        return;
+      }
+
+      if (isHighlightMessage(event.data)) {
+        const { file, where } = event.data;
+        setEditing(file === null ? null : editOf({ file, where }));
         return;
       }
 
@@ -102,6 +120,46 @@ export function PreviewApp() {
   useLayoutEffect(() => {
     postGeometry(editor.current, content);
   }, [content]);
+
+  // A click lands in the editor. Only once an editor has spoken — a preview
+  // opened in its own tab is the page, and its links should work as links.
+  // With an editor, a link inside a card is a click on the card: the mirror
+  // must not walk off to another site, and "Open in a tab" is there for that.
+  useEffect(() => {
+    function onClick(event: MouseEvent) {
+      const target = editor.current;
+      if (target === null || !(event.target instanceof Element)) return;
+
+      const pick = pickAt(event.target);
+      if (pick === null) return;
+
+      if (event.target.closest("a[href]") !== null) event.preventDefault();
+      target.window.postMessage(pick, target.origin);
+    }
+
+    document.addEventListener("click", onClick);
+    return () => {
+      document.removeEventListener("click", onClick);
+    };
+  }, []);
+
+  // Mark the card the editor is on, after every draw: the outline is an
+  // attribute on the card, and the card is redrawn on every edit.
+  useLayoutEffect(() => {
+    for (const marked of document.querySelectorAll("[data-editing]")) {
+      marked.removeAttribute("data-editing");
+    }
+    if (editing !== null) cardFor(document, editing)?.setAttribute("data-editing", "");
+  }, [content, editing]);
+
+  // And bring it into view when it changes — not on every keystroke, which
+  // would fight a page the owner is scrolling through.
+  useEffect(() => {
+    const card = editing === null ? null : cardFor(document, editing);
+    if (card !== null && typeof card.scrollIntoView === "function") {
+      card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [editing]);
 
   // And whenever the page moves under a fixed content — a scroll, a resize —
   // so the editor's map stays true. Coalesced to one send per frame.

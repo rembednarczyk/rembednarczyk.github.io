@@ -2,6 +2,7 @@ import { m } from "motion/react";
 import { Terminal } from "lucide-react";
 import { useContent } from "../../data/content";
 import { useScrollToSection } from "../../hooks/useScrollToSection";
+import { editValue } from "../../preview/edit";
 import { Tag } from "../ui/Tag";
 
 /**
@@ -19,7 +20,10 @@ export function HeroSection() {
   const scrollToSection = useScrollToSection();
 
   return (
-    <section className="relative min-h-[80vh] flex flex-col justify-center items-start">
+    <section
+      data-edit={editValue("hero")}
+      className="relative min-h-[80vh] flex flex-col justify-center items-start"
+    >
       <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

@@ -130,7 +130,9 @@ src/
 ├── lib/      React-free logic: the canvas simulation, the form transport,
 │             error reporting, routing
 ├── preview/  the editor's live preview: the real page drawn from content
-│             posted over the window, and the wire that carries it
+│             posted over the window, the wire that carries it, and the
+│             `data-edit` mark a card wears so a click there opens the
+│             editor at that entry
 ├── test/     helpers used by tests and by nothing that ships
 ├── types/
 └── utils/    pure helpers that run without React

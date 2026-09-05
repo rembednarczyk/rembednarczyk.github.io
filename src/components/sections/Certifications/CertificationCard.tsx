@@ -1,9 +1,9 @@
 import { Certification } from "../../../types";
 import { IconCard } from "../../ui/IconCard";
 
-export function CertificationCard({ item }: { item: Certification }) {
+export function CertificationCard({ item, edit }: { item: Certification; edit?: string | undefined }) {
   return (
-    <IconCard icon={item.icon} title={item.title}>
+    <IconCard icon={item.icon} title={item.title} edit={edit}>
       <ul className="space-y-2">
         {item.items.map((line, i) => (
           <li key={i} className="text-slate-400 text-sm flex items-start gap-2">

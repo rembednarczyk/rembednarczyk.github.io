@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   isContentMessage,
+  isHighlightMessage,
   isScrollMessage,
   looksLikeContent,
   normalizeOrigins,
@@ -99,5 +100,21 @@ describe("isScrollMessage", () => {
     expect(isScrollMessage({ type: "preview:scrollTo", id: 7 })).toBe(false);
     expect(isScrollMessage("preview:scrollTo")).toBe(false);
     expect(isScrollMessage(null)).toBe(false);
+  });
+});
+
+describe("isHighlightMessage", () => {
+  it("accepts an entry, a whole file, and the request to clear", () => {
+    expect(isHighlightMessage({ type: "preview:highlight", file: "experience.json", where: "jobs[2]" })).toBe(true);
+    expect(isHighlightMessage({ type: "preview:highlight", file: "hero.json", where: null })).toBe(true);
+    expect(isHighlightMessage({ type: "preview:highlight", file: null, where: null })).toBe(true);
+  });
+
+  it("refuses the wrong envelope or the wrong shape", () => {
+    expect(isHighlightMessage({ type: "preview:pick", file: "hero.json", where: null })).toBe(false);
+    expect(isHighlightMessage({ type: "preview:highlight" })).toBe(false);
+    expect(isHighlightMessage({ type: "preview:highlight", file: 3, where: null })).toBe(false);
+    expect(isHighlightMessage({ type: "preview:highlight", file: "hero.json", where: ["jobs"] })).toBe(false);
+    expect(isHighlightMessage(null)).toBe(false);
   });
 });

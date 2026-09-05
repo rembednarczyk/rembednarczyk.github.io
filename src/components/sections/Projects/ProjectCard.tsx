@@ -44,12 +44,15 @@ function groupedLinks(links: KeyProjectLink[]): [string, KeyProjectLink[]][] {
  * difference from the other cards is the content's own shape — editions and
  * reports — not an ornament.
  */
-function FeaturedCard({ project }: { project: KeyProject }) {
+function FeaturedCard({ project, edit }: { project: KeyProject; edit?: string | undefined }) {
   const groups = groupedLinks(project.links ?? []);
   const editions = groups.filter(([name]) => name !== "").length;
 
   return (
-    <article className={`${CARD} md:col-span-2 md:grid md:grid-cols-[1.15fr_1fr] md:gap-12`}>
+    <article
+      data-edit={edit}
+      className={`${CARD} md:col-span-2 md:grid md:grid-cols-[1.15fr_1fr] md:gap-12`}
+    >
       <div className="flex flex-col">
         <div className="flex items-center gap-4 mb-6">
           <div className="text-cyan-400">{project.mainIcon}</div>
@@ -98,13 +101,13 @@ function FeaturedCard({ project }: { project: KeyProject }) {
   );
 }
 
-export const ProjectCard: React.FC<{ project: KeyProject }> = ({ project }) => {
-  if (project.featured) return <FeaturedCard project={project} />;
+export const ProjectCard: React.FC<{ project: KeyProject; edit?: string }> = ({ project, edit }) => {
+  if (project.featured) return <FeaturedCard project={project} edit={edit} />;
 
   const labelled = (project.links ?? []).every((link) => link.label !== undefined);
 
   return (
-    <article className={CARD}>
+    <article data-edit={edit} className={CARD}>
       <div className="flex justify-between items-start mb-6">
         <div className="text-cyan-400">{project.mainIcon}</div>
         {/* Links without a label keep the old icon row: the icons keep their

@@ -1,5 +1,6 @@
 import { CheckCircle } from "lucide-react";
 import { useContent } from "../../../data/content";
+import { entryEdit } from "../../../preview/edit";
 import { IconListItem } from "../../ui/IconListItem";
 
 /**
@@ -16,7 +17,7 @@ export function AchievementsSection() {
   return (
     <ul className="grid gap-4 max-w-4xl mx-auto">
       {achievementsData.map((achievement, idx) => (
-        <IconListItem key={idx} icon={CheckCircle}>
+        <IconListItem key={idx} icon={CheckCircle} edit={entryEdit("achievements", "items", idx)}>
           {achievement}
         </IconListItem>
       ))}

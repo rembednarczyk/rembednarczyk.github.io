@@ -1,9 +1,15 @@
 import React from "react";
 import { SkillCategory } from "../../../types";
 
-export const SkillCategoryCard: React.FC<{ category: SkillCategory }> = ({ category }) => {
+export const SkillCategoryCard: React.FC<{ category: SkillCategory; edit?: string }> = ({
+  category,
+  edit,
+}) => {
   return (
-    <article className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 active:scale-95 active:bg-white/10 transition-all duration-300">
+    <article
+      data-edit={edit}
+      className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 active:scale-95 active:bg-white/10 transition-all duration-300"
+    >
       <div className="flex items-center gap-3 mb-4">
         <div aria-hidden="true">{category.icon}</div>
         <h3 className="font-semibold text-white">{category.name}</h3>

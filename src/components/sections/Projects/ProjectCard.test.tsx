@@ -92,7 +92,7 @@ describe("the band's order", () => {
       { title: "a" },
       { title: "b", featured: true },
       { title: "c" },
-    ]).map((entry) => entry.title);
+    ]).map((entry) => entry.project.title);
 
     expect(order).toEqual(["b", "a", "c"]);
   });

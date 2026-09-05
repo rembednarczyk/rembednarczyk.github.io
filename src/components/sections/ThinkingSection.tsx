@@ -1,5 +1,6 @@
 import { Quote } from "lucide-react";
 import { useContent } from "../../data/content";
+import { editValue } from "../../preview/edit";
 import { Reveal } from "../ui/Reveal";
 
 /**
@@ -15,7 +16,7 @@ import { Reveal } from "../ui/Reveal";
 export function ThinkingSection() {
   const { thinkingQuote } = useContent();
   return (
-    <section className="py-24 print:hidden relative overflow-hidden">
+    <section data-edit={editValue("thinking")} className="py-24 print:hidden relative overflow-hidden">
       <Reveal
         distance={30}
         duration={0.8}

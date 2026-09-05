@@ -1,4 +1,5 @@
 import { useContent } from "../../../data/content";
+import { entryEdit } from "../../../preview/edit";
 import { ExperienceItem } from "./ExperienceItem";
 
 /**
@@ -15,7 +16,7 @@ export function ExperienceSection() {
   return (
     <div className="space-y-8">
       {experienceData.map((job, idx) => (
-        <ExperienceItem key={idx} job={job} />
+        <ExperienceItem key={idx} job={job} edit={entryEdit("experience", "jobs", idx)} />
       ))}
     </div>
   );
